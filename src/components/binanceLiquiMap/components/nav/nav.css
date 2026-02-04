@@ -1,0 +1,9 @@
+@layer components {
+  .addLengthHover {
+    transform: scaleX(1);
+  }
+
+  .addLengthHover:hover {
+    transform: scaleX(1.2) !important;
+  }
+}
