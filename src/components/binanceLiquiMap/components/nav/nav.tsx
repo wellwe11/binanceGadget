@@ -24,12 +24,12 @@ const Pair_Symbol = () => {
   };
 
   const buttonStyle =
-    "z-10 py-3.75 w-16 text-gray-200 cursor-pointer bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]";
+    "card-shadow z-10 h-7.5 w-16 text-gray-200 cursor-pointer bg-gray-600";
   const buttonTextStyle =
     "absolute z-13 top-1.75 text-gray-200 pointer-events-none";
 
   return (
-    <div className="relative flex w-fit p-1 rounded-xl overflow-hidden bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]">
+    <div className="card-shadow relative flex w-fit p-1 rounded-xl bg-gray-600 border-4 border-gray-700">
       <p
         className={`left-5.5 ${buttonTextStyle}`}
         style={{
@@ -46,7 +46,7 @@ const Pair_Symbol = () => {
       />
 
       <div
-        className={`z-11 absolute top-1 py-3.75 w-16 bg-gray-900 pointer-events-auto cursor-pointer shadow-[inset_0px_30px_60px_-12px_rgba(50,50,93,0.25),inset_0px_18px_36px_-18px_rgba(0,0,0,0.3)] rounded-xl`}
+        className={`inner-shadow z-11 absolute top-1 py-3.75 w-16 bg-gray-700 pointer-events-auto cursor-pointer`}
         style={{
           transformOrigin: !transformOrigin ? "right" : "left",
           transform: `translateX(${activeButton ? "0" : "100%"}) scaleX(${scaleOn ? "1.6" : "1"})`,
@@ -59,6 +59,7 @@ const Pair_Symbol = () => {
           borderBottomRightRadius: !activeButton ? "12px" : "0px",
         }}
       />
+
       <p
         className={`right-2 ${buttonTextStyle}`}
         style={{
