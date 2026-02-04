@@ -24,12 +24,12 @@ const Pair_Symbol = () => {
   };
 
   const buttonStyle =
-    "z-10 py-3.75 w-16 text-gray-200 cursor-pointer bg-gray-700 hover:bg-gray-600 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]";
+    "z-10 py-3.75 w-16 text-gray-200 cursor-pointer bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]";
   const buttonTextStyle =
     "absolute z-13 top-1.75 text-gray-200 pointer-events-none";
 
   return (
-    <div className="relative flex w-fit p-1 rounded-md overflow-hidden bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]">
+    <div className="relative flex w-fit p-1 rounded-xl overflow-hidden bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]">
       <p
         className={`left-5.5 ${buttonTextStyle}`}
         style={{
@@ -41,16 +41,22 @@ const Pair_Symbol = () => {
       </p>
 
       <button
-        className={`rounded-l-md ${buttonStyle}`}
+        className={`rounded-l-xl ${buttonStyle}`}
         onClick={() => !activeButton && handleButton()}
       />
 
       <div
-        className={`z-11 absolute top-1 py-3.75 w-16 bg-gray-900 pointer-events-auto cursor-pointer shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)] rounded-md`}
+        className={`z-11 absolute top-1 py-3.75 w-16 bg-gray-900 pointer-events-auto cursor-pointer shadow-[inset_0px_30px_60px_-12px_rgba(50,50,93,0.25),inset_0px_18px_36px_-18px_rgba(0,0,0,0.3)] rounded-xl`}
         style={{
           transformOrigin: !transformOrigin ? "right" : "left",
           transform: `translateX(${activeButton ? "0" : "100%"}) scaleX(${scaleOn ? "1.6" : "1"})`,
-          transition: "transform 0.2s ease",
+          transition: "transform 0.2s ease, border-radius 0.2s ease",
+
+          borderTopLeftRadius: activeButton ? "12px" : "0px",
+          borderBottomLeftRadius: activeButton ? "12px" : "0px",
+
+          borderTopRightRadius: !activeButton ? "12px" : "0px",
+          borderBottomRightRadius: !activeButton ? "12px" : "0px",
         }}
       />
       <p
@@ -64,7 +70,7 @@ const Pair_Symbol = () => {
       </p>
 
       <button
-        className={`rounded-r-md ${buttonStyle}`}
+        className={`rounded-r-xl ${buttonStyle}`}
         onClick={() => activeButton && handleButton()}
       />
     </div>
