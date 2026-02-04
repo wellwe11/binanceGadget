@@ -20,16 +20,16 @@ const Pair_Symbol = () => {
 
     setTimeout(() => {
       setScaleOn(false);
-    }, 175);
+    }, 100);
   };
 
   const buttonStyle =
-    "z-10 py-3.75 w-16 text-gray-200 cursor-pointer bg-gray-500 hover:bg-gray-400";
+    "z-10 py-3.75 w-16 text-gray-200 cursor-pointer bg-gray-700 hover:bg-gray-600 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]";
   const buttonTextStyle =
     "absolute z-13 top-1.75 text-gray-200 pointer-events-none";
 
   return (
-    <div className="relative flex w-fit p-1 rounded-md overflow-hidden bg-gray-600">
+    <div className="relative flex w-fit p-1 rounded-md overflow-hidden bg-gray-700 shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)]">
       <p
         className={`left-5.5 ${buttonTextStyle}`}
         style={{
@@ -46,10 +46,10 @@ const Pair_Symbol = () => {
       />
 
       <div
-        className="z-11 absolute top-1 py-3.75 w-16 bg-gray-600 hover:bg-gray-600 pointer-events-auto cursor-pointer"
+        className={`z-11 absolute top-1 py-3.75 w-16 bg-gray-900 pointer-events-auto cursor-pointer shadow-[0px_1px_1px_rgba(9,30,66,0.25),0px_0px_1px_1px_rgba(9,30,66,0.13)] rounded-md`}
         style={{
           transformOrigin: !transformOrigin ? "right" : "left",
-          transform: `translateX(${activeButton ? "0" : "100%"}) scaleX(${scaleOn ? "1.3" : "1"})`,
+          transform: `translateX(${activeButton ? "0" : "100%"}) scaleX(${scaleOn ? "1.6" : "1"})`,
           transition: "transform 0.2s ease",
         }}
       />
