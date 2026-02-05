@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./nav.css";
 import ClickMenu from "./components/clickMenu";
+import DropdownMenu from "./components/dropdownMenu";
 
 const Nav = ({
   symbol,
@@ -53,6 +54,7 @@ const Nav = ({
   return (
     <div>
       <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
+      <DropdownMenu keys={Object.keys(time)} />
     </div>
   );
 };

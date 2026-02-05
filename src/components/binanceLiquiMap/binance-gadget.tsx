@@ -66,17 +66,17 @@ const BinanceGadget = () => {
   );
 
   const times = useMemo(
-    () => [
-      { name: "24 hour", days: 1 },
-      { name: "48 hour", days: 2 },
-      { name: "3 day", days: 3 },
-      { name: "1 week", days: 7 },
-      { name: "2 week", days: 14 },
-      { name: "1 month", days: 29 },
-      { name: "3 month", days: 87 },
-      { name: "6 month", days: 182 },
-      { name: "1 year", days: 365 },
-    ],
+    () => ({
+      "24_hour": { days: 1 },
+      "48 hour": { days: 2 },
+      "3 day": { days: 3 },
+      "1 week": { days: 7 },
+      "2 week": { days: 14 },
+      "1 month": { days: 29 },
+      "3 month": { days: 87 },
+      "6 month": { days: 182 },
+      "1 year": { days: 365 },
+    }),
     [],
   );
 

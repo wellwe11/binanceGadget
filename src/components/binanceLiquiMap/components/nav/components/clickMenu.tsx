@@ -62,7 +62,7 @@ const ActiveButtonBackground = ({
         transform: `translateX(${currentOffsetWidth + 6 * activeButton}px) scaleX(${scaleSize})`,
         transformOrigin: transformOriginSide,
         transition:
-          "transform 0.2s ease, border-radius 0.2s ease, width 0.34s ease",
+          "transform 0.2s ease, border-radius 0.2s ease, width 0.29s ease",
       }}
     />
   );
