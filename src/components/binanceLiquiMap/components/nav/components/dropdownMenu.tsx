@@ -3,14 +3,22 @@ import { useState } from "react";
 const FallMenu = () => {};
 
 const MainInput = ({ children }: { children: string }) => {
-  // Will update in future to handle more complex strings
-  const cleanString = (s: string) => {
-    return s.replace("_", " ");
+  const [inputVal, setInputVal] = useState(() => children);
+
+  const handleInput = (e) => {
+    const newVal = e.target.value;
+
+    setInputVal(newVal);
   };
 
   return (
     <div>
-      <input id="coin_select" type="input" value={children} />
+      <input
+        id="coin_select"
+        type="input"
+        value={inputVal}
+        onChange={handleInput}
+      />
     </div>
   );
 };
