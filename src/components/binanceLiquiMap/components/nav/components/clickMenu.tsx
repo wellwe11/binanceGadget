@@ -3,7 +3,7 @@ import "../nav.css";
 
 interface ClickMenuProps {
   children: string[] | string;
-  defaultValue: number;
+  defaultValue?: number;
   onSelect?: (index: number, value: string) => void;
 }
 
