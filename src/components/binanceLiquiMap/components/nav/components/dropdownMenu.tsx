@@ -1,19 +1,30 @@
 import { useState } from "react";
 
-const Button = () => {};
-
 const FallMenu = () => {};
 
-const MainButton = ({ children = "Default" }: { children?: string }) => {
+const MainInput = ({ children }: { children: string }) => {
   // Will update in future to handle more complex strings
   const cleanString = (s: string) => {
     return s.replace("_", " ");
   };
 
   return (
-    <button>
-      <p>{cleanString(children)}</p>
-    </button>
+    <div>
+      <input id="coin_select" type="input" value={children} />
+    </div>
+  );
+};
+
+const MainButton = () => {
+  return <button>V</button>;
+};
+
+const MainBar = () => {
+  return (
+    <div className="flex">
+      <MainInput>asd</MainInput>
+      <MainButton />
+    </div>
   );
 };
 
@@ -28,7 +39,7 @@ const DropdownMenu = ({
 
   return (
     <div>
-      <MainButton>{keys[currentButton]}</MainButton>
+      <MainBar />
       <h1>Dropdown</h1>
     </div>
   );
