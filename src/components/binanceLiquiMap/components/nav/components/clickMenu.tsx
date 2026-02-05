@@ -68,7 +68,7 @@ const ActiveButtonBackground = ({
 
   return (
     <div
-      className="shadow-inner absolute w-16 h-full top-0 bg-black pointer-events-auto cursor-pointer rounded-md"
+      className="shadow-inner absolute h-[70%] top-[15%] bg-black pointer-events-auto cursor-pointer rounded-md"
       style={{
         willChange: "width transform",
         width: `${width + gap}px`,
@@ -80,7 +80,7 @@ const ActiveButtonBackground = ({
 };
 
 const Container = ({ children }: { children: React.ReactNode[] }) => (
-  <div className="relative flex gap-2 w-fit h-fit border-4 border-gray-700 rounded-md bg-gray-700 overflow-hidden px-1 ">
+  <div className="relative flex gap-2 w-fit h-fit rounded-md bg-gray-700 overflow-hidden px-3 py-2 ">
     {children}
   </div>
 );
