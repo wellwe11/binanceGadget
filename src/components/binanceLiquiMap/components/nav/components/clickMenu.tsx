@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../nav.css";
 
+interface ClickMenuProps {
+  children: string[] | string;
+  defaultValue: number;
+  onSelect?: (index: number, value: string) => void;
+}
+
 // Pair Symbol button
 const Button = ({
   children = "Default",
@@ -61,11 +67,7 @@ const ClickMenu = ({
   children,
   onSelect,
   defaultValue = 0,
-}: {
-  children: string[] | string;
-  onSelect?: (index: number, value: string) => void;
-  defaultValue: number;
-}) => {
+}: ClickMenuProps) => {
   const [activeButton, setActiveButton] = useState(defaultValue);
 
   // Minor animation-time for increasing active-buttons background-colors width
