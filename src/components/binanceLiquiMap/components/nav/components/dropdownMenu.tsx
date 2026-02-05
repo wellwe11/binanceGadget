@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 const FallMenu = () => {};
 
 const MainInput = ({ children }: { children: string }) => {
   const [inputVal, setInputVal] = useState(() => children);
 
+  // Update inputs value
   const handleInput = (e) => {
     const newVal = e.target.value;
 
     setInputVal(newVal);
+  };
+
+  // Search for matching child
+  const handleSearch = () => {
+    // Look for matching child
   };
 
   return (
@@ -17,7 +23,10 @@ const MainInput = ({ children }: { children: string }) => {
         id="coin_select"
         type="input"
         value={inputVal}
-        onChange={handleInput}
+        onChange={(e) => {
+          handleInput(e);
+          handleSearch();
+        }}
       />
     </div>
   );
