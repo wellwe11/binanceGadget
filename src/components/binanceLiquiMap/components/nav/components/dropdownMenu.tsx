@@ -1,4 +1,4 @@
-import { Activity, ReactNode, useState } from "react";
+import { Activity, ReactNode, useEffect, useState } from "react";
 
 import "../nav.css";
 import ArrowSVG from "./assets/arrowSVG";
@@ -8,6 +8,7 @@ const FallMenu = ({
   children,
   showMenu,
   setShow,
+  handler,
 }: {
   showMenu: boolean;
   children: string[];
@@ -27,11 +28,14 @@ const FallMenu = ({
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
   dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
       >
-        {fallMenuItems.map((val: string) => (
+        {fallMenuItems.map((val: string, index) => (
           <button
             className="px-2 py-2.5 cursor-pointer hover:bg-gray-600"
-            key={val}
-            onClick={() => setShow(!showMenu)}
+            key={val + " " + index}
+            onClick={() => {
+              setShow(!showMenu);
+              handler(index);
+            }}
           >
             <p className="text-white text-xs text-left font-extralight">
               {cleanInputHandler(val)}
@@ -50,7 +54,7 @@ const MainInput = ({
   children: string;
   canSearch?: boolean;
 }) => {
-  const [inputVal, setInputVal] = useState(() => children);
+  const [inputVal, setInputVal] = useState(children);
 
   // Update inputs value
   const handleInput = (e) => {
@@ -63,6 +67,10 @@ const MainInput = ({
   const handleSearch = () => {
     // Look for matching child
   };
+
+  useEffect(() => {
+    setInputVal(children);
+  }, [children]);
 
   return (
     <input
@@ -81,7 +89,13 @@ const MainInput = ({
   );
 };
 
-const MainButton = ({ handler, boolean }) => {
+const MainButton = ({
+  handler,
+  boolean,
+}: {
+  handler: () => void;
+  boolean: boolean;
+}) => {
   const rotateFlip = boolean ? "rotate(180deg)" : "rotate(0deg)";
 
   return (
@@ -104,12 +118,15 @@ const MainButton = ({ handler, boolean }) => {
 
 // Top-level bar which displays currently selected item
 const MainBar = ({
+  children,
   canSearch,
   handler,
   boolean,
 }: {
+  children: string;
   canSearch?: boolean;
   boolean: boolean;
+  handler: () => void;
 }) => {
   return (
     <div
@@ -121,7 +138,7 @@ const MainBar = ({
       }}
     >
       <div className="relevant flex-1">
-        <MainInput canSearch={canSearch}>asd</MainInput>
+        <MainInput canSearch={canSearch}>{children}</MainInput>
       </div>
       <div className="w-10 h-max pr-1">
         <MainButton boolean={boolean} handler={handler} />
@@ -139,7 +156,7 @@ const DropdownMenu = ({
   value?: number;
   canSearch?: boolean;
 }) => {
-  const [currentButton, setCurrentButton] = useState(value);
+  const [currentButton, setCurrentButton] = useState(() => value);
   const [expandBar, setExpandBar] = useState(false);
   const handleExpandBar = () => setExpandBar(!expandBar);
 
@@ -149,8 +166,14 @@ const DropdownMenu = ({
         canSearch={canSearch}
         handler={handleExpandBar}
         boolean={expandBar}
-      />
-      <FallMenu setShow={setExpandBar} showMenu={expandBar}>
+      >
+        {keys[currentButton]}
+      </MainBar>
+      <FallMenu
+        setShow={setExpandBar}
+        showMenu={expandBar}
+        handler={setCurrentButton}
+      >
         {keys}
       </FallMenu>
     </div>

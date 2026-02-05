@@ -67,7 +67,7 @@ const BinanceGadget = () => {
 
   const times = useMemo(
     () => ({
-      "24_hour": { days: 1 },
+      "24 hour": { days: 1 },
       "48 hour": { days: 2 },
       "3 day": { days: 3 },
       "1 week": { days: 7 },
