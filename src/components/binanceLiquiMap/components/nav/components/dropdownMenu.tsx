@@ -42,30 +42,36 @@ const MainInput = ({
   };
 
   return (
-    <div>
-      <input
-        readOnly={!canSearch}
-        id="coin_select"
-        type="input"
-        value={inputVal}
-        onChange={(e) => {
-          handleInput(e);
-          handleSearch();
-        }}
-      />
-    </div>
+    <input
+      className="w-full px-2 outline-none bg-transparent"
+      readOnly={!canSearch}
+      id="coin_select"
+      value={inputVal}
+      onChange={(e) => {
+        handleInput(e);
+        handleSearch();
+      }}
+    />
   );
 };
 
 const MainButton = ({ handler }) => {
-  return <button onClick={handler}>V</button>;
+  return (
+    <button className="px-1 cursor-pointer" onClick={handler}>
+      V
+    </button>
+  );
 };
 
 const MainBar = ({ canSearch, handler }: { canSearch?: boolean }) => {
   return (
-    <div className="flex">
-      <MainInput canSearch={canSearch}>asd</MainInput>
-      <MainButton handler={handler} />
+    <div className="flex bg-amber-500">
+      <div className="relevant w-[80%]">
+        <MainInput canSearch={canSearch}>asd</MainInput>
+      </div>
+      <div className="w-[20%]">
+        <MainButton handler={handler} />
+      </div>
     </div>
   );
 };
