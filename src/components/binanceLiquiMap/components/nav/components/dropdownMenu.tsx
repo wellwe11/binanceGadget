@@ -1,5 +1,8 @@
-import { ReactNode, useState } from "react";
+import { Activity, ReactNode, useState } from "react";
 
+import "../nav.css";
+
+// Dropbar which displays all items
 const FallMenu = ({
   children,
   showMenu,
@@ -12,11 +15,28 @@ const FallMenu = ({
   const fallMenuItems = Array.isArray(children) ? children : [children];
 
   return (
-    <div className="flex flex-col bg-amber-200">
-      {fallMenuItems.map((val: string) => (
-        <button key={val}>{cleanInputHandler(val)}</button>
-      ))}
-    </div>
+    <Activity mode={showMenu ? "visible" : "hidden"}>
+      <div
+        className="border_bg mt-0.5 flex flex-col max-h-50 overflow-y-scroll 
+  
+  [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:bg-gray-300
+  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+      >
+        {fallMenuItems.map((val: string) => (
+          <button
+            className="px-2 py-2.5 cursor-pointer hover:bg-gray-600"
+            key={val}
+          >
+            <p className="text-white text-xs text-left font-extralight">
+              {cleanInputHandler(val)}
+            </p>
+          </button>
+        ))}
+      </div>
+    </Activity>
   );
 };
 
@@ -43,7 +63,7 @@ const MainInput = ({
 
   return (
     <input
-      className="w-full px-2 outline-none bg-transparent"
+      className="w-full px-2 py-1 outline-none bg-transparent text-white text-s text-left font-extralight"
       readOnly={!canSearch}
       id="coin_select"
       value={inputVal}
@@ -58,14 +78,15 @@ const MainInput = ({
 const MainButton = ({ handler }) => {
   return (
     <button className="px-1 cursor-pointer" onClick={handler}>
-      V
+      <p className="text-white">V</p>
     </button>
   );
 };
 
+// Top-level bar which displays currently selected item
 const MainBar = ({ canSearch, handler }: { canSearch?: boolean }) => {
   return (
-    <div className="flex bg-amber-500">
+    <div className="border_bg flex">
       <div className="relevant w-[80%]">
         <MainInput canSearch={canSearch}>asd</MainInput>
       </div>

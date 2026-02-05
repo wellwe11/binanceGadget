@@ -21,9 +21,9 @@ const Button = ({
     <button
       ref={elRef}
       onClick={handler}
-      className={`card-shadow z-13 h-7.5 w-fit text-gray-200 cursor-pointer`}
+      className={`card-shadow h-7.5 w-fit cursor-pointer px-1`}
     >
-      <p className="z-13 top-1.75 text-gray-200 pointer-events-none">
+      <p className="top-1.75 text-white mix-blend-difference pointer-events-none">
         {children}
       </p>
     </button>
@@ -56,10 +56,10 @@ const ActiveButtonBackground = ({
 
   return (
     <div
-      className={`shadow-inner z-11 absolute w-16 top-0 py-3.75 bg-gray-800 pointer-events-auto cursor-pointer`}
+      className={`shadow-inner absolute w-16 top-0 py-3.75 bg-gray-300 pointer-events-auto cursor-pointer`}
       style={{
-        width: `${width + 4}px`,
-        transform: `translateX(${currentOffsetWidth + 6 * activeButton}px) scaleX(${scaleSize})`,
+        width: `${width + 8}px`,
+        transform: `translateX(${currentOffsetWidth + 16 * activeButton}px) scaleX(${scaleSize})`,
         transformOrigin: transformOriginSide,
         transition:
           "transform 0.2s ease, border-radius 0.2s ease, width 0.29s ease",
@@ -69,7 +69,7 @@ const ActiveButtonBackground = ({
 };
 
 const Container = ({ children }: { children: React.ReactNode[] }) => (
-  <div className="shadow-inner relative flex gap-2 w-fit h-fit border-4 border-gray-600 rounded-xl bg-gray-600 overflow-hidden">
+  <div className="shadow-inner relative flex gap-2 w-fit h-fit border-4 border-black rounded-xl bg-black overflow-hidden">
     {children}
   </div>
 );
