@@ -49,7 +49,7 @@ const Nav = ({
   Displays a new chart on the right side with a 'Hyperlioquid whale tracker'
  */
 
-  const Pair_SymbolButtons = ["Pair Symbol", "random", "random3"];
+  const Pair_SymbolButtons = ["Pair", "Symbol"];
 
   return (
     <div>

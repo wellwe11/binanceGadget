@@ -1,6 +1,7 @@
 import { Activity, ReactNode, useState } from "react";
 
 import "../nav.css";
+import ArrowSVG from "./assets/arrowSVG";
 
 // Dropbar which displays all items
 const FallMenu = ({
@@ -75,23 +76,43 @@ const MainInput = ({
   );
 };
 
-const MainButton = ({ handler }) => {
+const MainButton = ({ handler, boolean }) => {
+  const rotateFlip = boolean ? "rotate(180deg)" : "rotate(0deg)";
+
   return (
-    <button className="px-1 cursor-pointer" onClick={handler}>
-      <p className="text-white">V</p>
+    <button
+      className="px-1 py-1 h-inherit w-inherit cursor-pointer flex items-center justify-center hover:bg-gray-600"
+      style={{ transition: "background-color 0.2s ease" }}
+      onClick={handler}
+    >
+      <div
+        style={{
+          transform: rotateFlip,
+          transition: "transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+        }}
+      >
+        <ArrowSVG />
+      </div>
     </button>
   );
 };
 
 // Top-level bar which displays currently selected item
-const MainBar = ({ canSearch, handler }: { canSearch?: boolean }) => {
+const MainBar = ({
+  canSearch,
+  handler,
+  boolean,
+}: {
+  canSearch?: boolean;
+  boolean: boolean;
+}) => {
   return (
-    <div className="border_bg flex">
+    <div className="border_bg flex items-center">
       <div className="relevant w-[80%]">
         <MainInput canSearch={canSearch}>asd</MainInput>
       </div>
-      <div className="w-[20%]">
-        <MainButton handler={handler} />
+      <div className="w-[20%] h-max">
+        <MainButton boolean={boolean} handler={handler} />
       </div>
     </div>
   );
@@ -112,7 +133,11 @@ const DropdownMenu = ({
 
   return (
     <div className="w-40">
-      <MainBar canSearch={canSearch} handler={handleExpandBar} />
+      <MainBar
+        canSearch={canSearch}
+        handler={handleExpandBar}
+        boolean={expandBar}
+      />
       <FallMenu showMenu={expandBar}>{keys}</FallMenu>
     </div>
   );

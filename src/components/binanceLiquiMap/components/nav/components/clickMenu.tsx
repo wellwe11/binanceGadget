@@ -21,9 +21,12 @@ const Button = ({
     <button
       ref={elRef}
       onClick={handler}
-      className={`card-shadow h-7.5 w-fit cursor-pointer px-1`}
+      className="z-13 h-7.5 w-fit cursor-pointer min-w-13"
     >
-      <p className="top-1.75 text-white mix-blend-difference pointer-events-none">
+      <p
+        className="top-1.75 text-white pointer-events-none"
+        style={{ fontSize: "14px", fontVariationSettings: "'wght' 400" }}
+      >
         {children}
       </p>
     </button>
@@ -42,34 +45,42 @@ const ActiveButtonBackground = ({
   activeButton: number;
   widths?: (number | undefined)[];
 }) => {
-  const scaleSize = scaleOn ? "1.5" : "1";
-  const transformOriginSide = transformOrigin ? "left" : "right";
+  const [prevButton, setPrevButton] = useState(activeButton);
+  const gap = 8;
+
+  const start = Math.min(prevButton, activeButton);
+  const end = Math.max(prevButton, activeButton);
+  const expandedWidth = widths
+    ?.slice(start, end + 1)
+    .reduce((sum, w) => sum + (w ?? 0) + gap, -gap);
+
+  const normalWidth = widths?.[activeButton];
+  const width = scaleOn ? expandedWidth : normalWidth;
 
   const currentOffsetWidth =
-    (widths &&
-      widths
-        ?.slice(0, activeButton)
-        .reduce((sum: number, w) => sum + (w ?? 0), 0)) ??
-    0;
+    widths?.slice(0, start).reduce((sum, w) => sum + (w ?? 0) + gap, 0) ?? 0;
 
-  const width = (widths && widths[activeButton]) || 64;
+  useEffect(() => {
+    if (!scaleOn) {
+      setPrevButton(activeButton);
+    }
+  }, [scaleOn, activeButton]);
 
   return (
     <div
-      className={`shadow-inner absolute w-16 top-0 py-3.75 bg-gray-300 pointer-events-auto cursor-pointer`}
+      className="shadow-inner absolute w-16 h-full top-0 bg-black pointer-events-auto cursor-pointer rounded-md"
       style={{
-        width: `${width + 8}px`,
-        transform: `translateX(${currentOffsetWidth + 16 * activeButton}px) scaleX(${scaleSize})`,
-        transformOrigin: transformOriginSide,
-        transition:
-          "transform 0.2s ease, border-radius 0.2s ease, width 0.29s ease",
+        willChange: "width transform",
+        width: `${width + gap}px`,
+        transform: `translateX(${currentOffsetWidth - gap / 2}px)`,
+        transition: "transform 0.3s ease, width 0.3s ease",
       }}
     />
   );
 };
 
 const Container = ({ children }: { children: React.ReactNode[] }) => (
-  <div className="shadow-inner relative flex gap-2 w-fit h-fit border-4 border-black rounded-xl bg-black overflow-hidden">
+  <div className="relative flex gap-2 w-fit h-fit border-4 border-gray-700 rounded-md bg-gray-700 overflow-hidden px-1 ">
     {children}
   </div>
 );
@@ -113,13 +124,13 @@ const ClickMenu = ({
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
 
-    if (index !== activeButton) {
-      setScaleOn(true);
-    }
-    setTransformOrigin(index < activeButton ? false : true); // Maintain origin relevant to it's direction
+    if (index === activeButton) return;
 
-    const activeButtonTimer = setTimeout(() => setActiveButton(index), 50);
-    const scaleOnTimer = setTimeout(() => setScaleOn(false), 100);
+    setScaleOn(true);
+    setTransformOrigin(index > activeButton); // Maintain origin relevant to it's direction
+
+    const activeButtonTimer = setTimeout(() => setActiveButton(index), 150);
+    const scaleOnTimer = setTimeout(() => setScaleOn(false), 200);
     timersRef.current = [activeButtonTimer, scaleOnTimer];
 
     onSelect?.(index, value);
