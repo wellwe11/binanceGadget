@@ -52,9 +52,14 @@ const Nav = ({
   const Pair_SymbolButtons = ["Pair", "Symbol"];
 
   return (
-    <div>
+    <div className="flex">
       <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
-      <DropdownMenu keys={Object.keys(time)} />
+      <div className="w-30">
+        <DropdownMenu keys={Object.keys(time)} canSearch={false} />
+      </div>
+      <div>
+        <DropdownMenu keys={pair} />
+      </div>
     </div>
   );
 };

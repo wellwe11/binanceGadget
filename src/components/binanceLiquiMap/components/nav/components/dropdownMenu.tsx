@@ -7,6 +7,7 @@ import ArrowSVG from "./assets/arrowSVG";
 const FallMenu = ({
   children,
   showMenu,
+  setShow,
 }: {
   showMenu: boolean;
   children: string[];
@@ -30,6 +31,7 @@ const FallMenu = ({
           <button
             className="px-2 py-2.5 cursor-pointer hover:bg-gray-600"
             key={val}
+            onClick={() => setShow(!showMenu)}
           >
             <p className="text-white text-xs text-left font-extralight">
               {cleanInputHandler(val)}
@@ -65,12 +67,15 @@ const MainInput = ({
   return (
     <input
       className="w-full px-2 py-1 outline-none bg-transparent text-white text-s text-left font-extralight"
+      style={{ cursor: !canSearch ? "pointer" : "" }}
       readOnly={!canSearch}
       id="coin_select"
       value={inputVal}
       onChange={(e) => {
-        handleInput(e);
-        handleSearch();
+        if (canSearch) {
+          handleInput(e);
+          handleSearch();
+        }
       }}
     />
   );
@@ -81,14 +86,14 @@ const MainButton = ({ handler, boolean }) => {
 
   return (
     <button
-      className="px-1 py-1 h-inherit w-inherit cursor-pointer flex items-center justify-center hover:bg-gray-600"
+      className="h-full w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 rounded-sm"
       style={{ transition: "background-color 0.2s ease" }}
       onClick={handler}
     >
       <div
         style={{
           transform: rotateFlip,
-          transition: "transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+          transition: "transform 0.4s cubic-bezier(0.68, -0.4, 0.32, 1.4)",
         }}
       >
         <ArrowSVG />
@@ -107,11 +112,18 @@ const MainBar = ({
   boolean: boolean;
 }) => {
   return (
-    <div className="border_bg flex items-center">
-      <div className="relevant w-[80%]">
+    <div
+      className="border_bg flex items-center"
+      onClick={() => {
+        if (!canSearch) {
+          handler();
+        }
+      }}
+    >
+      <div className="relevant flex-1">
         <MainInput canSearch={canSearch}>asd</MainInput>
       </div>
-      <div className="w-[20%] h-max">
+      <div className="w-10 h-max pr-1">
         <MainButton boolean={boolean} handler={handler} />
       </div>
     </div>
@@ -132,13 +144,15 @@ const DropdownMenu = ({
   const handleExpandBar = () => setExpandBar(!expandBar);
 
   return (
-    <div className="w-40">
+    <div>
       <MainBar
         canSearch={canSearch}
         handler={handleExpandBar}
         boolean={expandBar}
       />
-      <FallMenu showMenu={expandBar}>{keys}</FallMenu>
+      <FallMenu setShow={setExpandBar} showMenu={expandBar}>
+        {keys}
+      </FallMenu>
     </div>
   );
 };
