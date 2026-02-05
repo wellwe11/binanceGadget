@@ -1,6 +1,24 @@
 import { ReactNode, useState } from "react";
 
-const FallMenu = () => {};
+const FallMenu = ({
+  children,
+  showMenu,
+}: {
+  showMenu: boolean;
+  children: string[];
+}) => {
+  const cleanInputHandler = (s: string) => s.replace("_", " ");
+
+  const fallMenuItems = Array.isArray(children) ? children : [children];
+
+  return (
+    <div className="flex flex-col bg-amber-200">
+      {fallMenuItems.map((val: string) => (
+        <button key={val}>{cleanInputHandler(val)}</button>
+      ))}
+    </div>
+  );
+};
 
 const MainInput = ({
   children,
@@ -39,15 +57,15 @@ const MainInput = ({
   );
 };
 
-const MainButton = () => {
-  return <button>V</button>;
+const MainButton = ({ handler }) => {
+  return <button onClick={handler}>V</button>;
 };
 
-const MainBar = ({ canSearch }: { canSearch?: boolean }) => {
+const MainBar = ({ canSearch, handler }: { canSearch?: boolean }) => {
   return (
     <div className="flex">
       <MainInput canSearch={canSearch}>asd</MainInput>
-      <MainButton />
+      <MainButton handler={handler} />
     </div>
   );
 };
@@ -62,11 +80,13 @@ const DropdownMenu = ({
   canSearch?: boolean;
 }) => {
   const [currentButton, setCurrentButton] = useState(value);
+  const [expandBar, setExpandBar] = useState(false);
+  const handleExpandBar = () => setExpandBar(!expandBar);
 
   return (
-    <div>
-      <MainBar canSearch={canSearch} />
-      <h1>Dropdown</h1>
+    <div className="w-40">
+      <MainBar canSearch={canSearch} handler={handleExpandBar} />
+      <FallMenu showMenu={expandBar}>{keys}</FallMenu>
     </div>
   );
 };
