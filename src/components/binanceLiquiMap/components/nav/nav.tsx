@@ -1,10 +1,22 @@
 import { useState } from "react";
 import "./nav.css";
-import Pair_Symbol from "./components/pair_symbol";
+import ClickMenu from "./components/clickMenu";
 
-const Nav = () => {
+const Nav = ({
+  symbol,
+  pair,
+  time,
+}: {
+  symbol: string[];
+  pair: string[];
+  time: Object[];
+}) => {
   /** navbar
   
+
+  // coins: Symbol
+  // 
+
   
   Pair/Symbol button
   This updates the type of data
@@ -20,18 +32,6 @@ const Nav = () => {
   etc.
   
   
-  Drop-down menu with
-  times
-  1 year
-  6 month
-  3 month
-  1 month
-  2 week
-  1 week
-  3 day
-  48 hour
-  24 hour
-
   A reset button 
   Refreshes the chart
 
@@ -50,7 +50,7 @@ const Nav = () => {
 
   return (
     <div>
-      <Pair_Symbol />
+      <ClickMenu>{["Pair", "Symbol"]}</ClickMenu>
     </div>
   );
 };
