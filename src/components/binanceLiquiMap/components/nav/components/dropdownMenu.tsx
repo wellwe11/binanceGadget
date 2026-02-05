@@ -2,7 +2,13 @@ import { ReactNode, useState } from "react";
 
 const FallMenu = () => {};
 
-const MainInput = ({ children }: { children: string }) => {
+const MainInput = ({
+  children,
+  canSearch = true,
+}: {
+  children: string;
+  canSearch?: boolean;
+}) => {
   const [inputVal, setInputVal] = useState(() => children);
 
   // Update inputs value
@@ -20,6 +26,7 @@ const MainInput = ({ children }: { children: string }) => {
   return (
     <div>
       <input
+        readOnly={!canSearch}
         id="coin_select"
         type="input"
         value={inputVal}
@@ -36,10 +43,10 @@ const MainButton = () => {
   return <button>V</button>;
 };
 
-const MainBar = () => {
+const MainBar = ({ canSearch }: { canSearch?: boolean }) => {
   return (
     <div className="flex">
-      <MainInput>asd</MainInput>
+      <MainInput canSearch={canSearch}>asd</MainInput>
       <MainButton />
     </div>
   );
@@ -48,15 +55,17 @@ const MainBar = () => {
 const DropdownMenu = ({
   keys,
   value = 0,
+  canSearch = true,
 }: {
   keys: string[];
-  value: number;
+  value?: number;
+  canSearch?: boolean;
 }) => {
   const [currentButton, setCurrentButton] = useState(value);
 
   return (
     <div>
-      <MainBar />
+      <MainBar canSearch={canSearch} />
       <h1>Dropdown</h1>
     </div>
   );
