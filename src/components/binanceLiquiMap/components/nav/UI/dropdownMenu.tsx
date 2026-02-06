@@ -20,13 +20,13 @@ const FallMenu = ({
   return (
     <Activity mode={showMenu ? "visible" : "hidden"}>
       <div
-        className="border_bg mt-0.5 flex flex-col max-h-50 overflow-y-scroll 
-  
-  [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:bg-gray-300
-  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+        className="absolute border_bg mt-0.5 flex flex-col max-h-50 overflow-y-scroll 
+        [&::-webkit-scrollbar]:w-2
+        [&::-webkit-scrollbar-track]:bg-gray-100
+        [&::-webkit-scrollbar-thumb]:bg-gray-300
+        dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+        style={{ width: "100%" }}
       >
         {fallMenuItems.map((val: string, index) => (
           <button
@@ -174,13 +174,16 @@ const DropdownMenu = ({
       >
         {keys[currentButton]}
       </MainBar>
-      <FallMenu
-        setShow={setExpandBar}
-        showMenu={expandBar}
-        handler={setCurrentButton}
-      >
-        {keys}
-      </FallMenu>
+
+      <div className="relative w-inherit">
+        <FallMenu
+          setShow={setExpandBar}
+          showMenu={expandBar}
+          handler={setCurrentButton}
+        >
+          {keys}
+        </FallMenu>
+      </div>
     </div>
   );
 };
