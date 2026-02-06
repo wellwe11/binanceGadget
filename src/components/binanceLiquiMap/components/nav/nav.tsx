@@ -116,9 +116,7 @@ const GraphTypeControllerMenu = ({ arr, setter }) => {
   ];
 
   const handleEvent = (n) => {
-    const indexOf = arr.indexOf(n);
-
-    if (indexOf === -1) {
+    if (!arr.includes(n)) {
       return setter((prev) => [...prev, n]);
     }
 
