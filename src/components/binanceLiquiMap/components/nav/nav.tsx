@@ -12,30 +12,35 @@ import DragInput from "./UI/dragInput";
 // Each wrapper handles it's own logic
 // Each wrapper has abstract and un-direct components
 
-const Reset_and_Snapshot = () => {
+const SnapShotButton = () => {
   const [rotation, setRotation] = useState(0);
 
   return (
-    <div className="generic_height flex gap-1 mx-1">
+    <div onClick={() => setRotation((prev) => prev + 180)}>
+      <MenuButton>
+        <div
+          className="transition-transform duration-500 ease-bounce"
+          style={{
+            height: "20px",
+            transform: `rotate(${rotation}deg)`,
+            color: "white",
+          }}
+        >
+          <ResetSVG />
+        </div>
+      </MenuButton>
+    </div>
+  );
+};
+
+const ResetButton = () => {
+  return (
+    <div className="flex gap-1 mx-1">
       <MenuButton>
         <div className="" style={{ height: "20px", color: "white" }}>
           <CameraSVG />
         </div>
       </MenuButton>
-      <div onClick={() => setRotation((prev) => prev + 180)}>
-        <MenuButton>
-          <div
-            className="transition-transform duration-500 ease-bounce"
-            style={{
-              height: "20px",
-              transform: `rotate(${rotation}deg)`,
-              color: "white",
-            }}
-          >
-            <ResetSVG />
-          </div>
-        </MenuButton>
-      </div>
     </div>
   );
 };
@@ -95,11 +100,9 @@ const PairSymbolClickMenu = ({
   };
 
   return (
-    <div className="generic_height">
-      <ClickMenu onSelect={handleSelectPairOrSymbol}>
-        {Pair_SymbolButtons}
-      </ClickMenu>
-    </div>
+    <ClickMenu onSelect={handleSelectPairOrSymbol}>
+      {Pair_SymbolButtons}
+    </ClickMenu>
   );
 };
 
@@ -174,16 +177,34 @@ const Nav = ({
   ]);
 
   return (
-    <div className="flex">
-      <PairSymbolClickMenu
-        pair={pair}
-        symbol={symbol}
-        setter={setPairOrSymbol}
-      />
-      <TimeDropMenu time={time} />
-      <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
-      <Reset_and_Snapshot />
-      <Slider />
+    <div className=" bg-amber-200 h-64 flex flex-col justify-between">
+      <div className="w-full flex flex-col justify-center items-start bg-amber-400">
+        <div className="generic_height w-32">
+          <PairSymbolClickMenu
+            pair={pair}
+            symbol={symbol}
+            setter={setPairOrSymbol}
+          />
+        </div>
+        <h4 style={{ fontSize: "28px", fontVariationSettings: "'wght' 550" }}>
+          Binance BTC/USDT Liquidation Heatmap
+        </h4>
+      </div>
+
+      <div className="flex flex-col items-end bg-amber-950">
+        <div className="generic_height w-full flex justify-end items-center bg-amber-700">
+          <div className="flex">
+            <TimeDropMenu time={time} />
+            <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
+          </div>
+
+          <div className="generic_height flex">
+            <SnapShotButton />
+            <ResetButton />
+          </div>
+        </div>
+        <Slider />
+      </div>
 
       <GraphTypeControllerMenu arr={showCharts} setter={setShowCharts} />
     </div>

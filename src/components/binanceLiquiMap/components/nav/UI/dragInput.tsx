@@ -16,7 +16,10 @@ const DragInput = ({
       onMouseEnter={() => setViewVal(true)}
       onMouseLeave={() => setViewVal(false)}
     >
-      <div style={{ position: "relative" }}>
+      <div
+        style={{ position: "relative", height: "100%" }}
+        className="flex items-center justify-center"
+      >
         <div
           className="absolute z-10 -bottom-8.5 px-2 py-1 mb-2 text-xs font-bold text-white bg-gray-500 rounded -translate-x-1/2 pointer-events-none"
           style={{
