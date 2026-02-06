@@ -177,8 +177,8 @@ const Nav = ({
   ]);
 
   return (
-    <div className=" bg-amber-200 h-64 flex flex-col justify-between">
-      <div className="w-full flex flex-col justify-center items-start bg-amber-400">
+    <div className="h-fit max-w-230 bg-amber-100 flex flex-col justify-between">
+      <div className="w-full flex flex-col justify-center items-start">
         <div className="generic_height w-32">
           <PairSymbolClickMenu
             pair={pair}
@@ -191,14 +191,14 @@ const Nav = ({
         </h4>
       </div>
 
-      <div className="flex flex-col items-end bg-amber-950">
-        <div className="generic_height w-full flex justify-end items-center bg-amber-700">
+      <div className="flex flex-col items-end">
+        <div className="generic_height w-full flex justify-end items-center">
           <div className="flex">
             <TimeDropMenu time={time} />
             <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
           </div>
 
-          <div className="generic_height flex">
+          <div className="generic_height flex pl-1">
             <SnapShotButton />
             <ResetButton />
           </div>
@@ -206,7 +206,9 @@ const Nav = ({
         <Slider />
       </div>
 
-      <GraphTypeControllerMenu arr={showCharts} setter={setShowCharts} />
+      <div className="width-full flex justify-center">
+        <GraphTypeControllerMenu arr={showCharts} setter={setShowCharts} />
+      </div>
     </div>
   );
 };
