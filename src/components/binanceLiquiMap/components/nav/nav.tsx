@@ -193,7 +193,7 @@ const Nav = ({
 
       <div className="flex flex-col items-end">
         <div className="generic_height w-full flex justify-end items-center">
-          <div className="flex">
+          <div className="flex z-3">
             <TimeDropMenu time={time} />
             <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
           </div>

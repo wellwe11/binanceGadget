@@ -104,14 +104,16 @@ const MainButton = ({
 
   return (
     <button
-      className="cursor-pointer flex items-center justify-center hover:bg-gray-600 rounded-sm"
+      className="w-5 h-5 cursor-pointer flex items-center justify-center hover:bg-gray-600 rounded-sm"
       style={{ transition: "background-color 0.2s ease" }}
       onClick={handler}
     >
       <div
-        className="transition-transform duration-400 ease-bounce"
+        className="transition-transform duration-250 ease-bounce"
         style={{
           transform: rotateFlip,
+          height: "15px",
+          width: "15px",
         }}
       >
         <ArrowSVG />
