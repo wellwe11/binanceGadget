@@ -17,13 +17,13 @@ const DragInput = ({
       onMouseLeave={() => setViewVal(false)}
     >
       <div
-        style={{ position: "relative", height: "100%" }}
-        className="flex items-center justify-center"
+        style={{ height: "100%" }}
+        className="relative flex items-center justify-center"
       >
         <div
-          className="absolute z-10 -bottom-8.5 px-2 py-1 mb-2 text-xs font-bold text-white bg-gray-500 rounded -translate-x-1/2 pointer-events-none"
+          className="absolute z-10 text-xs top-5 p-1 font-bold text-white bg-gray-500 rounded pointer-events-none"
           style={{
-            left: `calc(${procent}%)`,
+            left: `${procent - 15}%`,
             opacity: `${viewVal ? "1" : "0"}`,
             transition: "left 0.1s ease, opacity, 0.3s ease",
           }}
