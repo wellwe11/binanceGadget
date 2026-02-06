@@ -9,8 +9,6 @@ import ResetSVG from "./UI/assets/resetSVG";
 const Reset_and_Snapshot = () => {
   const [rotation, setRotation] = useState(0);
 
-  console.log(rotation);
-
   return (
     <div className="generic_height flex gap-1 mx-1">
       <MenuButton>
@@ -18,19 +16,20 @@ const Reset_and_Snapshot = () => {
           <CameraSVG />
         </div>
       </MenuButton>
-      <MenuButton>
-        <div
-          className="transition-transform duration-500 ease-bounce"
-          style={{
-            height: "20px",
-            transform: `rotate(${rotation}deg)`,
-            color: "white",
-          }}
-          onClick={() => setRotation((prev) => prev + 180)}
-        >
-          <ResetSVG />
-        </div>
-      </MenuButton>
+      <div onClick={() => setRotation((prev) => prev + 180)}>
+        <MenuButton>
+          <div
+            className="transition-transform duration-500 ease-bounce"
+            style={{
+              height: "20px",
+              transform: `rotate(${rotation}deg)`,
+              color: "white",
+            }}
+          >
+            <ResetSVG />
+          </div>
+        </MenuButton>
+      </div>
     </div>
   );
 };
@@ -83,16 +82,25 @@ const Nav = ({
 
   const Pair_SymbolButtons = ["Pair", "Symbol"];
 
+  const [pairOrSymbol, setPairOrSymbol] = useState(pair);
+  const pairOrSymbolArr = [pair, symbol];
+  const handleSelectPairOrSymbol = (e) => {
+    setPairOrSymbol(pairOrSymbolArr[e]);
+    console.log(pairOrSymbol[e]);
+  };
+
   return (
     <div className="flex">
       <div className="generic_height">
-        <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
+        <ClickMenu onSelect={handleSelectPairOrSymbol}>
+          {Pair_SymbolButtons}
+        </ClickMenu>
       </div>
       <div className="w-30 mx-1">
         <DropdownMenu keys={Object.keys(time)} canSearch={false} />
       </div>
       <div className="w-70">
-        <DropdownMenu keys={pair} />
+        <DropdownMenu keys={pairOrSymbol} />
       </div>
 
       <Reset_and_Snapshot />
