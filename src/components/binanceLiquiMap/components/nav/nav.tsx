@@ -3,6 +3,37 @@ import "./nav.css";
 import ClickMenu from "./UI/clickMenu";
 import DropdownMenu from "./UI/dropdownMenu";
 import MenuButton from "./components/menuButton";
+import CameraSVG from "./UI/assets/cameraSVG";
+import ResetSVG from "./UI/assets/resetSVG";
+
+const Reset_and_Snapshot = () => {
+  const [rotation, setRotation] = useState(0);
+
+  console.log(rotation);
+
+  return (
+    <div className="generic_height flex gap-1 mx-1">
+      <MenuButton>
+        <div className="" style={{ height: "20px", color: "white" }}>
+          <CameraSVG />
+        </div>
+      </MenuButton>
+      <MenuButton>
+        <div
+          className="transition-transform duration-500 ease-bounce"
+          style={{
+            height: "20px",
+            transform: `rotate(${rotation}deg)`,
+            color: "white",
+          }}
+          onClick={() => setRotation((prev) => prev + 180)}
+        >
+          <ResetSVG />
+        </div>
+      </MenuButton>
+    </div>
+  );
+};
 
 const Nav = ({
   symbol,
@@ -57,16 +88,14 @@ const Nav = ({
       <div className="generic_height">
         <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
       </div>
-      <div className="w-30">
+      <div className="w-30 mx-1">
         <DropdownMenu keys={Object.keys(time)} canSearch={false} />
       </div>
       <div className="w-70">
         <DropdownMenu keys={pair} />
       </div>
 
-      <div className="generic_height">
-        <MenuButton>Hello</MenuButton>
-      </div>
+      <Reset_and_Snapshot />
     </div>
   );
 };

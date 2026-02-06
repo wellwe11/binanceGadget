@@ -109,9 +109,9 @@ const MainButton = ({
       onClick={handler}
     >
       <div
+        className="transition-transform duration-400 ease-bounce"
         style={{
           transform: rotateFlip,
-          transition: "transform 0.4s cubic-bezier(0.68, -0.4, 0.32, 1.4)",
         }}
       >
         <ArrowSVG />

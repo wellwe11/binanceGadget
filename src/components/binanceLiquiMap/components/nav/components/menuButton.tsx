@@ -1,13 +1,17 @@
+import { ReactNode } from "react";
+
 // Pair Symbol button
 const MenuButton = ({
   children = "Default",
   handler,
   elRef,
 }: {
-  children: string;
+  children: string | ReactNode;
   handler?: () => void;
   elRef?: (el: HTMLButtonElement | null) => void;
 }) => {
+  const isChildString = typeof children === "string";
+
   return (
     <button
       ref={elRef}
@@ -15,12 +19,16 @@ const MenuButton = ({
       className="cursor-pointer min-w-13 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center"
       style={{ height: "100%", width: "100%" }}
     >
-      <p
-        className="z-13 text-white pointer-events-none"
-        style={{ fontSize: "14px", fontVariationSettings: "'wght' 400" }}
-      >
-        {children}
-      </p>
+      {isChildString ? (
+        <p
+          className="z-13 text-white pointer-events-none"
+          style={{ fontSize: "14px", fontVariationSettings: "'wght' 400" }}
+        >
+          {children}
+        </p>
+      ) : (
+        children
+      )}
     </button>
   );
 };

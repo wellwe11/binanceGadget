@@ -19,6 +19,9 @@
     height: 30px;
   }
 }
+.ease-bounce {
+  transition-timing-function: cubic-bezier(0.68, -0.4, 0.32, 1.4);
+}
 
 .card-shadow {
   box-shadow:

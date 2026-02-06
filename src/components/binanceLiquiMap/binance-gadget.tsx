@@ -81,8 +81,7 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div>
-      <h1>This is BinanceGadget</h1>
+    <div className="pt-5 pl-1">
       <div>
         <Nav
           symbol={placeholderCurrencies}
