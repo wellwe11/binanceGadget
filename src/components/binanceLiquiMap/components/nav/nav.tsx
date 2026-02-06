@@ -58,6 +58,7 @@ const Slider = () => {
       </div>
       <div className="flex items-center text-left" style={{ width: "60%" }}>
         <p
+          className="text-white"
           style={{
             fontSize: "12px",
           }}
@@ -154,7 +155,9 @@ const GraphTypeControllerMenu = ({ arr, setter }) => {
               }}
             />
           </div>
-          <p style={{ fontSize: "12px" }}>{name}</p>
+          <p className="text-white" style={{ fontSize: "12px" }}>
+            {name}
+          </p>
         </button>
       ))}
     </div>
@@ -177,7 +180,7 @@ const Nav = ({
   ]);
 
   return (
-    <div className="h-fit max-w-230 bg-amber-100 flex flex-col justify-between">
+    <div className="h-fit w-full flex flex-col justify-between">
       <div className="w-full flex flex-col justify-center items-start">
         <div className="generic_height w-32">
           <PairSymbolClickMenu
@@ -203,7 +206,9 @@ const Nav = ({
             <ResetButton />
           </div>
         </div>
-        <Slider />
+        <div className="py-2">
+          <Slider />
+        </div>
       </div>
 
       <div className="width-full flex justify-center">
