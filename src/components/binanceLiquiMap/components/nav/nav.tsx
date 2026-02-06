@@ -103,6 +103,52 @@ const PairSymbolClickMenu = ({
   );
 };
 
+const GraphTypeControllerMenu = ({ arr, setter }) => {
+  const buttons = [
+    {
+      name: "Liquidation Leverage",
+      color: "purple",
+    },
+    {
+      name: "Supercharts",
+      color: "green",
+    },
+  ];
+
+  const handleEvent = (n) => {
+    const indexOf = arr.indexOf(n);
+
+    if (indexOf === -1) {
+      return setter((prev) => [...prev, n]);
+    }
+
+    const newArr = [...arr];
+    newArr.splice(indexOf, newArr.length - 1);
+    setter(newArr);
+  };
+
+  return (
+    <div className="bg-amber-200 flex gap-5">
+      {buttons.map(({ name, color }, index) => (
+        <button
+          key={index + " " + name}
+          onClick={() => handleEvent(name)}
+          className="flex gap-1 justify-center items-center cursor-pointer"
+        >
+          <div
+            className="h-2.5 w-2.5"
+            style={{
+              backgroundColor: arr.includes(name) ? color : "gray",
+              transition: "background-color 0.15s ease",
+            }}
+          />
+          <p style={{ fontSize: "12px" }}>{name}</p>
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const Nav = ({
   symbol,
   pair,
@@ -113,6 +159,12 @@ const Nav = ({
   time: Object[];
 }) => {
   const [pairOrSymbol, setPairOrSymbol] = useState(pair);
+  const [showCharts, setShowCharts] = useState([
+    "Liquidation Leverage",
+    "Supercharts",
+  ]);
+
+  console.log(showCharts);
 
   return (
     <div className="flex">
@@ -125,6 +177,8 @@ const Nav = ({
       <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
       <Reset_and_Snapshot />
       <Slider />
+
+      <GraphTypeControllerMenu arr={showCharts} setter={setShowCharts} />
     </div>
   );
 };
