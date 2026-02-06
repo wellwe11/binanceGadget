@@ -56,12 +56,6 @@ const ActiveButtonBackground = ({
   );
 };
 
-const Container = ({ children }: { children: React.ReactNode[] }) => (
-  <div className="px-1.5 py-1 gap-1 relative flex w-fit h-fit rounded-md bg-gray-700 overflow-hidden">
-    {children}
-  </div>
-);
-
 const ClickMenu = ({
   children,
   onSelect,
@@ -118,7 +112,10 @@ const ClickMenu = ({
   const childArray = Array.isArray(children) ? children : [children];
 
   return (
-    <Container>
+    <div
+      className="px-1.5 py-1 gap-1 relative flex w-fit h-fit rounded-md bg-gray-700 overflow-hidden"
+      style={{ width: "100%", height: "100%" }}
+    >
       <Activity mode={childArray.length > 1 ? "visible" : "hidden"}>
         <ActiveButtonBackground
           widths={buttonsWidths}
@@ -136,7 +133,7 @@ const ClickMenu = ({
           {context}
         </Button>
       ))}
-    </Container>
+    </div>
   );
 };
 

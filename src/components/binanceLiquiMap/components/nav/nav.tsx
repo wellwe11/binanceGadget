@@ -55,7 +55,9 @@ const Nav = ({
 
   return (
     <div className="flex">
-      <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
+      <div className="h-10">
+        <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
+      </div>
       <div className="w-30">
         <DropdownMenu keys={Object.keys(time)} canSearch={false} />
       </div>
