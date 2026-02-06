@@ -74,10 +74,14 @@ const MainInput = ({
 
   return (
     <input
-      className="w-full px-2 py-1 outline-none bg-transparent text-white text-s text-left font-extralight"
-      style={{ cursor: !canSearch ? "pointer" : "" }}
+      className="px-2 py-1 outline-none bg-transparent text-white text-s text-left font-extralight"
+      style={{
+        cursor: !canSearch ? "pointer" : "",
+        width: "100%",
+        height: "100%",
+      }}
       readOnly={!canSearch}
-      id="coin_select"
+      id="item_select"
       value={inputVal}
       onChange={(e) => {
         if (canSearch) {
@@ -100,7 +104,7 @@ const MainButton = ({
 
   return (
     <button
-      className="h-full w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 rounded-sm"
+      className="cursor-pointer flex items-center justify-center hover:bg-gray-600 rounded-sm"
       style={{ transition: "background-color 0.2s ease" }}
       onClick={handler}
     >
@@ -130,17 +134,17 @@ const MainBar = ({
 }) => {
   return (
     <div
-      className="border_bg flex items-center"
+      className="border_bg generic_height flex items-center"
       onClick={() => {
         if (!canSearch) {
           handler();
         }
       }}
     >
-      <div className="relevant flex-1">
+      <div className="flex-1">
         <MainInput canSearch={canSearch}>{children}</MainInput>
       </div>
-      <div className="w-10 h-max pr-1">
+      <div className="pr-1">
         <MainButton boolean={boolean} handler={handler} />
       </div>
     </div>
@@ -161,7 +165,7 @@ const DropdownMenu = ({
   const handleExpandBar = () => setExpandBar(!expandBar);
 
   return (
-    <div>
+    <div style={{ width: "100%", height: "100%" }}>
       <MainBar
         canSearch={canSearch}
         handler={handleExpandBar}

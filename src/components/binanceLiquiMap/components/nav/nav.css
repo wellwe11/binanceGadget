@@ -14,6 +14,10 @@
     color: white;
     text-align: start;
   }
+
+  .generic_height {
+    height: 30px;
+  }
 }
 
 .card-shadow {
