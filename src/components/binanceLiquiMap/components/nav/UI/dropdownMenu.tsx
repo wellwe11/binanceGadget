@@ -134,7 +134,8 @@ const MainBar = ({
 }) => {
   return (
     <div
-      className="border_bg generic_height flex items-center"
+      className="border_bg flex items-center"
+      style={{ height: "100%", width: "100%" }}
       onClick={() => {
         if (!canSearch) {
           handler();

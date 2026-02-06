@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, Activity } from "react";
 import "../nav.css";
-import Button from "../components/menuButton";
+import MenuButton from "../components/menuButton";
 
 interface ClickMenuProps {
   children: string[] | string;
@@ -125,13 +125,13 @@ const ClickMenu = ({
         />
       </Activity>
       {childArray.map((context, index) => (
-        <Button
+        <MenuButton
           elRef={(el) => (buttonRefs.current[index] = el)}
           key={index}
           handler={() => handleButton(index, context)}
         >
           {context}
-        </Button>
+        </MenuButton>
       ))}
     </div>
   );

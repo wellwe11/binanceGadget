@@ -2,8 +2,7 @@ import { useState } from "react";
 import "./nav.css";
 import ClickMenu from "./UI/clickMenu";
 import DropdownMenu from "./UI/dropdownMenu";
-import Button from "./components/menuButton";
-import SingleButton from "./UI/singleButton";
+import MenuButton from "./components/menuButton";
 
 const Nav = ({
   symbol,
@@ -55,7 +54,7 @@ const Nav = ({
 
   return (
     <div className="flex">
-      <div className="h-10">
+      <div className="generic_height">
         <ClickMenu>{Pair_SymbolButtons}</ClickMenu>
       </div>
       <div className="w-30">
@@ -64,7 +63,10 @@ const Nav = ({
       <div className="w-70">
         <DropdownMenu keys={pair} />
       </div>
-      <SingleButton>Hello</SingleButton>
+
+      <div className="generic_height">
+        <MenuButton>Hello</MenuButton>
+      </div>
     </div>
   );
 };

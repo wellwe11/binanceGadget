@@ -1,5 +1,5 @@
 // Pair Symbol button
-const Button = ({
+const MenuButton = ({
   children = "Default",
   handler,
   elRef,
@@ -25,4 +25,4 @@ const Button = ({
   );
 };
 
-export default Button;
+export default MenuButton;
