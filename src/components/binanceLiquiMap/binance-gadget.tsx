@@ -81,7 +81,7 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="pt-5 pl-1 w-240 h-170 bg-gray-800">
+    <div className="pt-5 pl-1 w-240 h-170 bg-gray-950">
       <div>
         <Nav
           symbol={placeholderCurrencies}

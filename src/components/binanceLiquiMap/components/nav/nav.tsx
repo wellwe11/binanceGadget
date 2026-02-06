@@ -180,7 +180,7 @@ const Nav = ({
   ]);
 
   return (
-    <div className="h-fit w-full flex flex-col justify-between">
+    <div className="h-fit w-full flex flex-col justify-between px-2 py-1">
       <div className="w-full flex flex-col justify-center items-start">
         <div className="generic_height w-32">
           <PairSymbolClickMenu
@@ -189,7 +189,13 @@ const Nav = ({
             setter={setPairOrSymbol}
           />
         </div>
-        <h4 style={{ fontSize: "28px", fontVariationSettings: "'wght' 550" }}>
+        <h4
+          style={{
+            fontSize: "28px",
+            fontVariationSettings: "'wght' 550",
+            color: "white",
+          }}
+        >
           Binance BTC/USDT Liquidation Heatmap
         </h4>
       </div>
