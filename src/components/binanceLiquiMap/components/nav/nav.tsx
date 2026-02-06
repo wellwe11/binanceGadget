@@ -122,26 +122,37 @@ const GraphTypeControllerMenu = ({ arr, setter }) => {
       return setter((prev) => [...prev, n]);
     }
 
-    const newArr = [...arr];
-    newArr.splice(indexOf, newArr.length - 1);
-    setter(newArr);
+    const filtered = arr.filter((name) => name !== n);
+
+    setter(filtered);
   };
 
   return (
-    <div className="bg-amber-200 flex gap-5">
+    <div className="flex gap-5">
       {buttons.map(({ name, color }, index) => (
         <button
           key={index + " " + name}
           onClick={() => handleEvent(name)}
           className="flex gap-1 justify-center items-center cursor-pointer"
         >
-          <div
-            className="h-2.5 w-2.5"
-            style={{
-              backgroundColor: arr.includes(name) ? color : "gray",
-              transition: "background-color 0.15s ease",
-            }}
-          />
+          <div className="relative w-2.5 h-2.5">
+            <div
+              className="absolute h-2.5 w-2.5 z-1"
+              style={{
+                backgroundColor: "gray",
+                transition: "background-color 0.15s ease",
+              }}
+            />
+            <div
+              className="absolute h-2.5 w-2.5 z-2"
+              style={{
+                backgroundColor: color,
+                transform: `scale(${arr.includes(name) ? "1" : "0"})`,
+                transformOrigin: "center",
+                transition: `transform ${arr.includes(name) ? "0.3" : "0.2"}s ease`,
+              }}
+            />
+          </div>
           <p style={{ fontSize: "12px" }}>{name}</p>
         </button>
       ))}
@@ -163,8 +174,6 @@ const Nav = ({
     "Liquidation Leverage",
     "Supercharts",
   ]);
-
-  console.log(showCharts);
 
   return (
     <div className="flex">
