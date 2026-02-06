@@ -1,5 +1,6 @@
-import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState, Activity } from "react";
 import "../nav.css";
+import Button from "../components/menuButton";
 
 interface ClickMenuProps {
   children: string[] | string;
@@ -7,58 +8,33 @@ interface ClickMenuProps {
   onSelect?: (index: number, value: string) => void;
 }
 
-// Pair Symbol button
-const Button = ({
-  children = "Default",
-  handler,
-  elRef,
-}: {
-  children: string;
-  handler: () => void;
-  elRef: HTMLButtonElement[];
-}) => {
-  return (
-    <button
-      ref={elRef}
-      onClick={handler}
-      className="z-13 h-7.5 w-fit cursor-pointer min-w-13"
-    >
-      <p
-        className="top-1.75 text-white pointer-events-none"
-        style={{ fontSize: "14px", fontVariationSettings: "'wght' 400" }}
-      >
-        {children}
-      </p>
-    </button>
-  );
-};
-
 // Shade that displays currently active button
 const ActiveButtonBackground = ({
   transformOrigin,
   scaleOn,
   activeButton,
-  widths,
+  widths = [],
 }: {
   transformOrigin: boolean;
   scaleOn: boolean;
   activeButton: number;
   widths?: (number | undefined)[];
 }) => {
+  const gap = 4;
   const [prevButton, setPrevButton] = useState(activeButton);
-  const gap = 8;
-
   const start = Math.min(prevButton, activeButton);
   const end = Math.max(prevButton, activeButton);
   const expandedWidth = widths
     ?.slice(start, end + 1)
-    .reduce((sum, w) => sum + (w ?? 0) + gap, -gap);
+    .reduce((sum, w) => sum! + (w ?? 0) + gap, -gap);
 
   const normalWidth = widths?.[activeButton];
   const width = scaleOn ? expandedWidth : normalWidth;
 
   const currentOffsetWidth =
-    widths?.slice(0, start).reduce((sum, w) => sum + (w ?? 0) + gap, 0) ?? 0;
+    widths?.slice(0, start).reduce((sum, w) => sum! + (w ?? 0) + gap, 0) ?? 0;
+
+  const transformOriginSide = !transformOrigin ? "left" : "right";
 
   useEffect(() => {
     if (!scaleOn) {
@@ -70,8 +46,9 @@ const ActiveButtonBackground = ({
     <div
       className="shadow-inner absolute h-[70%] top-[15%] bg-black pointer-events-auto cursor-pointer rounded-md"
       style={{
+        transformOrigin: transformOriginSide,
         willChange: "width transform",
-        width: `${width + gap}px`,
+        width: `${width! + gap}px`,
         transform: `translateX(${currentOffsetWidth - gap / 2}px)`,
         transition: "transform 0.3s ease, width 0.3s ease",
       }}
@@ -80,7 +57,7 @@ const ActiveButtonBackground = ({
 };
 
 const Container = ({ children }: { children: React.ReactNode[] }) => (
-  <div className="relative flex gap-2 w-fit h-fit rounded-md bg-gray-700 overflow-hidden px-3 py-2 ">
+  <div className="px-1.5 py-1 gap-1 relative flex w-fit h-fit rounded-md bg-gray-700 overflow-hidden">
     {children}
   </div>
 );
@@ -142,15 +119,17 @@ const ClickMenu = ({
 
   return (
     <Container>
-      <ActiveButtonBackground
-        widths={buttonsWidths}
-        transformOrigin={transformOrigin}
-        scaleOn={scaleOn}
-        activeButton={activeButton}
-      />
+      <Activity mode={childArray.length > 1 ? "visible" : "hidden"}>
+        <ActiveButtonBackground
+          widths={buttonsWidths}
+          transformOrigin={transformOrigin}
+          scaleOn={scaleOn}
+          activeButton={activeButton}
+        />
+      </Activity>
       {childArray.map((context, index) => (
         <Button
-          elRef={(el: HTMLButtonElement) => (buttonRefs.current[index] = el)}
+          elRef={(el) => (buttonRefs.current[index] = el)}
           key={index}
           handler={() => handleButton(index, context)}
         >
