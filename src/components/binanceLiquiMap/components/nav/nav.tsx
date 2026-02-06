@@ -7,6 +7,11 @@ import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 
+// In this document you'll find wrappers, as well as the complete Nav component.
+// Each wrapper contains the general styling such as width, height etc.
+// Each wrapper handles it's own logic
+// Each wrapper has abstract and un-direct components
+
 const Reset_and_Snapshot = () => {
   const [rotation, setRotation] = useState(0);
 
@@ -42,8 +47,17 @@ const Slider = () => {
     setDragVal(val);
   };
   return (
-    <div className="w-30">
-      <DragInput value={dragVal} setValue={handleDrag} />
+    <div className="w-70 flex gap-3">
+      <div className="flex-1">
+        <DragInput value={dragVal} setValue={handleDrag} />
+      </div>
+      <div className="flex items-center text-left" style={{ width: "60%" }}>
+        <p
+          style={{
+            fontSize: "12px",
+          }}
+        >{`Liquidity Threshold = ${dragVal < 100 ? "0." + dragVal : 1}`}</p>
+      </div>
     </div>
   );
 };

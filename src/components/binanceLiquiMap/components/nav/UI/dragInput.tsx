@@ -8,7 +8,7 @@ const DragInput = ({
   setValue: (e: React.ChangeEvent<HTMLInputElement, Element>) => void;
 }) => {
   const [viewVal, setViewVal] = useState(false);
-  const procent = value <= 10 ? value + 10 : value >= 90 ? value - 10 : value;
+  const procent = value >= 90 ? value - 10 : value;
 
   return (
     <div
@@ -27,10 +27,11 @@ const DragInput = ({
         >
           {Math.round(value)}
         </div>
+
         <input
           id="slider"
           type="range"
-          min="0"
+          min="10"
           max="100"
           value={value}
           onChange={setValue}
