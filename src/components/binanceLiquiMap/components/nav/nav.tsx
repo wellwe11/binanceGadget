@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import "./nav.css";
 import ClickMenu from "./UI/clickMenu";
 import DropdownMenu from "./UI/dropdownMenu";
 import MenuButton from "./components/menuButton";
 import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
+import DragInput from "./UI/dragInput";
 
 const Reset_and_Snapshot = () => {
   const [rotation, setRotation] = useState(0);
@@ -84,9 +85,15 @@ const Nav = ({
 
   const [pairOrSymbol, setPairOrSymbol] = useState(pair);
   const pairOrSymbolArr = [pair, symbol];
-  const handleSelectPairOrSymbol = (e) => {
+
+  const handleSelectPairOrSymbol = (e: number) => {
     setPairOrSymbol(pairOrSymbolArr[e]);
-    console.log(pairOrSymbol[e]);
+  };
+
+  const [dragVal, setDragVal] = useState(60);
+  const handleDrag = (e: React.ChangeEvent<HTMLInputElement, Element>) => {
+    const val = +e.target.value;
+    setDragVal(val);
   };
 
   return (
@@ -104,6 +111,10 @@ const Nav = ({
       </div>
 
       <Reset_and_Snapshot />
+
+      <div className="w-30 bg-amber-400">
+        <DragInput value={dragVal} setValue={handleDrag} />
+      </div>
     </div>
   );
 };
