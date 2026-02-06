@@ -16,9 +16,6 @@ const DragInput = ({
       onMouseEnter={() => setViewVal(true)}
       onMouseLeave={() => setViewVal(false)}
     >
-      <label htmlFor="slider" className="text-white">
-        Color slider
-      </label>
       <div style={{ position: "relative" }}>
         <div
           className="absolute z-10 -bottom-8.5 px-2 py-1 mb-2 text-xs font-bold text-white bg-gray-500 rounded -translate-x-1/2 pointer-events-none"

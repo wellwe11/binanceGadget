@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import "./nav.css";
 import ClickMenu from "./UI/clickMenu";
 import DropdownMenu from "./UI/dropdownMenu";
@@ -35,6 +35,60 @@ const Reset_and_Snapshot = () => {
   );
 };
 
+const Slider = () => {
+  const [dragVal, setDragVal] = useState(60);
+  const handleDrag = (e: React.ChangeEvent<HTMLInputElement, Element>) => {
+    const val = +e.target.value;
+    setDragVal(val);
+  };
+  return (
+    <div className="w-30">
+      <DragInput value={dragVal} setValue={handleDrag} />
+    </div>
+  );
+};
+
+const PairSymbolDropMenu = ({ pairOrSymbol }: { pairOrSymbol: string[] }) => {
+  return (
+    <div className="w-70">
+      <DropdownMenu keys={pairOrSymbol} />
+    </div>
+  );
+};
+
+const TimeDropMenu = ({ time }: { time: Object[] }) => {
+  return (
+    <div className="w-30 mx-1">
+      <DropdownMenu keys={Object.keys(time)} canSearch={false} />
+    </div>
+  );
+};
+
+const PairSymbolClickMenu = ({
+  pair,
+  symbol,
+  setter,
+}: {
+  symbol: string[];
+  pair: string[];
+  setter: (e: string[]) => void;
+}) => {
+  const Pair_SymbolButtons = ["Pair", "Symbol"];
+  const pairOrSymbolArr = [pair, symbol];
+
+  const handleSelectPairOrSymbol = (index: number) => {
+    setter(pairOrSymbolArr[index]);
+  };
+
+  return (
+    <div className="generic_height">
+      <ClickMenu onSelect={handleSelectPairOrSymbol}>
+        {Pair_SymbolButtons}
+      </ClickMenu>
+    </div>
+  );
+};
+
 const Nav = ({
   symbol,
   pair,
@@ -44,77 +98,19 @@ const Nav = ({
   pair: string[];
   time: Object[];
 }) => {
-  /** navbar
-  
-
-  // coins: Symbol
-  // 
-
-  
-  Pair/Symbol button
-  This updates the type of data
-  Pair: Binance BTC/USDT Perpetual
-  Symbol: BTC
-  
-  
-  Drop-down menu with
-  type of data:
-  -- Binance BTC/USDT Perpetual
-  -- MEXC BTC/USDT Perpetual
-  -- Gate BTC/USDT Perpetual
-  etc.
-  
-  
-  A reset button 
-  Refreshes the chart
-
-  A printscreen button 
-  Downloads a snapshot of the chart
-
-
-  Pull-bar
-  name: Liquidity Threshold = n
-  Goes from 0.1 - 1
-
-
-  Liquidation map
-  Displays a new chart on the right side with a 'Hyperlioquid whale tracker'
- */
-
-  const Pair_SymbolButtons = ["Pair", "Symbol"];
-
   const [pairOrSymbol, setPairOrSymbol] = useState(pair);
-  const pairOrSymbolArr = [pair, symbol];
-
-  const handleSelectPairOrSymbol = (e: number) => {
-    setPairOrSymbol(pairOrSymbolArr[e]);
-  };
-
-  const [dragVal, setDragVal] = useState(60);
-  const handleDrag = (e: React.ChangeEvent<HTMLInputElement, Element>) => {
-    const val = +e.target.value;
-    setDragVal(val);
-  };
 
   return (
     <div className="flex">
-      <div className="generic_height">
-        <ClickMenu onSelect={handleSelectPairOrSymbol}>
-          {Pair_SymbolButtons}
-        </ClickMenu>
-      </div>
-      <div className="w-30 mx-1">
-        <DropdownMenu keys={Object.keys(time)} canSearch={false} />
-      </div>
-      <div className="w-70">
-        <DropdownMenu keys={pairOrSymbol} />
-      </div>
-
+      <PairSymbolClickMenu
+        pair={pair}
+        symbol={symbol}
+        setter={setPairOrSymbol}
+      />
+      <TimeDropMenu time={time} />
+      <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
       <Reset_and_Snapshot />
-
-      <div className="w-30 bg-amber-400">
-        <DragInput value={dragVal} setValue={handleDrag} />
-      </div>
+      <Slider />
     </div>
   );
 };
