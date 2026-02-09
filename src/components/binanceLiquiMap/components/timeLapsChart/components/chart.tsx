@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const useChart = (gRef, data, innerHeight, x, y, margins) => {
+const Chart = ({ children, data, innerHeight, x, y, margins }) => {
+  const gRef = useRef(null);
+
   useEffect(() => {
     if (!gRef.current || !data) return;
     const g = d3.select(gRef.current);
@@ -35,6 +37,12 @@ const useChart = (gRef, data, innerHeight, x, y, margins) => {
       .attr("stroke-width", 1)
       .attr("d", line);
   }, [data, gRef, margins]);
+
+  return (
+    <g ref={gRef} transform={`translate(${(margins.left, margins.top)})`}>
+      {children && children}
+    </g>
+  );
 };
 
-export default useChart;
+export default Chart;

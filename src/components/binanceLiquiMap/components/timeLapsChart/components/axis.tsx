@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const useAxis = (svgRef, data, margins, childNodes) => {
+const Axis = ({ children, data, margins, width, height }) => {
+  const svgRef = useRef(null);
   useEffect(() => {
     if (!svgRef.current || !data) return;
 
@@ -17,7 +18,21 @@ const useAxis = (svgRef, data, margins, childNodes) => {
       .append("g")
       .attr("class", "axis")
       .attr("transform", `translate(${innerWidth},0)`);
-  }, [data, svgRef, margins, childNodes]);
+  }, [data, svgRef, margins]);
+
+  return (
+    <svg
+      id="svgRef"
+      ref={svgRef}
+      style={{
+        width,
+        height,
+        transform: `translate(${margins.left}, ${margins.top})`,
+      }}
+    >
+      {children && children}
+    </svg>
+  );
 };
 
-export default useAxis;
+export default Axis;
