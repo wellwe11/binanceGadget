@@ -1,4 +1,4 @@
-const InputRange = () => {
+const InputRange = ({ val, setter, max = 100 }) => {
   return (
     <input
       className="absolute top-0 right-0 z-11 w-full
@@ -26,11 +26,11 @@ const InputRange = () => {
           [&::-moz-range-thumb]:border-solid"
       type="range"
       min="0"
-      max="100"
-      // value={gradientHigh}
+      max={max}
+      value={val}
       onChange={(e) => {
-        //   const value = Math.min(Number(e.target.value), 90 + gradientLow);
-        //   setGradientHigh(value);
+        const value = +e.target.value;
+        setter(value);
       }}
     />
   );

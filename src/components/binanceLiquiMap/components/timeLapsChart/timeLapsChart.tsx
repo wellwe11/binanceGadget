@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";
@@ -14,11 +14,20 @@ import InputRange from "./components/inputRange";
  * Zooming HeatMap also highlights the min/max time currently showed on Heatmap
  */
 
-const MoveableGraph = ({ data, x, y, margins, innerHeight }) => {
+const MoveableGraph = ({
+  data,
+  x,
+  y,
+  margins,
+  innerHeight,
+  sliceStart,
+  sliceEnd,
+}) => {
+  const min = 100 - sliceEnd - 10;
+  const max = 100 - sliceStart - 10;
+
   // Data that will adjust the width of top-chart
-  const sliceMin = data.length - 3,
-    sliceMax = 5;
-  const slicedData = data.slice(sliceMax, sliceMin);
+  const slicedData = data.slice(min, max);
 
   return (
     <Chart
@@ -37,6 +46,9 @@ const TimeLapsChart = ({ data }) => {
   const width = 800;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
+
+  const [graphWidthStart, setGraphWidthStart] = useState(0);
+  const [graphWidthEnd, setGraphWidthEnd] = useState(data.length);
 
   const x = useMemo(
     () =>
@@ -66,10 +78,18 @@ const TimeLapsChart = ({ data }) => {
         }}
       >
         <div>
-          <InputRange />
+          <InputRange
+            val={graphWidthStart}
+            setter={setGraphWidthStart}
+            max={data.length}
+          />
         </div>
         <div>
-          <InputRange />
+          <InputRange
+            val={graphWidthEnd}
+            setter={setGraphWidthEnd}
+            max={data.length}
+          />
         </div>
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>
@@ -79,6 +99,8 @@ const TimeLapsChart = ({ data }) => {
           y={y}
           margins={margins}
           innerHeight={innerHeight}
+          sliceStart={graphWidthStart}
+          sliceEnd={graphWidthEnd}
         />
         <Chart
           data={data}
