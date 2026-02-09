@@ -90,7 +90,7 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div>
+      <div className="w-10">
         <Gradient />
       </div>
 
