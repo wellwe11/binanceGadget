@@ -81,7 +81,7 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="pt-5 pl-1 w-240 h-170 bg-gray-950">
+    <div className="flex flex-col pt-5 pl-1 w-240 h-170 bg-gray-950">
       <div>
         <Nav
           symbol={placeholderCurrencies}
@@ -90,12 +90,13 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="w-10">
-        <Gradient />
-      </div>
+      <div className="flex-1 flex">
+        <div className="w-8 h-full">
+          {/* Need to calculate max and add it to Gradient max={number} */}
+          <Gradient />
+        </div>
 
-      <div>
-        <div>
+        <div className="h-full flex flex-col flex-1">
           <HeatMap />
           <TimeLapsChart />
         </div>
