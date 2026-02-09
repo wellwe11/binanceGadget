@@ -96,7 +96,7 @@ const BinanceGadget = () => {
           <Gradient />
         </div>
 
-        <div className="h-full flex flex-col flex-1">
+        <div className="h-full flex flex-col flex-1 bg-gray-800">
           <HeatMap />
           <TimeLapsChart />
         </div>

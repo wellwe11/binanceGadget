@@ -44,7 +44,7 @@ const ActiveButtonBackground = ({
 
   return (
     <div
-      className="shadow-inner absolute h-[70%] top-[15%] bg-black pointer-events-auto cursor-pointer rounded-md"
+      className="shadow-inner absolute h-[70%] top-[15%] bg-black pointer-events-none cursor-pointer rounded-md"
       style={{
         transformOrigin: transformOriginSide,
         willChange: "width transform",
@@ -87,6 +87,7 @@ const ClickMenu = ({
   useEffect(() => {
     return () => {
       timersRef.current.forEach(clearTimeout);
+      setActiveButton(defaultValue);
     };
   }, []);
 
