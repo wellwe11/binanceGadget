@@ -1,5 +1,7 @@
 import * as d3 from "d3";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import useChart from "./hooks/useChart";
+import useAxis from "./hooks/useAxis";
 
 /**
      A simpler graph below the chart
@@ -9,41 +11,6 @@ import { useEffect, useRef } from "react";
 /**
  * Zooming HeatMap also highlights the min/max time currently showed on Heatmap
  */
-
-const useChart = (gRef, data, innerHeight, x, y, margins) => {
-  useEffect(() => {
-    if (!gRef.current || !data) return;
-    const g = d3.select(gRef.current);
-
-    g.selectAll("*").remove();
-
-    const line = d3
-      .line()
-      .x((d) => x(new Date(d.date)))
-      .y((d) => y(d.value));
-
-    const area = d3
-      .area()
-      .x((d) => x(new Date(d.date)))
-      .y0(innerHeight)
-      .y1((d) => y(d.value));
-
-    g.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area)
-      .style("fill", "#002570")
-      .style("opacity", 0.5);
-
-    g.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("fill", "none")
-      .attr("stroke", "#002570")
-      .attr("stroke-width", 1)
-      .attr("d", line);
-  }, [data, gRef, margins]);
-};
 
 const TimeLapsChart = ({ data }) => {
   const svgRef = useRef(null);
@@ -55,7 +22,6 @@ const TimeLapsChart = ({ data }) => {
   const width = 1100;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
-
   const x = d3
     .scaleTime()
     .range([0, innerWidth])
@@ -66,31 +32,17 @@ const TimeLapsChart = ({ data }) => {
     .range([innerHeight, 0])
     .domain([0, d3.max(data, (d) => d.value)]);
 
-  useEffect(() => {
-    if (!svgRef.current || !data) return;
+  // Create group-axis
+  useAxis(svgRef, data, margins, [gRefStale, gRefMoveable]);
 
-    const svgRefElement = d3.select(svgRef.current);
-    svgRefElement.selectAll(".axis").remove();
-
-    svgRefElement
-      .append("g")
-      .attr("class", "axis")
-      .attr("transform", `translate(0, ${innerHeight})`);
-
-    svgRefElement
-      .append("g")
-      .attr("class", "axis")
-      .attr("transform", `translate(${innerWidth},0)`);
-  }, [data, svgRef, margins, gRefStale, gRefMoveable]);
-
+  // Create base-graph (Is visible as background)
   useChart(gRefStale, data, innerHeight, x, y, margins);
 
   // Data that will adjust the width of top-chart
   const sliceMin = data.length - 16,
     sliceMax = 16;
-
   const slicedData = data.slice(sliceMax, sliceMin);
-
+  // Create moveable graph
   useChart(gRefMoveable, slicedData, innerHeight, x, y, margins);
 
   return (
@@ -106,11 +58,13 @@ const TimeLapsChart = ({ data }) => {
       >
         <g
           ref={gRefStale}
-          style={{ transform: `translate(${(margins.left, margins.top)})` }}
-        />
+          transform={`translate(${(margins.left, margins.top)})`}
+        >
+          {/* Create a slider like my previous gradient-slider, which can increase or decrease sliceMin/sliceMax */}
+        </g>
         <g
           ref={gRefMoveable}
-          style={{ transform: `translate(${(margins.left, margins.top)})` }}
+          transform={`translate(${(margins.left, margins.top)})`}
         />
       </svg>
     </>

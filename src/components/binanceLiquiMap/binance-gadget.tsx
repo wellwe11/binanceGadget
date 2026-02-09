@@ -3,7 +3,7 @@ import Gradient from "./components/gradient";
 import HeatMap from "./components/Heatmap";
 import LiquidationMap from "./components/LiquidationMap";
 import Nav from "./components/nav/nav";
-import TimeLapsChart from "./components/timeLapsChart";
+import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
 import generateHeatmapData from "./generateData";
 
 const BinanceGadget = () => {
