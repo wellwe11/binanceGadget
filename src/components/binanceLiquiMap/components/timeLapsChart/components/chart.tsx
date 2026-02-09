@@ -38,9 +38,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .attr("d", line);
   }, [data, gRef, margins]);
 
-  return (
-    <g ref={gRef} transform={`translate(${(margins.left, margins.top)})`} />
-  );
+  return <g ref={gRef} />;
 };
 
 export default Chart;

@@ -23,8 +23,10 @@ const MoveableGraph = ({
   sliceStart,
   sliceEnd,
 }) => {
-  const min = 100 - sliceEnd - 10;
-  const max = 100 - sliceStart - 10;
+  const start = sliceStart < sliceEnd ? sliceStart : sliceEnd;
+  const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
+  const min = data.length - end - 1;
+  const max = data.length - start + 1;
 
   // Data that will adjust the width of top-chart
   const slicedData = data.slice(min, max);
@@ -47,8 +49,8 @@ const TimeLapsChart = ({ data }) => {
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
-  const [graphWidthStart, setGraphWidthStart] = useState(0);
-  const [graphWidthEnd, setGraphWidthEnd] = useState(data.length);
+  const [graphWidthStart, setGraphWidthStart] = useState(-1);
+  const [graphWidthEnd, setGraphWidthEnd] = useState(data.length - 1);
 
   const x = useMemo(
     () =>
@@ -73,7 +75,7 @@ const TimeLapsChart = ({ data }) => {
       <div
         className="z-20 h-10"
         style={{
-          transform: `translate(${margins.left - 10}px, ${margins.top + 10}px)`,
+          transform: `translate(0, ${margins.top + 10}px)`,
           width: innerWidth,
         }}
       >

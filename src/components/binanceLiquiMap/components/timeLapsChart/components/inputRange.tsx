@@ -1,4 +1,5 @@
 const InputRange = ({ val, setter, max = 100 }) => {
+  console.log(val);
   return (
     <input
       className="absolute top-0 right-0 z-11 w-full
@@ -25,8 +26,8 @@ const InputRange = ({ val, setter, max = 100 }) => {
           [&::-moz-range-thumb]:border-[#a4a4a4]
           [&::-moz-range-thumb]:border-solid"
       type="range"
-      min="0"
-      max={max}
+      min="1"
+      max={max - 1}
       value={val}
       onChange={(e) => {
         const value = +e.target.value;
