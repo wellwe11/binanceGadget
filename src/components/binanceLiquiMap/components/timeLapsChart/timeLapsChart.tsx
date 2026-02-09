@@ -1,8 +1,9 @@
 import * as d3 from "d3";
-import { useRef, useMemo } from "react";
+import { useMemo } from "react";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";
+import InputRange from "./components/inputRange";
 
 /**
      A simpler graph below the chart
@@ -15,10 +16,9 @@ import Axis from "./components/axis";
 
 const MoveableGraph = ({ data, x, y, margins, innerHeight }) => {
   // Data that will adjust the width of top-chart
-  const sliceMin = data.length - 17,
-    sliceMax = 25;
+  const sliceMin = data.length - 3,
+    sliceMax = 5;
   const slicedData = data.slice(sliceMax, sliceMin);
-  // Create moveable graph
 
   return (
     <Chart
@@ -27,9 +27,7 @@ const MoveableGraph = ({ data, x, y, margins, innerHeight }) => {
       y={y}
       margins={margins}
       innerHeight={innerHeight}
-    >
-      {/* Create a slider like my previous gradient-slider, which can increase or decrease sliceMin/sliceMax */}
-    </Chart>
+    />
   );
 };
 
@@ -58,20 +56,31 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
-  // Create group-axis
-
   return (
     <>
+      <div
+        className="z-20 h-10"
+        style={{
+          transform: `translate(${margins.left - 10}px, ${margins.top + 10}px)`,
+          width: innerWidth,
+        }}
+      >
+        <div>
+          <InputRange />
+        </div>
+        <div>
+          <InputRange />
+        </div>
+      </div>
       <Axis data={data} margins={margins} width={width} height={height}>
-        <Chart
+        <MoveableGraph
           data={data}
           x={x}
           y={y}
           margins={margins}
           innerHeight={innerHeight}
         />
-
-        <MoveableGraph
+        <Chart
           data={data}
           x={x}
           y={y}

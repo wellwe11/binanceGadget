@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Chart = ({ children, data, innerHeight, x, y, margins }) => {
+const Chart = ({ data, innerHeight, x, y, margins }) => {
   const gRef = useRef(null);
 
   useEffect(() => {
@@ -39,9 +39,7 @@ const Chart = ({ children, data, innerHeight, x, y, margins }) => {
   }, [data, gRef, margins]);
 
   return (
-    <g ref={gRef} transform={`translate(${(margins.left, margins.top)})`}>
-      {children && children}
-    </g>
+    <g ref={gRef} transform={`translate(${(margins.left, margins.top)})`} />
   );
 };
 
