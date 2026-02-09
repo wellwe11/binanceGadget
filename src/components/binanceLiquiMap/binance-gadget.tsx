@@ -4,6 +4,7 @@ import HeatMap from "./components/Heatmap";
 import LiquidationMap from "./components/LiquidationMap";
 import Nav from "./components/nav/nav";
 import TimeLapsChart from "./components/timeLapsChart";
+import generateHeatmapData from "./generateData";
 
 const BinanceGadget = () => {
   const placeholderCurrencies = useMemo(
@@ -80,9 +81,14 @@ const BinanceGadget = () => {
     [],
   );
 
+  const data = useMemo(
+    () => generateHeatmapData(["BITCOIN"]),
+    [placeholderCurrencies],
+  );
+
   return (
-    <div className="flex flex-col pt-5 pl-1 w-240 h-170 bg-gray-950">
-      <div>
+    <div className="flex flex-col pt-5 pl-1 w-240 h-170">
+      <div className="bg-gray-950">
         <Nav
           symbol={placeholderCurrencies}
           pair={placeholderPairs}
@@ -96,9 +102,12 @@ const BinanceGadget = () => {
           <Gradient />
         </div>
 
-        <div className="h-full flex flex-col flex-1 bg-gray-800">
+        <div
+          className="h-full flex flex-col flex-1"
+          style={{ border: "1px solid black" }}
+        >
           <HeatMap />
-          <TimeLapsChart />
+          <TimeLapsChart data={data} />
         </div>
         <LiquidationMap />
       </div>
