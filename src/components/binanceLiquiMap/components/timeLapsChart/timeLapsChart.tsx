@@ -14,6 +14,65 @@ import InputRange from "./components/inputRange";
  * Zooming HeatMap also highlights the min/max time currently showed on Heatmap
  */
 
+const trackDrag = (setter) => {
+  let animationFrameId = null;
+  let accumulatedDelta = 0;
+
+  const handleMove = (moveEvent) => {
+    accumulatedDelta += moveEvent.movementX * 0.135; // Adjust for increased/decreased acceleration of mouse-speed
+    if (animationFrameId) return;
+
+    animationFrameId = requestAnimationFrame(() => {
+      const delta = accumulatedDelta;
+      accumulatedDelta = 0;
+
+      setter((prev) => {
+        let newStart = prev.start + delta;
+        let newEnd = prev.end + delta;
+
+        // To avoid if width is full
+        if (prev.start === 0 && prev.end === 89) return prev;
+
+        if (newStart < 1) {
+          newStart = 1;
+          newEnd = prev.end;
+        }
+
+        if (newEnd > 89) {
+          newEnd = 89;
+          newStart = prev.start;
+        }
+
+        if (newStart > 89) {
+          newStart = 89;
+          newEnd = prev.end;
+        }
+
+        if (newEnd < 1) {
+          newEnd = 1;
+          newStart = prev.start;
+        }
+
+        return { start: newStart, end: newEnd };
+      });
+
+      animationFrameId = null;
+    });
+  };
+
+  const handleUp = () => {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+    }
+
+    window.removeEventListener("mousemove", handleMove);
+    window.removeEventListener("mouseup", handleUp);
+  };
+
+  window.addEventListener("mousemove", handleMove);
+  window.addEventListener("mouseup", handleUp);
+};
+
 const MoveableGraph = ({
   data,
   x,
@@ -61,11 +120,16 @@ const TimeLapsChart = ({ data }) => {
   const width = 800;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
+  const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
 
   const [graphMargins, setGraphMargins] = useState({
     start: 1,
     end: data.length - 1,
   });
+
+  useEffect(() => {
+    trackDrag(setGraphMargins);
+  }, []);
 
   const handleGraphStart = (e) => {
     const value = +e.target.value;
@@ -76,67 +140,6 @@ const TimeLapsChart = ({ data }) => {
   const handleGraphEnd = (e) => {
     const value = +e.target.value;
     setGraphMargins((prev) => ({ ...prev, end: value }));
-  };
-
-  const trackDrag = (e) => {
-    let animationFrameId = null;
-    let accumulatedDelta = 0;
-
-    const handleMove = (moveEvent) => {
-      accumulatedDelta += moveEvent.movementX * 0.135; // Adjust for increased/decreased acceleration of mouse-speed
-      if (animationFrameId) return;
-
-      animationFrameId = requestAnimationFrame(() => {
-        const delta = accumulatedDelta;
-        accumulatedDelta = 0;
-
-        setGraphMargins((prev) => {
-          let newStart = prev.start + delta;
-          let newEnd = prev.end + delta;
-
-          // To avoid if width is full
-          if (prev.start === 0 && prev.end === 89) return prev;
-
-          if (newStart < 1) {
-            newStart = 1;
-            newEnd = prev.end;
-          }
-
-          if (newEnd > 89) {
-            newEnd = 89;
-            newStart = prev.start;
-          }
-
-          if (newStart > 89) {
-            newStart = 89;
-            newEnd = prev.end;
-          }
-
-          if (newEnd < 1) {
-            newEnd = 1;
-            newStart = prev.start;
-          }
-
-          console.log(newStart, newEnd);
-
-          return { start: newStart, end: newEnd };
-        });
-
-        animationFrameId = null;
-      });
-    };
-
-    const handleUp = () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
-    };
-
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
   };
 
   const x = useMemo(
@@ -162,6 +165,8 @@ const TimeLapsChart = ({ data }) => {
   const firstObjectDate = data[Math.round(graphMargins.start)].date;
   const lastObjectDate = data[Math.round(graphMargins.end)].date;
 
+  console.log(graphMargins);
+
   return (
     <div className="ml-5">
       <div
@@ -180,12 +185,13 @@ const TimeLapsChart = ({ data }) => {
         </div>
         <div>
           <p
-            className="pointer-events-none focus:none"
+            className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none"
             style={{
-              transform: `translateX(${(100 / 90) * graphMargins.start}%)`,
+              left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
+              transform: `translateX(${graphMargins.end > graphMargins.start ? "-110" : "5"}%)`,
             }}
           >
-            {String(firstObjectDate)}
+            {dateFormat(firstObjectDate)}
           </p>
           <InputRange
             val={graphMargins.end}
@@ -193,18 +199,19 @@ const TimeLapsChart = ({ data }) => {
             max={data.length}
           />
           <p
-            className="pointer-events-none focus:none"
+            className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none"
             style={{
-              transform: `translateX(${(100 / 90) * graphMargins.end}%)`,
+              left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
+              transform: `translateX(${graphMargins.end > graphMargins.start ? "5" : "-110"}%)`,
             }}
           >
-            {String(lastObjectDate)}
+            {dateFormat(lastObjectDate)}
           </p>
         </div>
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>
         <rect
-          onMouseDown={trackDrag}
+          onMouseDown={() => trackDrag(setGraphMargins)}
           ref={rectRef}
           style={{ zIndex: 10 }}
           x="0"
