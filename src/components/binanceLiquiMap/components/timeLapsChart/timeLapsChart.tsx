@@ -158,11 +158,8 @@ const TimeLapsChart = ({ data }) => {
 
   // FIX BUG:
   // DATES ARE REVERSED: RIGHT CONTROLLER SHOWS END DATE
-  // const firstObjectDate = data[Math.round(graphMargins.start)].date;
-  // const lastObjectDate = data[Math.round(graphMargins.end)].date;
-
-  const firstObjectDate = "";
-  const lastObjectDate = "";
+  const firstObjectDate = data[Math.round(graphMargins.start)].date;
+  const lastObjectDate = data[Math.round(graphMargins.end)].date;
 
   const logVal = (e) => {
     const clientX = e.clientX;
@@ -219,7 +216,7 @@ const TimeLapsChart = ({ data }) => {
               transform: `translateX(${graphMargins.end > graphMargins.start ? "-110" : "5"}%)`,
             }}
           >
-            {dateFormat(firstObjectDate)}
+            {dateFormat(lastObjectDate)}
           </p>
           <InputRange
             val={graphMargins.end}
@@ -233,7 +230,7 @@ const TimeLapsChart = ({ data }) => {
               transform: `translateX(${graphMargins.end > graphMargins.start ? "5" : "-110"}%)`,
             }}
           >
-            {dateFormat(lastObjectDate)}
+            {dateFormat(firstObjectDate)}
           </p>
         </div>
       </div>
