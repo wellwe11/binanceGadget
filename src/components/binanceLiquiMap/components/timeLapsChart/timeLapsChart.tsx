@@ -167,9 +167,10 @@ const TimeLapsChart = ({ data }) => {
     const percentualClick =
       Math.round((data.length / innerWidth) * clientX) - 7.5; // Adjust to control chart relevant to cursor
 
-    console.log(percentualClick);
-
     setGraphMargins((prev) => {
+      if (percentualClick > prev.start && percentualClick < prev.end)
+        return prev;
+
       const difference =
         prev.end > prev.start ? prev.end - prev.start : prev.start - prev.end;
 
@@ -237,6 +238,7 @@ const TimeLapsChart = ({ data }) => {
           height={innerHeight}
           fill="transparent"
         />
+
         <MoveableGraph
           data={data}
           x={x}
