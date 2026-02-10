@@ -164,7 +164,8 @@ const TimeLapsChart = ({ data }) => {
   const logVal = (e) => {
     const clientX = e.clientX;
 
-    const percentualClick = Math.round((data.length / innerWidth) * clientX);
+    const percentualClick =
+      Math.round((data.length / innerWidth) * clientX) - 7.5; // Adjust to control chart relevant to cursor
 
     console.log(percentualClick);
 
