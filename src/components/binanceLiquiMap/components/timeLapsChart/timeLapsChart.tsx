@@ -80,7 +80,7 @@ const TimeLapsChart = ({ data }) => {
 
   const trackDrag = (e) => {
     const handleMove = (moveEvent) => {
-      const delta = moveEvent.movementX * 0.15;
+      const delta = moveEvent.movementX * 0.135;
 
       setGraphMargins((prev) => {
         let newStart = prev.start + delta;
