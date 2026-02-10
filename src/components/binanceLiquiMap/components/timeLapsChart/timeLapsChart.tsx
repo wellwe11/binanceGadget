@@ -79,41 +79,55 @@ const TimeLapsChart = ({ data }) => {
   };
 
   const trackDrag = (e) => {
+    let animationFrameId = null;
+
     const handleMove = (moveEvent) => {
-      const delta = moveEvent.movementX * 0.135;
+      if (animationFrameId) return;
 
-      setGraphMargins((prev) => {
-        let newStart = prev.start + delta;
-        let newEnd = prev.end + delta;
+      animationFrameId = requestAnimationFrame(() => {
+        const delta = moveEvent.movementX * 0.75; // Adjust for increased/decreased acceleration of mouse-speed
 
-        // To avoid if width is full
-        if (prev.start === 0 && prev.end === 89) return;
+        setGraphMargins((prev) => {
+          let newStart = prev.start + delta;
+          let newEnd = prev.end + delta;
 
-        if (newStart < 1) {
-          newStart = 1;
-          newEnd = prev.end;
-        }
+          // To avoid if width is full
+          if (prev.start === 0 && prev.end === 89) return;
 
-        if (newEnd > 89) {
-          newEnd = 89;
-          newStart = prev.start;
-        }
+          if (newStart < 1) {
+            newStart = 1;
+            newEnd = prev.end;
+          }
 
-        if (newStart > 89) {
-          newStart = 89;
-          newEnd = prev.end;
-        }
+          if (newEnd > 89) {
+            newEnd = 89;
+            newStart = prev.start;
+          }
 
-        if (newEnd < 1) {
-          newEnd = 1;
-          newStart = prev.start;
-        }
+          if (newStart > 89) {
+            newStart = 89;
+            newEnd = prev.end;
+          }
 
-        return { start: newStart, end: newEnd };
+          if (newEnd < 1) {
+            newEnd = 1;
+            newStart = prev.start;
+          }
+
+          console.log(newStart, newEnd);
+
+          return { start: newStart, end: newEnd };
+        });
+
+        animationFrameId = null;
       });
     };
 
     const handleUp = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleUp);
     };
@@ -140,6 +154,8 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
+  // FIX BUG:
+  // DATES ARE REVERSED: RIGHT CONTROLLER SHOWS END DATE
   const firstObjectDate = data[Math.round(graphMargins.start)].date;
   const lastObjectDate = data[Math.round(graphMargins.end)].date;
 
