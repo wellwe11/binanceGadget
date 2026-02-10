@@ -53,6 +53,8 @@ const trackDrag = (setter) => {
           newStart = prev.start;
         }
 
+        console.log(newStart, newEnd);
+
         return { start: newStart, end: newEnd };
       });
 
@@ -127,10 +129,6 @@ const TimeLapsChart = ({ data }) => {
     end: data.length - 1,
   });
 
-  useEffect(() => {
-    trackDrag(setGraphMargins);
-  }, []);
-
   const handleGraphStart = (e) => {
     const value = +e.target.value;
 
@@ -164,8 +162,6 @@ const TimeLapsChart = ({ data }) => {
   // DATES ARE REVERSED: RIGHT CONTROLLER SHOWS END DATE
   const firstObjectDate = data[Math.round(graphMargins.start)].date;
   const lastObjectDate = data[Math.round(graphMargins.end)].date;
-
-  console.log(graphMargins);
 
   return (
     <div className="ml-5">
