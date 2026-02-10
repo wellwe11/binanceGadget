@@ -38,7 +38,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .attr("d", line);
   }, [data, gRef, margins]);
 
-  return <g ref={gRef} />;
+  return <g className="pointer-events-none" ref={gRef} />;
 };
 
 export default Chart;

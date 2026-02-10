@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";
@@ -23,22 +23,63 @@ const MoveableGraph = ({
   sliceStart,
   sliceEnd,
 }) => {
+  const rectRef = useRef(null);
   const start = sliceStart < sliceEnd ? sliceStart : sliceEnd;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
-  const min = data.length - end - 1;
-  const max = data.length - start + 1;
+
+  const [min, setMin] = useState(data.length - end - 1);
+  const [max, setMax] = useState(data.length - start + 1);
+
+  console.log(start, end);
 
   // Data that will adjust the width of top-chart
   const slicedData = data.slice(min, max);
 
+  useEffect(() => {
+    setMin(data.length - end - 1);
+    setMax(data.length - start + 1);
+  }, [start, end]);
+
+  const trackDrag = (e) => {
+    const handleMove = (moveEvent) => {
+      // 1. Calculate mouse position relative to the chart's left edge
+      const mouseEvent = moveEvent.movementX;
+
+      if (min > 0 || max < 99) {
+        setMin((prev) => prev - mouseEvent / 10);
+        setMax((prev) => prev - mouseEvent / 10);
+      }
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
+  console.log(min, max);
+
   return (
-    <Chart
-      data={slicedData}
-      x={x}
-      y={y}
-      margins={margins}
-      innerHeight={innerHeight}
-    />
+    <>
+      <rect
+        onMouseDown={trackDrag}
+        x={`${start}%`}
+        ref={rectRef}
+        style={{ zIndex: 10 }}
+        width={`${end - start - 10}%`}
+        height={innerHeight}
+      />
+      <Chart
+        data={slicedData}
+        x={x}
+        y={y}
+        margins={margins}
+        innerHeight={innerHeight}
+      />
+    </>
   );
 };
 
@@ -49,7 +90,7 @@ const TimeLapsChart = ({ data }) => {
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
-  const [graphWidthStart, setGraphWidthStart] = useState(-1);
+  const [graphWidthStart, setGraphWidthStart] = useState(1);
   const [graphWidthEnd, setGraphWidthEnd] = useState(data.length - 1);
 
   const x = useMemo(
@@ -73,7 +114,7 @@ const TimeLapsChart = ({ data }) => {
   return (
     <>
       <div
-        className="z-20 h-10"
+        className="z-20 h-10 pointer-events-none"
         style={{
           transform: `translate(0, ${margins.top + 10}px)`,
           width: innerWidth,

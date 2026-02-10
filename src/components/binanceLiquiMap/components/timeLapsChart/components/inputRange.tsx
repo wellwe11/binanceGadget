@@ -1,9 +1,9 @@
 const InputRange = ({ val, setter, max = 100 }) => {
-  console.log(val);
   return (
     <input
       className="absolute top-0 right-0 z-11 w-full
           cursor-ew-resize
+        
           appearance-none
           bg-transparent
           pointer-events-none
