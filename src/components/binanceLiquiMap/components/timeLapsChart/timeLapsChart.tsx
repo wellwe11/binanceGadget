@@ -158,8 +158,11 @@ const TimeLapsChart = ({ data }) => {
 
   // FIX BUG:
   // DATES ARE REVERSED: RIGHT CONTROLLER SHOWS END DATE
-  const firstObjectDate = data[Math.round(graphMargins.start)].date;
-  const lastObjectDate = data[Math.round(graphMargins.end)].date;
+  // const firstObjectDate = data[Math.round(graphMargins.start)].date;
+  // const lastObjectDate = data[Math.round(graphMargins.end)].date;
+
+  const firstObjectDate = "";
+  const lastObjectDate = "";
 
   const logVal = (e) => {
     const clientX = e.clientX;
@@ -171,11 +174,20 @@ const TimeLapsChart = ({ data }) => {
       if (percentualClick > prev.start && percentualClick < prev.end)
         return prev;
 
-      const difference =
-        prev.end > prev.start ? prev.end - prev.start : prev.start - prev.end;
+      const areTheyReversed = prev.end < prev.start && prev.start > prev.end;
 
-      const newMin = percentualClick - difference / 2,
-        newMax = percentualClick + difference / 2;
+      console.log(prev, areTheyReversed);
+
+      const difference = areTheyReversed
+        ? prev.start - prev.end
+        : prev.end - prev.start;
+
+      const newMin = areTheyReversed
+          ? percentualClick + difference / 2
+          : percentualClick - difference / 2,
+        newMax = areTheyReversed
+          ? percentualClick - difference / 2
+          : percentualClick + difference / 2;
 
       // fix so it does not exceed 100 and below 0
 
