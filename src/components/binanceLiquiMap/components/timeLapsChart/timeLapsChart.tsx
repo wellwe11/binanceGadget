@@ -67,8 +67,6 @@ const TimeLapsChart = ({ data }) => {
     end: data.length - 1,
   });
 
-  console.log(graphMargins);
-
   const handleGraphStart = (e) => {
     const value = +e.target.value;
 
@@ -82,10 +80,14 @@ const TimeLapsChart = ({ data }) => {
 
   const trackDrag = (e) => {
     const handleMove = (moveEvent) => {
-      const delta = moveEvent.movementX / 10;
+      const delta = moveEvent.movementX * 0.15;
+
       setGraphMargins((prev) => {
         let newStart = prev.start + delta;
         let newEnd = prev.end + delta;
+
+        // To avoid if width is full
+        if (prev.start === 0 && prev.end === 89) return;
 
         if (newStart < 1) {
           newStart = 1;
@@ -96,6 +98,8 @@ const TimeLapsChart = ({ data }) => {
           newEnd = 89;
           newStart = prev.start;
         }
+
+        console.log(newStart, newEnd);
 
         return { start: newStart, end: newEnd };
       });
@@ -128,6 +132,9 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
+  const firstObjectDate = data[Math.round(graphMargins.start)].date;
+  const lastObjectDate = data[Math.round(graphMargins.end)].date;
+
   return (
     <div className="ml-5">
       <div
@@ -145,11 +152,27 @@ const TimeLapsChart = ({ data }) => {
           />
         </div>
         <div>
+          <p
+            className="pointer-events-none focus:none"
+            style={{
+              transform: `translateX(${(100 / 90) * graphMargins.start}%)`,
+            }}
+          >
+            {String(firstObjectDate)}
+          </p>
           <InputRange
             val={graphMargins.end}
             setter={handleGraphEnd}
             max={data.length}
           />
+          <p
+            className="pointer-events-none focus:none"
+            style={{
+              transform: `translateX(${(100 / 90) * graphMargins.end}%)`,
+            }}
+          >
+            {String(lastObjectDate)}
+          </p>
         </div>
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>

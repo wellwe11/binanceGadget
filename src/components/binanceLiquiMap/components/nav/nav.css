@@ -6,7 +6,7 @@
   .addLengthHover:hover {
     transform: scaleX(1.2) !important;
 
-    background-color: rgb(164, 164, 164);
+    background-color: #a4a4a4;
   }
 
   .border_bg {
