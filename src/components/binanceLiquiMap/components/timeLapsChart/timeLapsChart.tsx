@@ -27,28 +27,44 @@ const MoveableGraph = ({
   const start = sliceStart < sliceEnd ? sliceStart : sliceEnd;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
 
-  const [min, setMin] = useState(data.length - end - 1);
-  const [max, setMax] = useState(data.length - start + 1);
-
-  console.log(start, end);
+  const [values, setValues] = useState({
+    min: data.length - end - 1,
+    max: data.length - start + 1,
+  });
 
   // Data that will adjust the width of top-chart
-  const slicedData = data.slice(min, max);
+  const slicedData = data.slice(values.min, values.max);
 
   useEffect(() => {
-    setMin(data.length - end - 1);
-    setMax(data.length - start + 1);
+    setValues({
+      min: data.length - end - 1,
+      max: data.length - start + 1,
+    });
   }, [start, end]);
 
   const trackDrag = (e) => {
     const handleMove = (moveEvent) => {
-      // 1. Calculate mouse position relative to the chart's left edge
-      const mouseEvent = moveEvent.movementX;
+      setValues((prev) => {
+        const delta = moveEvent.movementX / 10;
 
-      if (min > 0 || max < 99) {
-        setMin((prev) => prev - mouseEvent / 10);
-        setMax((prev) => prev - mouseEvent / 10);
-      }
+        let nextMin = prev.min - delta;
+        let nextMax = prev.max - delta;
+
+        if (nextMin < 1) {
+          const offset = 1 - nextMin;
+          nextMin = 1;
+          nextMax += offset;
+        }
+
+        if (nextMax > 90) {
+          const offset = nextMax - 90;
+          nextMax = 90;
+          nextMin -= offset;
+        }
+
+        console.log(nextMin, nextMax);
+        return { min: nextMin, max: nextMax };
+      });
     };
 
     const handleUp = () => {
@@ -60,17 +76,16 @@ const MoveableGraph = ({
     window.addEventListener("mouseup", handleUp);
   };
 
-  console.log(min, max);
-
   return (
     <>
       <rect
         onMouseDown={trackDrag}
-        x={`${start}%`}
         ref={rectRef}
         style={{ zIndex: 10 }}
-        width={`${end - start - 10}%`}
+        x="0"
+        width="100%"
         height={innerHeight}
+        fill="transparent"
       />
       <Chart
         data={slicedData}
