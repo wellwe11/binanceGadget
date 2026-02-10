@@ -53,8 +53,6 @@ const trackDrag = (setter) => {
           newStart = prev.start;
         }
 
-        console.log(newStart, newEnd);
-
         return { start: newStart, end: newEnd };
       });
 
@@ -163,6 +161,26 @@ const TimeLapsChart = ({ data }) => {
   const firstObjectDate = data[Math.round(graphMargins.start)].date;
   const lastObjectDate = data[Math.round(graphMargins.end)].date;
 
+  const logVal = (e) => {
+    const clientX = e.clientX;
+
+    const percentualClick = Math.round((data.length / innerWidth) * clientX);
+
+    console.log(percentualClick);
+
+    setGraphMargins((prev) => {
+      const difference =
+        prev.end > prev.start ? prev.end - prev.start : prev.start - prev.end;
+
+      const newMin = percentualClick - difference / 2,
+        newMax = percentualClick + difference / 2;
+
+      // fix so it does not exceed 100 and below 0
+
+      return { start: newMin, end: newMax };
+    });
+  };
+
   return (
     <div className="ml-5">
       <div
@@ -207,11 +225,14 @@ const TimeLapsChart = ({ data }) => {
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>
         <rect
-          onMouseDown={() => trackDrag(setGraphMargins)}
+          onMouseDown={(e) => {
+            logVal(e);
+            trackDrag(setGraphMargins);
+          }}
           ref={rectRef}
-          style={{ zIndex: 10 }}
+          style={{ cursor: "grabbing" }}
           x="0"
-          width="100%"
+          width={innerWidth}
           height={innerHeight}
           fill="transparent"
         />
