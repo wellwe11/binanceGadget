@@ -20,10 +20,9 @@ const MoveableGraph = ({
   y,
   margins,
   innerHeight,
-  sliceStart,
-  sliceEnd,
+  sliceStart, // graphWidthStart
+  sliceEnd, // graphWidthEnd
 }) => {
-  const rectRef = useRef(null);
   const start = sliceStart < sliceEnd ? sliceStart : sliceEnd;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
 
@@ -42,51 +41,8 @@ const MoveableGraph = ({
     });
   }, [start, end]);
 
-  const trackDrag = (e) => {
-    const handleMove = (moveEvent) => {
-      setValues((prev) => {
-        const delta = moveEvent.movementX / 10;
-
-        let nextMin = prev.min - delta;
-        let nextMax = prev.max - delta;
-
-        if (nextMin < 1) {
-          const offset = 1 - nextMin;
-          nextMin = 1;
-          nextMax += offset;
-        }
-
-        if (nextMax > 90) {
-          const offset = nextMax - 90;
-          nextMax = 90;
-          nextMin -= offset;
-        }
-
-        console.log(nextMin, nextMax);
-        return { min: nextMin, max: nextMax };
-      });
-    };
-
-    const handleUp = () => {
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
-    };
-
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
-  };
-
   return (
     <>
-      <rect
-        onMouseDown={trackDrag}
-        ref={rectRef}
-        style={{ zIndex: 10 }}
-        x="0"
-        width="100%"
-        height={innerHeight}
-        fill="transparent"
-      />
       <Chart
         data={slicedData}
         x={x}
@@ -99,14 +55,60 @@ const MoveableGraph = ({
 };
 
 const TimeLapsChart = ({ data }) => {
+  const rectRef = useRef(null);
   const margins = { top: 70, right: 60, bottom: 50, left: 80 };
   const height = 200;
   const width = 800;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
-  const [graphWidthStart, setGraphWidthStart] = useState(1);
-  const [graphWidthEnd, setGraphWidthEnd] = useState(data.length - 1);
+  const [graphMargins, setGraphMargins] = useState({
+    start: 1,
+    end: data.length - 1,
+  });
+
+  console.log(graphMargins);
+
+  const handleGraphStart = (e) => {
+    const value = +e.target.value;
+
+    setGraphMargins((prev) => ({ ...prev, start: value }));
+  };
+
+  const handleGraphEnd = (e) => {
+    const value = +e.target.value;
+    setGraphMargins((prev) => ({ ...prev, end: value }));
+  };
+
+  const trackDrag = (e) => {
+    const handleMove = (moveEvent) => {
+      const delta = moveEvent.movementX / 10;
+      setGraphMargins((prev) => {
+        let newStart = prev.start + delta;
+        let newEnd = prev.end + delta;
+
+        if (newStart < 1) {
+          newStart = 1;
+          newEnd = prev.end;
+        }
+
+        if (newEnd > 89) {
+          newEnd = 89;
+          newStart = prev.start;
+        }
+
+        return { start: newStart, end: newEnd };
+      });
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
 
   const x = useMemo(
     () =>
@@ -127,7 +129,7 @@ const TimeLapsChart = ({ data }) => {
   );
 
   return (
-    <>
+    <div className="ml-5">
       <div
         className="z-20 h-10 pointer-events-none"
         style={{
@@ -137,28 +139,37 @@ const TimeLapsChart = ({ data }) => {
       >
         <div>
           <InputRange
-            val={graphWidthStart}
-            setter={setGraphWidthStart}
+            val={graphMargins.start}
+            setter={handleGraphStart}
             max={data.length}
           />
         </div>
         <div>
           <InputRange
-            val={graphWidthEnd}
-            setter={setGraphWidthEnd}
+            val={graphMargins.end}
+            setter={handleGraphEnd}
             max={data.length}
           />
         </div>
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>
+        <rect
+          onMouseDown={trackDrag}
+          ref={rectRef}
+          style={{ zIndex: 10 }}
+          x="0"
+          width="100%"
+          height={innerHeight}
+          fill="transparent"
+        />
         <MoveableGraph
           data={data}
           x={x}
           y={y}
           margins={margins}
           innerHeight={innerHeight}
-          sliceStart={graphWidthStart}
-          sliceEnd={graphWidthEnd}
+          sliceStart={graphMargins.start}
+          sliceEnd={graphMargins.end}
         />
         <Chart
           data={data}
@@ -168,7 +179,7 @@ const TimeLapsChart = ({ data }) => {
           innerHeight={innerHeight}
         />
       </Axis>
-    </>
+    </div>
   );
 };
 

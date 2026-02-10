@@ -29,10 +29,7 @@ const InputRange = ({ val, setter, max = 100 }) => {
       min="1"
       max={max - 1}
       value={val}
-      onChange={(e) => {
-        const value = +e.target.value;
-        setter(value);
-      }}
+      onChange={setter}
     />
   );
 };
