@@ -80,19 +80,22 @@ const TimeLapsChart = ({ data }) => {
 
   const trackDrag = (e) => {
     let animationFrameId = null;
+    let accumulatedDelta = 0;
 
     const handleMove = (moveEvent) => {
+      accumulatedDelta += moveEvent.movementX * 0.135; // Adjust for increased/decreased acceleration of mouse-speed
       if (animationFrameId) return;
 
       animationFrameId = requestAnimationFrame(() => {
-        const delta = moveEvent.movementX * 0.75; // Adjust for increased/decreased acceleration of mouse-speed
+        const delta = accumulatedDelta;
+        accumulatedDelta = 0;
 
         setGraphMargins((prev) => {
           let newStart = prev.start + delta;
           let newEnd = prev.end + delta;
 
           // To avoid if width is full
-          if (prev.start === 0 && prev.end === 89) return;
+          if (prev.start === 0 && prev.end === 89) return prev;
 
           if (newStart < 1) {
             newStart = 1;
