@@ -99,7 +99,15 @@ const TimeLapsChart = ({ data }) => {
           newStart = prev.start;
         }
 
-        console.log(newStart, newEnd);
+        if (newStart > 89) {
+          newStart = 89;
+          newEnd = prev.end;
+        }
+
+        if (newEnd < 1) {
+          newEnd = 1;
+          newStart = prev.start;
+        }
 
         return { start: newStart, end: newEnd };
       });
