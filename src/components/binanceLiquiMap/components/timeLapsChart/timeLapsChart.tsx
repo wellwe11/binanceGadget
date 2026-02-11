@@ -42,6 +42,7 @@ const MoveableGraphContainerRect = ({
   setGraphMargins,
   innerWidth,
   innerHeight,
+  setHover,
 }) => {
   const max = data.length - 1;
   const calcWhereUserClicked = (e) =>
@@ -64,6 +65,8 @@ const MoveableGraphContainerRect = ({
       />
 
       <rect
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         width={`${graphMargins.end - graphMargins.start - 1}%`}
         height={innerHeight}
         fill="transparent"
@@ -131,18 +134,14 @@ const TimeLapsChart = ({ data }) => {
     data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
   return (
-    <div
-      className="ml-5 overflow-hidden"
-      onMouseEnter={() => setDisplayText(true)}
-      onMouseLeave={() => setDisplayText(false)}
-    >
+    <div className="ml-5 overflow-hidden">
       <div
         className="z-20 h-10 cursor-copy pointer-events-none "
         style={{
           transform: `translate(0, ${margins.top + 10}px)`,
           width: innerWidth,
         }}
-        onMouseEnter={() => console.log("asd")}
+        onMouseEnter={() => setDisplayText(true)}
       >
         <>
           <InputRange
@@ -191,6 +190,7 @@ const TimeLapsChart = ({ data }) => {
           setGraphMargins={setGraphMargins}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
+          setHover={setDisplayText}
         />
 
         <MoveableGraph
