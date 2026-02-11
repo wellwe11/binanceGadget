@@ -96,7 +96,7 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex bg-black">
         <div className="w-8 h-full">
           {/* Need to calculate max and add it to Gradient max={number} */}
           <Gradient />

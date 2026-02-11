@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Activity, useEffect, useMemo, useRef, useState } from "react";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";
@@ -70,6 +70,7 @@ const TimeLapsChart = ({ data }) => {
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
+  const [displayText, setDisplayText] = useState(false);
 
   const [graphMargins, setGraphMargins] = useState({
     start: 1,
@@ -124,15 +125,17 @@ const TimeLapsChart = ({ data }) => {
             setter={handleGraphStart}
             max={data.length}
           />
-          <p
-            className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none"
-            style={{
-              left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
-              transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
-            }}
-          >
-            {dateFormat(firstObjectDate)}
-          </p>
+          <Activity>
+            <p
+              className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none text-white"
+              style={{
+                left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
+                transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
+              }}
+            >
+              {dateFormat(firstObjectDate)}
+            </p>
+          </Activity>
         </>
 
         <>
@@ -142,15 +145,17 @@ const TimeLapsChart = ({ data }) => {
             max={data.length}
           />
 
-          <p
-            className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none"
-            style={{
-              left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
-              transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
-            }}
-          >
-            {dateFormat(lastObjectDate)}
-          </p>
+          <Activity>
+            <p
+              className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none text-white"
+              style={{
+                left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
+                transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
+              }}
+            >
+              {dateFormat(lastObjectDate)}
+            </p>
+          </Activity>
         </>
       </div>
 

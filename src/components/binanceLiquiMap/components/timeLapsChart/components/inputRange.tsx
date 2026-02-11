@@ -11,15 +11,15 @@ const InputRange = ({ val, setter, max = 100 }) => {
           [&::-webkit-slider-thumb]:appearance-none
           [&::-webkit-slider-thumb]:pointer-events-auto
           [&::-webkit-slider-thumb]:w-3
-          [&::-webkit-slider-thumb]:h-8
+          [&::-webkit-slider-thumb]:h-3
           [&::-webkit-slider-thumb]:rounded-full
           [&::-webkit-slider-thumb]:bg-transparent
           [&::-webkit-slider-thumb]:border-2
-          [&::-webkit-slider-thumb]:border-gray
+          [&::-webkit-slider-thumb]:border-white
 
           [&::-moz-range-thumb]:pointer-events-auto
-          [&::-moz-range-thumb]:w-5
-          [&::-moz-range-thumb]:h-8
+          [&::-moz-range-thumb]:w-3
+          [&::-moz-range-thumb]:h-3
           [&::-moz-range-thumb]:rounded-full
           [&::-moz-range-thumb]:bg-transparent
           [&::-moz-range-thumb]:border-2
