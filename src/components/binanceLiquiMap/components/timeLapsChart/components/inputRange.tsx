@@ -1,7 +1,7 @@
 const InputRange = ({ val, setter, max = 100 }) => {
   return (
     <input
-      className="absolute top-0 right-0 z-11 w-full
+      className="absolute top-0 right-0 w-full
           cursor-ew-resize
         
           appearance-none
@@ -13,16 +13,16 @@ const InputRange = ({ val, setter, max = 100 }) => {
           [&::-webkit-slider-thumb]:w-3
           [&::-webkit-slider-thumb]:h-3
           [&::-webkit-slider-thumb]:rounded-full
-          [&::-webkit-slider-thumb]:bg-transparent
-          [&::-webkit-slider-thumb]:border-2
-          [&::-webkit-slider-thumb]:border-white
+          [&::-webkit-slider-thumb]:bg-[#0000007c]
+          [&::-webkit-slider-thumb]:border
+          [&::-webkit-slider-thumb]:border-[#9c9c9c]
 
           [&::-moz-range-thumb]:pointer-events-auto
           [&::-moz-range-thumb]:w-3
           [&::-moz-range-thumb]:h-3
           [&::-moz-range-thumb]:rounded-full
-          [&::-moz-range-thumb]:bg-transparent
-          [&::-moz-range-thumb]:border-2
+          [&::-moz-range-thumb]:bg-[#0000007c]
+          [&::-moz-range-thumb]:border
           [&::-moz-range-thumb]:border-[#a4a4a4]
           [&::-moz-range-thumb]:border-solid"
       type="range"

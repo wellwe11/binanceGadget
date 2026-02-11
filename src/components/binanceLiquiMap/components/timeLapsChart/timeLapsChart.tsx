@@ -7,8 +7,6 @@ import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 
-// FIX BUG ** if user moves left handle, right handle dates adjust?????
-
 const MoveableGraph = ({
   data,
   x,
@@ -40,58 +38,49 @@ const MoveableGraph = ({
 // the moveable graph
 const MoveableGraphContainerRect = ({
   data,
+  graphMargins,
   setGraphMargins,
   innerWidth,
   innerHeight,
-  setter,
 }) => {
-  const [isActive, setIsActive] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const handleMouseEnter = () => setIsActive(true);
-
-  const handleMouseLeave = () => {
-    if (!isDragging) setIsActive(false);
-  };
-
-  const handleMouseDown = () => {
-    setIsActive(true);
-    setIsDragging(true);
-
-    const handleMouseUp = () => {
-      setIsActive(false);
-      setIsDragging(false);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-
-    window.addEventListener("mouseup", handleMouseUp);
-  };
-
-  useEffect(() => {
-    if (isActive || isDragging) setter(true);
-    else setter(false);
-  }, [isActive, isDragging]);
-
   const max = data.length - 1;
   const calcWhereUserClicked = (e) =>
     Math.round((data.length / innerWidth) * e.clientX) - 7.5;
 
   return (
-    <rect
-      onMouseEnter={handleMouseEnter}
-      onMouseDown={(e) => {
-        moveGraph(max, 0, calcWhereUserClicked(e), setGraphMargins);
-        trackDrag(setGraphMargins, max, 1);
+    <>
+      <rect
+        onMouseDown={(e) => {
+          console.log("asasdasdd");
+          const clickedVal = calcWhereUserClicked(e);
 
-        handleMouseDown();
-      }}
-      onMouseLeave={handleMouseLeave}
-      style={{ cursor: "grabbing" }}
-      x="0"
-      width={innerWidth}
-      height={innerHeight}
-      fill="transparent"
-    />
+          moveGraph(max, 0, clickedVal, setGraphMargins);
+        }}
+        style={{ cursor: "pointer" }}
+        x="0"
+        width={innerWidth}
+        height={innerHeight}
+        fill="transparent"
+      />
+
+      <rect
+        width={`${graphMargins.end - graphMargins.start - 1}%`}
+        height={innerHeight}
+        fill="blue"
+        style={{ cursor: "ew-resize" }}
+        onMouseDown={(e) => {
+          const clickedVal = calcWhereUserClicked(e);
+          if (
+            clickedVal > graphMargins.start &&
+            clickedVal < graphMargins.end
+          ) {
+            trackDrag(setGraphMargins, max, 1);
+          }
+        }}
+        pointerEvents="auto"
+        x={(graphMargins.start / (data.length - 1)) * innerWidth}
+      />
+    </>
   );
 };
 
@@ -143,13 +132,18 @@ const TimeLapsChart = ({ data }) => {
     data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
   return (
-    <div className="ml-5 overflow-hidden">
+    <div
+      className="ml-5 overflow-hidden"
+      onMouseEnter={() => setDisplayText(true)}
+      onMouseLeave={() => setDisplayText(false)}
+    >
       <div
-        className="z-20 h-10 pointer-events-none overflow-hidden"
+        className="z-20 h-10 cursor-copy pointer-events-none "
         style={{
           transform: `translate(0, ${margins.top + 10}px)`,
           width: innerWidth,
         }}
+        onMouseEnter={() => console.log("asd")}
       >
         <>
           <InputRange
@@ -194,12 +188,13 @@ const TimeLapsChart = ({ data }) => {
       <Axis data={data} margins={margins} width={width} height={height}>
         <MoveableGraphContainerRect
           data={data}
+          graphMargins={graphMargins}
           setGraphMargins={setGraphMargins}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
-          setter={setDisplayText}
         />
-        <MoveableGraph
+
+        {/* <MoveableGraph
           data={data}
           x={x}
           y={y}
@@ -207,7 +202,7 @@ const TimeLapsChart = ({ data }) => {
           innerHeight={innerHeight}
           sliceStart={graphMargins.start}
           sliceEnd={graphMargins.end}
-        />
+        /> */}
         <Chart
           data={data}
           x={x}
