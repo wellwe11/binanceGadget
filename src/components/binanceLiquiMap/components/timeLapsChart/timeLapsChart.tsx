@@ -73,6 +73,41 @@ const trackDrag = (setter) => {
   window.addEventListener("mouseup", handleUp);
 };
 
+const moveGraph = ({ max, percentualClick, setter }) => {
+  setter((prev) => {
+    // Return if user is clicking on the graph itself (Allows for more comfortable control)
+    if (percentualClick > prev.start && percentualClick < prev.end) return prev;
+
+    // Check if values have been reversed
+    const leftValue = prev.end > prev.start ? prev.start : prev.end;
+    const rightValue = prev.end > prev.start ? prev.end : prev.start;
+
+    // To get correct values; User clicks on 50%. The prev.start and prev.end were 60 and 70, respectively.
+    // This means that the difference is 10, so if user clicks on 50%, meaning start now must be 45, and end must be 55.
+    const difference = rightValue - leftValue;
+    let newMin = percentualClick - difference / 2,
+      newMax = percentualClick + difference / 2;
+
+    // Caps values at max graph and adds removes the difference so that moveable graph keeps its side.
+    if (newMax > max) {
+      const exceededAmount = newMax - max;
+      newMax = max;
+      newMin = newMin - exceededAmount;
+    }
+
+    // Same as previous comment.
+    if (newMin < 1) {
+      const exceededAmount = newMin;
+      newMin = 1;
+      newMax = newMax - exceededAmount;
+    }
+
+    console.log(newMin, newMax);
+
+    return { start: newMin, end: newMax };
+  });
+};
+
 const MoveableGraph = ({
   data,
   x,
@@ -101,15 +136,13 @@ const MoveableGraph = ({
   }, [start, end]);
 
   return (
-    <>
-      <Chart
-        data={slicedData}
-        x={x}
-        y={y}
-        margins={margins}
-        innerHeight={innerHeight}
-      />
-    </>
+    <Chart
+      data={slicedData}
+      x={x}
+      y={y}
+      margins={margins}
+      innerHeight={innerHeight}
+    />
   );
 };
 
@@ -156,41 +189,10 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
-  // FIX BUG:
-  // DATES ARE REVERSED: RIGHT CONTROLLER SHOWS END DATE
-  const firstObjectDate = data[Math.round(graphMargins.start)].date;
-  const lastObjectDate = data[Math.round(graphMargins.end)].date;
-
-  const logVal = (e) => {
-    const clientX = e.clientX;
-
-    const percentualClick =
-      Math.round((data.length / innerWidth) * clientX) - 7.5; // Adjust to control chart relevant to cursor
-
-    setGraphMargins((prev) => {
-      if (percentualClick > prev.start && percentualClick < prev.end)
-        return prev;
-
-      const areTheyReversed = prev.end < prev.start && prev.start > prev.end;
-
-      console.log(prev, areTheyReversed);
-
-      const difference = areTheyReversed
-        ? prev.start - prev.end
-        : prev.end - prev.start;
-
-      const newMin = areTheyReversed
-          ? percentualClick + difference / 2
-          : percentualClick - difference / 2,
-        newMax = areTheyReversed
-          ? percentualClick - difference / 2
-          : percentualClick + difference / 2;
-
-      // fix so it does not exceed 100 and below 0
-
-      return { start: newMin, end: newMax };
-    });
-  };
+  // const firstObjectDate = data[Math.round(graphMargins.start)].date;
+  // const lastObjectDate = data[Math.round(graphMargins.end)].date;
+  const firstObjectDate = "";
+  const lastObjectDate = "";
 
   return (
     <div className="ml-5">
@@ -237,7 +239,13 @@ const TimeLapsChart = ({ data }) => {
       <Axis data={data} margins={margins} width={width} height={height}>
         <rect
           onMouseDown={(e) => {
-            logVal(e);
+            const moveGraphArgs = {
+              percentualClick:
+                Math.round((data.length / innerWidth) * e.clientX) - 7.5, // Adjust to control chart relevant to cursor
+              max: data.length - 1,
+              setter: setGraphMargins,
+            };
+            moveGraph(moveGraphArgs);
             trackDrag(setGraphMargins);
           }}
           ref={rectRef}
