@@ -8,7 +8,6 @@ import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 
 // FIX BUG ** if user moves left handle, right handle dates adjust?????
-// FIX BUG ** When draggin left or/and right rapidly, the data-length is increased?
 
 const MoveableGraph = ({
   data,
@@ -19,7 +18,7 @@ const MoveableGraph = ({
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
 }) => {
-  const start = sliceStart < sliceEnd ? sliceStart : sliceEnd;
+  const start = sliceStart > sliceEnd ? sliceEnd : sliceStart;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
 
   const [values, setValues] = useState({
@@ -89,7 +88,6 @@ const TimeLapsChart = ({ data }) => {
 
   const handleGraphStart = (e) => {
     const value = +e.target.value;
-
     setGraphMargins((prev) => ({ ...prev, start: value }));
   };
 
@@ -116,8 +114,10 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
-  const firstObjectDate = data[Math.round(graphMargins.start)].date;
-  const lastObjectDate = data[Math.round(graphMargins.end)].date;
+  const firstObjectDate =
+    data[data.length - 1 - Math.round(graphMargins.start)]?.date;
+  const lastObjectDate =
+    data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
   return (
     <div className="ml-5">
@@ -128,39 +128,42 @@ const TimeLapsChart = ({ data }) => {
           width: innerWidth,
         }}
       >
-        <div>
+        <>
           <InputRange
             val={graphMargins.start}
             setter={handleGraphStart}
             max={data.length}
           />
-        </div>
-        <div>
-          <p
-            className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none"
-            style={{
-              left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
-              transform: `translateX(${graphMargins.end > graphMargins.start ? "-110" : "5"}%)`,
-            }}
-          >
-            {dateFormat(lastObjectDate)}
-          </p>
-          <InputRange
-            val={graphMargins.end}
-            setter={handleGraphEnd}
-            max={data.length}
-          />
           <p
             className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none"
             style={{
-              left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
+              left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
               transform: `translateX(${graphMargins.end > graphMargins.start ? "5" : "-110"}%)`,
             }}
           >
             {dateFormat(firstObjectDate)}
           </p>
-        </div>
+        </>
+
+        <>
+          <InputRange
+            val={graphMargins.end}
+            setter={handleGraphEnd}
+            max={data.length}
+          />
+
+          <p
+            className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none"
+            style={{
+              left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
+              transform: `translateX(${graphMargins.end > graphMargins.start ? "-110" : "5"}%)`,
+            }}
+          >
+            {dateFormat(lastObjectDate)}
+          </p>
+        </>
       </div>
+
       <Axis data={data} margins={margins} width={width} height={height}>
         <MoveableGraphContainerRect
           data={data}

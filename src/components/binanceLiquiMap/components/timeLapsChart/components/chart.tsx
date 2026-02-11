@@ -22,13 +22,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .y0(innerHeight)
       .y1((d) => y(d.value));
 
-    g.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", area)
-      .style("fill", "#002570")
-      .style("opacity", 0.5);
-
+    // Line
     g.append("path")
       .datum(data)
       .attr("class", "line")
@@ -36,6 +30,14 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .attr("stroke", "#002570")
       .attr("stroke-width", 1)
       .attr("d", line);
+
+    // Area
+    g.append("path")
+      .datum(data)
+      .attr("class", "area")
+      .attr("d", area)
+      .style("fill", "#002570")
+      .style("opacity", 0.5);
   }, [data, gRef, margins]);
 
   return <g className="pointer-events-none" ref={gRef} />;

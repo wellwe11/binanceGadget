@@ -9,15 +9,9 @@ const Axis = ({ children, data, margins, width, height }) => {
     const svgRefElement = d3.select(svgRef.current);
     svgRefElement.selectAll(".axis").remove();
 
-    svgRefElement
-      .append("g")
-      .attr("class", "axis")
-      .attr("transform", `translate(0, ${innerHeight})`);
+    svgRefElement.append("g").attr("class", "axis");
 
-    svgRefElement
-      .append("g")
-      .attr("class", "axis")
-      .attr("transform", `translate(${innerWidth},0)`);
+    svgRefElement.append("g").attr("class", "axis");
   }, [data, svgRef, margins]);
 
   return (
