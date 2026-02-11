@@ -43,17 +43,49 @@ const MoveableGraphContainerRect = ({
   setGraphMargins,
   innerWidth,
   innerHeight,
+  setter,
 }) => {
+  const [isActive, setIsActive] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseEnter = () => setIsActive(true);
+
+  const handleMouseLeave = () => {
+    if (!isDragging) setIsActive(false);
+  };
+
+  const handleMouseDown = () => {
+    setIsActive(true);
+    setIsDragging(true);
+
+    const handleMouseUp = () => {
+      setIsActive(false);
+      setIsDragging(false);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
+  useEffect(() => {
+    if (isActive || isDragging) setter(true);
+    else setter(false);
+  }, [isActive, isDragging]);
+
   const max = data.length - 1;
   const calcWhereUserClicked = (e) =>
     Math.round((data.length / innerWidth) * e.clientX) - 7.5;
 
   return (
     <rect
+      onMouseEnter={handleMouseEnter}
       onMouseDown={(e) => {
         moveGraph(max, 0, calcWhereUserClicked(e), setGraphMargins);
         trackDrag(setGraphMargins, max, 1);
+
+        handleMouseDown();
       }}
+      onMouseLeave={handleMouseLeave}
       style={{ cursor: "grabbing" }}
       x="0"
       width={innerWidth}
@@ -111,7 +143,7 @@ const TimeLapsChart = ({ data }) => {
     data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
   return (
-    <div className="ml-5">
+    <div className="ml-5 overflow-hidden">
       <div
         className="z-20 h-10 pointer-events-none"
         style={{
@@ -129,6 +161,7 @@ const TimeLapsChart = ({ data }) => {
             <p
               className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none text-white"
               style={{
+                opacity: displayText ? "1" : "0",
                 left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
                 transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
               }}
@@ -149,6 +182,7 @@ const TimeLapsChart = ({ data }) => {
             <p
               className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none text-white"
               style={{
+                opacity: displayText ? "1" : "0",
                 left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
                 transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
               }}
@@ -165,6 +199,7 @@ const TimeLapsChart = ({ data }) => {
           setGraphMargins={setGraphMargins}
           innerWidth={innerWidth}
           innerHeight={innerHeight}
+          setter={setDisplayText}
         />
         <MoveableGraph
           data={data}
