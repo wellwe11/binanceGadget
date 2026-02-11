@@ -145,7 +145,7 @@ const TimeLapsChart = ({ data }) => {
   return (
     <div className="ml-5 overflow-hidden">
       <div
-        className="z-20 h-10 pointer-events-none"
+        className="z-20 h-10 pointer-events-none overflow-hidden"
         style={{
           transform: `translate(0, ${margins.top + 10}px)`,
           width: innerWidth,
