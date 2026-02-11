@@ -157,12 +157,11 @@ const TimeLapsChart = ({ data }) => {
             setter={handleGraphStart}
             max={data.length}
           />
-          <Activity>
+          <Activity mode={displayText ? "visible" : "hidden"}>
             <p
-              className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none text-white"
+              className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
               style={{
-                opacity: displayText ? "1" : "0",
-                left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
+                left: `calc(${(graphMargins.start / (data.length - 1)) * 100}% - 5px)`,
                 transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
               }}
             >
@@ -178,12 +177,11 @@ const TimeLapsChart = ({ data }) => {
             max={data.length}
           />
 
-          <Activity>
+          <Activity mode={displayText ? "visible" : "hidden"}>
             <p
-              className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none text-white"
+              className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
               style={{
-                opacity: displayText ? "1" : "0",
-                left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
+                left: `calc(${(graphMargins.end / (data.length - 1)) * 100}% + 5px)`,
                 transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
               }}
             >

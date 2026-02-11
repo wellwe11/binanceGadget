@@ -27,7 +27,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .datum(data)
       .attr("class", "line")
       .attr("fill", "none")
-      .attr("stroke", "#002570")
+      .attr("stroke", "#093870")
       .attr("stroke-width", 1)
       .attr("d", line);
 
@@ -36,7 +36,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
       .datum(data)
       .attr("class", "area")
       .attr("d", area)
-      .style("fill", "#002570")
+      .style("fill", "#013270")
       .style("opacity", 0.5);
   }, [data, gRef, margins]);
 
