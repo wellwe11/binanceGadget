@@ -20,21 +20,11 @@ const MoveableGraph = ({
 }) => {
   const start = sliceStart > sliceEnd ? sliceEnd : sliceStart;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
-
-  const [values, setValues] = useState({
-    min: data.length - end - 1,
-    max: data.length - start + 1,
-  });
+  const min = data.length - end - 1;
+  const max = data.length - start + 1;
 
   // Data that will adjust the width of top-chart
-  const slicedData = data.slice(values.min, values.max);
-
-  useEffect(() => {
-    setValues({
-      min: data.length - end - 1,
-      max: data.length - start + 1,
-    });
-  }, [start, end]);
+  const slicedData = useMemo(() => data.slice(min, max), [min, max]);
 
   return (
     <Chart
@@ -138,7 +128,7 @@ const TimeLapsChart = ({ data }) => {
             className="absolute left-0 top-0 pointer-events-none whitespace-nowrap select-none"
             style={{
               left: `${(graphMargins.start / (data.length - 1)) * 100}%`,
-              transform: `translateX(${graphMargins.end > graphMargins.start ? "5" : "-110"}%)`,
+              transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
             }}
           >
             {dateFormat(firstObjectDate)}
@@ -156,7 +146,7 @@ const TimeLapsChart = ({ data }) => {
             className="absolute left-0 top-[10%] pointer-events-none whitespace-nowrap select-none"
             style={{
               left: `${(graphMargins.end / (data.length - 1)) * 100}%`,
-              transform: `translateX(${graphMargins.end > graphMargins.start ? "-110" : "5"}%)`,
+              transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
             }}
           >
             {dateFormat(lastObjectDate)}
