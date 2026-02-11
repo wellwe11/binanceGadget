@@ -66,7 +66,7 @@ const MoveableGraphContainerRect = ({
       <rect
         width={`${graphMargins.end - graphMargins.start - 1}%`}
         height={innerHeight}
-        fill="blue"
+        fill="transparent"
         style={{ cursor: "ew-resize" }}
         onMouseDown={(e) => {
           const clickedVal = calcWhereUserClicked(e);
@@ -77,7 +77,6 @@ const MoveableGraphContainerRect = ({
             trackDrag(setGraphMargins, max, 1);
           }
         }}
-        pointerEvents="auto"
         x={(graphMargins.start / (data.length - 1)) * innerWidth}
       />
     </>
@@ -194,7 +193,7 @@ const TimeLapsChart = ({ data }) => {
           innerHeight={innerHeight}
         />
 
-        {/* <MoveableGraph
+        <MoveableGraph
           data={data}
           x={x}
           y={y}
@@ -202,7 +201,7 @@ const TimeLapsChart = ({ data }) => {
           innerHeight={innerHeight}
           sliceStart={graphMargins.start}
           sliceEnd={graphMargins.end}
-        /> */}
+        />
         <Chart
           data={data}
           x={x}
