@@ -4,109 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Chart from "./components/chart";
 import Axis from "./components/axis";
 import InputRange from "./components/inputRange";
+import trackDrag from "./functions/trackDrag";
+import moveGraph from "./functions/moveGraph";
 
-/**
-     A simpler graph below the chart
-     Simply displays price-point
-     Is also dragable - end of highlighted area shows date & time-stamp
-     */
-/**
- * Zooming HeatMap also highlights the min/max time currently showed on Heatmap
- */
-
-const trackDrag = (setter) => {
-  let animationFrameId = null;
-  let accumulatedDelta = 0;
-
-  const handleMove = (moveEvent) => {
-    accumulatedDelta += moveEvent.movementX * 0.135; // Adjust for increased/decreased acceleration of mouse-speed
-    if (animationFrameId) return;
-
-    animationFrameId = requestAnimationFrame(() => {
-      const delta = accumulatedDelta;
-      accumulatedDelta = 0;
-
-      setter((prev) => {
-        let newStart = prev.start + delta;
-        let newEnd = prev.end + delta;
-
-        // To avoid if width is full
-        if (prev.start === 0 && prev.end === 89) return prev;
-
-        if (newStart < 1) {
-          newStart = 1;
-          newEnd = prev.end;
-        }
-
-        if (newEnd > 89) {
-          newEnd = 89;
-          newStart = prev.start;
-        }
-
-        if (newStart > 89) {
-          newStart = 89;
-          newEnd = prev.end;
-        }
-
-        if (newEnd < 1) {
-          newEnd = 1;
-          newStart = prev.start;
-        }
-
-        return { start: newStart, end: newEnd };
-      });
-
-      animationFrameId = null;
-    });
-  };
-
-  const handleUp = () => {
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
-    }
-
-    window.removeEventListener("mousemove", handleMove);
-    window.removeEventListener("mouseup", handleUp);
-  };
-
-  window.addEventListener("mousemove", handleMove);
-  window.addEventListener("mouseup", handleUp);
-};
-
-const moveGraph = ({ max, percentualClick, setter }) => {
-  setter((prev) => {
-    // Return if user is clicking on the graph itself (Allows for more comfortable control)
-    if (percentualClick > prev.start && percentualClick < prev.end) return prev;
-
-    // Check if values have been reversed
-    const leftValue = prev.end > prev.start ? prev.start : prev.end;
-    const rightValue = prev.end > prev.start ? prev.end : prev.start;
-
-    // To get correct values; User clicks on 50%. The prev.start and prev.end were 60 and 70, respectively.
-    // This means that the difference is 10, so if user clicks on 50%, meaning start now must be 45, and end must be 55.
-    const difference = rightValue - leftValue;
-    let newMin = percentualClick - difference / 2,
-      newMax = percentualClick + difference / 2;
-
-    // Caps values at max graph and adds removes the difference so that moveable graph keeps its side.
-    if (newMax > max) {
-      const exceededAmount = newMax - max;
-      newMax = max;
-      newMin = newMin - exceededAmount;
-    }
-
-    // Same as previous comment.
-    if (newMin < 1) {
-      const exceededAmount = newMin;
-      newMin = 1;
-      newMax = newMax - exceededAmount;
-    }
-
-    console.log(newMin, newMax);
-
-    return { start: newMin, end: newMax };
-  });
-};
+// FIX BUG ** if user moves left handle, right handle dates adjust?????
+// FIX BUG ** When draggin left or/and right rapidly, the data-length is increased?
 
 const MoveableGraph = ({
   data,
@@ -145,9 +47,34 @@ const MoveableGraph = ({
     />
   );
 };
+// This element covers the graphs, and calculates where and what the user is clicking on graph. It then calculates, and controls measures, which moves
+// the moveable graph
+const MoveableGraphContainerRect = ({
+  data,
+  setGraphMargins,
+  innerWidth,
+  innerHeight,
+}) => {
+  const max = data.length - 1;
+  const calcWhereUserClicked = (e) =>
+    Math.round((data.length / innerWidth) * e.clientX) - 7.5;
+
+  return (
+    <rect
+      onMouseDown={(e) => {
+        moveGraph(max, 0, calcWhereUserClicked(e), setGraphMargins);
+        trackDrag(setGraphMargins, max, 1);
+      }}
+      style={{ cursor: "grabbing" }}
+      x="0"
+      width={innerWidth}
+      height={innerHeight}
+      fill="transparent"
+    />
+  );
+};
 
 const TimeLapsChart = ({ data }) => {
-  const rectRef = useRef(null);
   const margins = { top: 70, right: 60, bottom: 50, left: 80 };
   const height = 200;
   const width = 800;
@@ -189,10 +116,8 @@ const TimeLapsChart = ({ data }) => {
     [data, innerHeight],
   );
 
-  // const firstObjectDate = data[Math.round(graphMargins.start)].date;
-  // const lastObjectDate = data[Math.round(graphMargins.end)].date;
-  const firstObjectDate = "";
-  const lastObjectDate = "";
+  const firstObjectDate = data[Math.round(graphMargins.start)].date;
+  const lastObjectDate = data[Math.round(graphMargins.end)].date;
 
   return (
     <div className="ml-5">
@@ -237,25 +162,12 @@ const TimeLapsChart = ({ data }) => {
         </div>
       </div>
       <Axis data={data} margins={margins} width={width} height={height}>
-        <rect
-          onMouseDown={(e) => {
-            const moveGraphArgs = {
-              percentualClick:
-                Math.round((data.length / innerWidth) * e.clientX) - 7.5, // Adjust to control chart relevant to cursor
-              max: data.length - 1,
-              setter: setGraphMargins,
-            };
-            moveGraph(moveGraphArgs);
-            trackDrag(setGraphMargins);
-          }}
-          ref={rectRef}
-          style={{ cursor: "grabbing" }}
-          x="0"
-          width={innerWidth}
-          height={innerHeight}
-          fill="transparent"
+        <MoveableGraphContainerRect
+          data={data}
+          setGraphMargins={setGraphMargins}
+          innerWidth={innerWidth}
+          innerHeight={innerHeight}
         />
-
         <MoveableGraph
           data={data}
           x={x}
