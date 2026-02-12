@@ -47,11 +47,12 @@ const MoveableGraphContainerRect = ({
   const calcWhereUserClicked = (e) =>
     Math.round((data.length / innerWidth) * e.clientX) - 7.5;
 
+  const x = (graphMargins.start / (data.length - 1)) * innerWidth;
+
   return (
     <>
       <rect
         onMouseDown={(e) => {
-          console.log("asasdasdd");
           const clickedVal = calcWhereUserClicked(e);
 
           moveGraph(max, 0, clickedVal, setGraphMargins);
@@ -79,7 +80,7 @@ const MoveableGraphContainerRect = ({
             trackDrag(setGraphMargins, max, 1);
           }
         }}
-        x={(graphMargins.start / (data.length - 1)) * innerWidth}
+        x={x}
       />
     </>
   );
@@ -145,6 +146,7 @@ const Charts = ({
   );
 };
 
+// Controlller wrapper - Left and right mouse-controllers which increases/decreases or moves the moveable chart.
 const Controllers = ({
   data,
   margins,
@@ -173,6 +175,15 @@ const Controllers = ({
   const lastObjectDate =
     data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
+  // <p> for left and right handle style.
+  const textStyle =
+    "absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white";
+
+  // Checks if text should be on the right side or left side of the handlers
+  const isHandleOnOppositeSide = graphMargins.end < graphMargins.start;
+
+  const maxRange = data.length;
+
   return (
     <div
       className="z-20 h-10 cursor-copy pointer-events-none "
@@ -186,14 +197,14 @@ const Controllers = ({
         <InputRange
           val={graphMargins.start}
           setter={handleGraphStart}
-          max={data.length}
+          max={maxRange}
         />
         <Activity mode={displayText ? "visible" : "hidden"}>
           <p
-            className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
+            className={textStyle}
             style={{
               left: `calc(${(graphMargins.start / (data.length - 1)) * 100}% - 5px)`,
-              transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
+              transform: `translateX(${isHandleOnOppositeSide ? "5" : "-110"}%)`,
             }}
           >
             {dateFormat(firstObjectDate)}
@@ -205,15 +216,15 @@ const Controllers = ({
         <InputRange
           val={graphMargins.end}
           setter={handleGraphEnd}
-          max={data.length}
+          max={maxRange}
         />
 
         <Activity mode={displayText ? "visible" : "hidden"}>
           <p
-            className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
+            className={textStyle}
             style={{
               left: `calc(${(graphMargins.end / (data.length - 1)) * 100}% + 5px)`,
-              transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
+              transform: `translateX(${isHandleOnOppositeSide ? "-110" : "5"}%)`,
             }}
           >
             {dateFormat(lastObjectDate)}
