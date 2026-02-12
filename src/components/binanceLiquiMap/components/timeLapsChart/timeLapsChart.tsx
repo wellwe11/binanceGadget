@@ -34,8 +34,7 @@ const MoveableGraph = ({
     />
   );
 };
-// This element covers the graphs, and calculates where and what the user is clicking on graph. It then calculates, and controls measures, which moves
-// the moveable graph
+// This element covers the graphs, and calculates where and what the user is clicking on graph. It updates the moveable graphs location depending on where user clicks.
 const MoveableGraphContainerRect = ({
   data,
   graphMargins,
@@ -86,6 +85,7 @@ const MoveableGraphContainerRect = ({
   );
 };
 
+// Component with axis x/y as well as the two viewed d3.js graphs.
 const Charts = ({
   data,
   margins,
@@ -145,26 +145,17 @@ const Charts = ({
   );
 };
 
-const TimeLapsChart = ({ data }) => {
-  // Charts fixed size. Will make more dynamic in future.
-  // They are passed to children all over the place, so they need to be in this component. Ideally, when component
-  // works more dynamically, they will be removed.
-  const margins = { top: 70, right: 60, bottom: 50, left: 80 };
-  const height = 200;
-  const width = 800;
-  const innerWidth = width - margins.left - margins.right;
-  const innerHeight = height - margins.top - margins.bottom;
-
+const Controllers = ({
+  data,
+  margins,
+  graphMargins,
+  setGraphMargins,
+  displayText,
+  setDisplayText,
+  innerWidth,
+}) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
-  // Shows/hides text when user hovers the component.
-  const [displayText, setDisplayText] = useState(false);
-
-  // Adjusts smaller graphs size
-  const [graphMargins, setGraphMargins] = useState({
-    start: 1,
-    end: data.length - 1,
-  });
 
   const handleGraphStart = (e) => {
     const value = +e.target.value;
@@ -183,54 +174,87 @@ const TimeLapsChart = ({ data }) => {
     data[data.length - 1 - Math.round(graphMargins.end)]?.date;
 
   return (
+    <div
+      className="z-20 h-10 cursor-copy pointer-events-none "
+      style={{
+        transform: `translate(0, ${margins.top + 10}px)`,
+        width: innerWidth,
+      }}
+      onMouseEnter={() => setDisplayText(true)}
+    >
+      <>
+        <InputRange
+          val={graphMargins.start}
+          setter={handleGraphStart}
+          max={data.length}
+        />
+        <Activity mode={displayText ? "visible" : "hidden"}>
+          <p
+            className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
+            style={{
+              left: `calc(${(graphMargins.start / (data.length - 1)) * 100}% - 5px)`,
+              transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
+            }}
+          >
+            {dateFormat(firstObjectDate)}
+          </p>
+        </Activity>
+      </>
+
+      <>
+        <InputRange
+          val={graphMargins.end}
+          setter={handleGraphEnd}
+          max={data.length}
+        />
+
+        <Activity mode={displayText ? "visible" : "hidden"}>
+          <p
+            className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
+            style={{
+              left: `calc(${(graphMargins.end / (data.length - 1)) * 100}% + 5px)`,
+              transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
+            }}
+          >
+            {dateFormat(lastObjectDate)}
+          </p>
+        </Activity>
+      </>
+    </div>
+  );
+};
+
+// Parent wrapper.
+const TimeLapsChart = ({ data }) => {
+  // Charts fixed size. Will make more dynamic in future.
+  // They are passed to children all over the place, so they need to be in this component. Ideally, when component
+  // works more dynamically, they will be removed.
+  const margins = { top: 70, right: 60, bottom: 50, left: 80 };
+  const height = 200;
+  const width = 800;
+  const innerWidth = width - margins.left - margins.right;
+  const innerHeight = height - margins.top - margins.bottom;
+
+  // Shows/hides text when user hovers the component.
+  const [displayText, setDisplayText] = useState(false);
+
+  // Adjusts smaller graphs size
+  const [graphMargins, setGraphMargins] = useState({
+    start: 1,
+    end: data.length - 1,
+  });
+
+  return (
     <div className="ml-5 overflow-hidden">
-      <div
-        className="z-20 h-10 cursor-copy pointer-events-none "
-        style={{
-          transform: `translate(0, ${margins.top + 10}px)`,
-          width: innerWidth,
-        }}
-        onMouseEnter={() => setDisplayText(true)}
-      >
-        <>
-          <InputRange
-            val={graphMargins.start}
-            setter={handleGraphStart}
-            max={data.length}
-          />
-          <Activity mode={displayText ? "visible" : "hidden"}>
-            <p
-              className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
-              style={{
-                left: `calc(${(graphMargins.start / (data.length - 1)) * 100}% - 5px)`,
-                transform: `translateX(${graphMargins.end < graphMargins.start ? "5" : "-110"}%)`,
-              }}
-            >
-              {dateFormat(firstObjectDate)}
-            </p>
-          </Activity>
-        </>
-
-        <>
-          <InputRange
-            val={graphMargins.end}
-            setter={handleGraphEnd}
-            max={data.length}
-          />
-
-          <Activity mode={displayText ? "visible" : "hidden"}>
-            <p
-              className="absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white"
-              style={{
-                left: `calc(${(graphMargins.end / (data.length - 1)) * 100}% + 5px)`,
-                transform: `translateX(${graphMargins.end < graphMargins.start ? "-110" : "5"}%)`,
-              }}
-            >
-              {dateFormat(lastObjectDate)}
-            </p>
-          </Activity>
-        </>
-      </div>
+      <Controllers
+        data={data}
+        margins={margins}
+        graphMargins={graphMargins}
+        setGraphMargins={setGraphMargins}
+        displayText={displayText}
+        setDisplayText={setDisplayText}
+        innerWidth={innerWidth}
+      />
 
       <Charts
         data={data}
