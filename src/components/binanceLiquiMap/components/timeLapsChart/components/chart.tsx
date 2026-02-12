@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Chart = ({ data, height, x, y, margins }) => {
+const Chart = ({ data, height, width, x, y }) => {
   const gRef = useRef(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const Chart = ({ data, height, x, y, margins }) => {
       .attr("d", area)
       .style("fill", "#013270")
       .style("opacity", 0.5);
-  }, [data, gRef, margins]);
+  }, [data, gRef, height, width, x, y]);
 
   return <g className="pointer-events-none" ref={gRef} />;
 };

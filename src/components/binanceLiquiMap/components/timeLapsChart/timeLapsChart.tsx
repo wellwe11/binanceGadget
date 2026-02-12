@@ -18,8 +18,8 @@ const MoveableGraph = ({
   data,
   x,
   y,
-  margins,
   height,
+  width,
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
 }) => {
@@ -29,11 +29,9 @@ const MoveableGraph = ({
   const max = data.length - start + 1;
 
   // Data that will adjust the width of top-chart
-  const slicedData = useMemo(() => data.slice(min, max), [min, max]);
+  const slicedData = useMemo(() => data.slice(min, max), [min, max, width]);
 
-  return (
-    <Chart data={slicedData} x={x} y={y} margins={margins} height={height} />
-  );
+  return <Chart data={slicedData} x={x} y={y} height={height} width={width} />;
 };
 // This element covers the graphs, and calculates where and what the user is clicking on graph. It updates the moveable graphs location depending on where user clicks.
 const MoveableGraphContainerRect = ({
@@ -89,7 +87,6 @@ const MoveableGraphContainerRect = ({
 // Component with axis x/y as well as the two viewed d3.js graphs.
 const Charts = ({
   data,
-  margins,
   graphMargins,
   setGraphMargins,
   setDisplayText,
@@ -102,7 +99,7 @@ const Charts = ({
         .scaleTime()
         .range([0, width])
         .domain(d3.extent(data, (d) => new Date(d.date))),
-    [data, width],
+    [data, width, height],
   );
 
   const y = useMemo(
@@ -111,7 +108,7 @@ const Charts = ({
         .scaleLinear()
         .range([height, 0])
         .domain([0, d3.max(data, (d) => d.value)]),
-    [data, height],
+    [data, height, width],
   );
 
   return (
@@ -128,12 +125,12 @@ const Charts = ({
         data={data}
         x={x}
         y={y}
-        margins={margins}
         height={height}
+        width={width}
         sliceStart={graphMargins.start}
         sliceEnd={graphMargins.end}
       />
-      <Chart data={data} x={x} y={y} margins={margins} height={height} />
+      <Chart data={data} x={x} y={y} height={height} width={width} />
     </Axis>
   );
 };
@@ -141,12 +138,10 @@ const Charts = ({
 // Controlller wrapper - Left and right mouse-controllers which increases/decreases or moves the moveable chart.
 const Controllers = ({
   data,
-  margins,
   graphMargins,
   setGraphMargins,
   displayText,
   setDisplayText,
-  width,
 }) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
@@ -180,8 +175,7 @@ const Controllers = ({
     <div
       className="z-20 cursor-copy pointer-events-none"
       style={{
-        transform: `translate(0, ${margins.top + 10}px)`,
-        width: width,
+        transform: `translate(0, 40px)`,
       }}
       onMouseEnter={() => setDisplayText(true)}
     >
@@ -229,11 +223,6 @@ const Controllers = ({
 
 // Parent wrapper.
 const TimeLapsChart = ({ data }) => {
-  // Charts fixed size. Will make more dynamic in future.
-  // They are passed to children all over the place, so they need to be in this component. Ideally, when component
-  // works more dynamically, they will be removed.
-  const margins = { top: 70, right: 60, bottom: 50, left: 80 };
-
   const [containerWidth, setContainerWidth] = useState(0);
   const [containersHeight, setContainersHeight] = useState(0);
   const containerRef = useRef(null);
@@ -254,6 +243,8 @@ const TimeLapsChart = ({ data }) => {
     const width = containersSize.width,
       height = containersSize.height;
 
+    console.log(width, height);
+
     if (width !== containerWidth) {
       setContainerWidth(width);
     }
@@ -264,20 +255,21 @@ const TimeLapsChart = ({ data }) => {
   }, [containerRef, data]);
 
   return (
-    <div ref={containerRef} className="overflow-hidden w-full h-full ">
+    <div
+      ref={containerRef}
+      className="overflow-hidden"
+      style={{ width: "inherit", height: "inherit" }}
+    >
       <Controllers
         data={data}
-        margins={margins}
         graphMargins={graphMargins}
         setGraphMargins={setGraphMargins}
         displayText={displayText}
         setDisplayText={setDisplayText}
-        width={containerWidth}
       />
 
       <Charts
         data={data}
-        margins={margins}
         graphMargins={graphMargins}
         setGraphMargins={setGraphMargins}
         setDisplayText={setDisplayText}
