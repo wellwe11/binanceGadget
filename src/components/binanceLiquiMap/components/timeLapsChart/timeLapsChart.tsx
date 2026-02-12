@@ -86,6 +86,65 @@ const MoveableGraphContainerRect = ({
   );
 };
 
+const Charts = ({
+  data,
+  margins,
+  width,
+  height,
+  graphMargins,
+  setGraphMargins,
+  setDisplayText,
+  innerWidth,
+  innerHeight,
+}) => {
+  const x = useMemo(
+    () =>
+      d3
+        .scaleTime()
+        .range([0, innerWidth])
+        .domain(d3.extent(data, (d) => new Date(d.date))),
+    [data, innerWidth],
+  );
+
+  const y = useMemo(
+    () =>
+      d3
+        .scaleLinear()
+        .range([innerHeight, 0])
+        .domain([0, d3.max(data, (d) => d.value)]),
+    [data, innerHeight],
+  );
+  return (
+    <Axis data={data} margins={margins} width={width} height={height}>
+      <MoveableGraphContainerRect
+        data={data}
+        graphMargins={graphMargins}
+        setGraphMargins={setGraphMargins}
+        innerWidth={innerWidth}
+        innerHeight={innerHeight}
+        setHover={setDisplayText}
+      />
+
+      <MoveableGraph
+        data={data}
+        x={x}
+        y={y}
+        margins={margins}
+        innerHeight={innerHeight}
+        sliceStart={graphMargins.start}
+        sliceEnd={graphMargins.end}
+      />
+      <Chart
+        data={data}
+        x={x}
+        y={y}
+        margins={margins}
+        innerHeight={innerHeight}
+      />
+    </Axis>
+  );
+};
+
 const TimeLapsChart = ({ data }) => {
   const margins = { top: 70, right: 60, bottom: 50, left: 80 };
   const height = 200;
@@ -109,24 +168,6 @@ const TimeLapsChart = ({ data }) => {
     const value = +e.target.value;
     setGraphMargins((prev) => ({ ...prev, end: value }));
   };
-
-  const x = useMemo(
-    () =>
-      d3
-        .scaleTime()
-        .range([0, innerWidth])
-        .domain(d3.extent(data, (d) => new Date(d.date))),
-    [data, innerWidth],
-  );
-
-  const y = useMemo(
-    () =>
-      d3
-        .scaleLinear()
-        .range([innerHeight, 0])
-        .domain([0, d3.max(data, (d) => d.value)]),
-    [data, innerHeight],
-  );
 
   const firstObjectDate =
     data[data.length - 1 - Math.round(graphMargins.start)]?.date;
@@ -183,33 +224,17 @@ const TimeLapsChart = ({ data }) => {
         </>
       </div>
 
-      <Axis data={data} margins={margins} width={width} height={height}>
-        <MoveableGraphContainerRect
-          data={data}
-          graphMargins={graphMargins}
-          setGraphMargins={setGraphMargins}
-          innerWidth={innerWidth}
-          innerHeight={innerHeight}
-          setHover={setDisplayText}
-        />
-
-        <MoveableGraph
-          data={data}
-          x={x}
-          y={y}
-          margins={margins}
-          innerHeight={innerHeight}
-          sliceStart={graphMargins.start}
-          sliceEnd={graphMargins.end}
-        />
-        <Chart
-          data={data}
-          x={x}
-          y={y}
-          margins={margins}
-          innerHeight={innerHeight}
-        />
-      </Axis>
+      <Charts
+        data={data}
+        margins={margins}
+        width={width}
+        height={height}
+        graphMargins={graphMargins}
+        setGraphMargins={setGraphMargins}
+        setDisplayText={setDisplayText}
+        innerWidth={innerWidth}
+        innerHeight={innerHeight}
+      />
     </div>
   );
 };
