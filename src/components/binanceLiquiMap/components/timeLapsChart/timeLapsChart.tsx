@@ -146,14 +146,21 @@ const Charts = ({
 };
 
 const TimeLapsChart = ({ data }) => {
+  // Charts fixed size. Will make more dynamic in future.
+  // They are passed to children all over the place, so they need to be in this component. Ideally, when component
+  // works more dynamically, they will be removed.
   const margins = { top: 70, right: 60, bottom: 50, left: 80 };
   const height = 200;
   const width = 800;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
+
+  // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
+  // Shows/hides text when user hovers the component.
   const [displayText, setDisplayText] = useState(false);
 
+  // Adjusts smaller graphs size
   const [graphMargins, setGraphMargins] = useState({
     start: 1,
     end: data.length - 1,
@@ -169,6 +176,7 @@ const TimeLapsChart = ({ data }) => {
     setGraphMargins((prev) => ({ ...prev, end: value }));
   };
 
+  // This is the actual text that is shown on left and right handler (The ones that control the size of the movable graph).
   const firstObjectDate =
     data[data.length - 1 - Math.round(graphMargins.start)]?.date;
   const lastObjectDate =
