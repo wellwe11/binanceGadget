@@ -103,12 +103,13 @@ const BinanceGadget = () => {
         </div>
 
         <div
-          className="h-full flex flex-col flex-1"
+          className="h-30 w-50 flex flex-col flex-1"
           style={{ border: "1px solid black" }}
         >
-          <HeatMap />
           <TimeLapsChart data={data} />
         </div>
+
+        <HeatMap />
         <LiquidationMap />
       </div>
     </div>

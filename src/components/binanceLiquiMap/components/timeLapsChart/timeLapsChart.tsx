@@ -1,5 +1,12 @@
 import * as d3 from "d3";
-import { Activity, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Activity,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";
@@ -12,7 +19,7 @@ const MoveableGraph = ({
   x,
   y,
   margins,
-  innerHeight,
+  height,
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
 }) => {
@@ -25,13 +32,7 @@ const MoveableGraph = ({
   const slicedData = useMemo(() => data.slice(min, max), [min, max]);
 
   return (
-    <Chart
-      data={slicedData}
-      x={x}
-      y={y}
-      margins={margins}
-      innerHeight={innerHeight}
-    />
+    <Chart data={slicedData} x={x} y={y} margins={margins} height={height} />
   );
 };
 // This element covers the graphs, and calculates where and what the user is clicking on graph. It updates the moveable graphs location depending on where user clicks.
@@ -39,15 +40,14 @@ const MoveableGraphContainerRect = ({
   data,
   graphMargins,
   setGraphMargins,
-  innerWidth,
-  innerHeight,
   setHover,
+  width,
 }) => {
   const max = data.length - 1;
   const calcWhereUserClicked = (e) =>
-    Math.round((data.length / innerWidth) * e.clientX) - 7.5;
+    Math.round((data.length / width) * e.clientX) - 7.5;
 
-  const x = (graphMargins.start / (data.length - 1)) * innerWidth;
+  const x = (graphMargins.start / (data.length - 1)) * width;
 
   return (
     <>
@@ -59,16 +59,17 @@ const MoveableGraphContainerRect = ({
         }}
         style={{ cursor: "pointer" }}
         x="0"
-        width={innerWidth}
-        height={innerHeight}
+        width="100%"
+        height="100%"
         fill="transparent"
       />
 
       <rect
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        width={`${graphMargins.end - graphMargins.start - 1}%`}
-        height={innerHeight}
+        width={`${(width / (data.length - 1)) * (graphMargins.end - graphMargins.start)}px`}
+        height="100%"
+        x={x}
         fill="transparent"
         style={{ cursor: "ew-resize" }}
         onMouseDown={(e) => {
@@ -80,7 +81,6 @@ const MoveableGraphContainerRect = ({
             trackDrag(setGraphMargins, max, 1);
           }
         }}
-        x={x}
       />
     </>
   );
@@ -90,40 +90,38 @@ const MoveableGraphContainerRect = ({
 const Charts = ({
   data,
   margins,
-  width,
-  height,
   graphMargins,
   setGraphMargins,
   setDisplayText,
-  innerWidth,
-  innerHeight,
+  height,
+  width,
 }) => {
   const x = useMemo(
     () =>
       d3
         .scaleTime()
-        .range([0, innerWidth])
+        .range([0, width])
         .domain(d3.extent(data, (d) => new Date(d.date))),
-    [data, innerWidth],
+    [data, width],
   );
 
   const y = useMemo(
     () =>
       d3
         .scaleLinear()
-        .range([innerHeight, 0])
+        .range([height, 0])
         .domain([0, d3.max(data, (d) => d.value)]),
-    [data, innerHeight],
+    [data, height],
   );
+
   return (
-    <Axis data={data} margins={margins} width={width} height={height}>
+    <Axis width={width}>
       <MoveableGraphContainerRect
         data={data}
         graphMargins={graphMargins}
         setGraphMargins={setGraphMargins}
-        innerWidth={innerWidth}
-        innerHeight={innerHeight}
         setHover={setDisplayText}
+        width={width}
       />
 
       <MoveableGraph
@@ -131,17 +129,11 @@ const Charts = ({
         x={x}
         y={y}
         margins={margins}
-        innerHeight={innerHeight}
+        height={height}
         sliceStart={graphMargins.start}
         sliceEnd={graphMargins.end}
       />
-      <Chart
-        data={data}
-        x={x}
-        y={y}
-        margins={margins}
-        innerHeight={innerHeight}
-      />
+      <Chart data={data} x={x} y={y} margins={margins} height={height} />
     </Axis>
   );
 };
@@ -154,7 +146,7 @@ const Controllers = ({
   setGraphMargins,
   displayText,
   setDisplayText,
-  innerWidth,
+  width,
 }) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
@@ -186,10 +178,10 @@ const Controllers = ({
 
   return (
     <div
-      className="z-20 h-10 cursor-copy pointer-events-none "
+      className="z-20 cursor-copy pointer-events-none"
       style={{
         transform: `translate(0, ${margins.top + 10}px)`,
-        width: innerWidth,
+        width: width,
       }}
       onMouseEnter={() => setDisplayText(true)}
     >
@@ -212,7 +204,7 @@ const Controllers = ({
         </Activity>
       </>
 
-      <>
+      <div>
         <InputRange
           val={graphMargins.end}
           setter={handleGraphEnd}
@@ -230,7 +222,7 @@ const Controllers = ({
             {dateFormat(lastObjectDate)}
           </p>
         </Activity>
-      </>
+      </div>
     </div>
   );
 };
@@ -241,10 +233,10 @@ const TimeLapsChart = ({ data }) => {
   // They are passed to children all over the place, so they need to be in this component. Ideally, when component
   // works more dynamically, they will be removed.
   const margins = { top: 70, right: 60, bottom: 50, left: 80 };
-  const height = 200;
-  const width = 800;
-  const innerWidth = width - margins.left - margins.right;
-  const innerHeight = height - margins.top - margins.bottom;
+
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [containersHeight, setContainersHeight] = useState(0);
+  const containerRef = useRef(null);
 
   // Shows/hides text when user hovers the component.
   const [displayText, setDisplayText] = useState(false);
@@ -255,8 +247,24 @@ const TimeLapsChart = ({ data }) => {
     end: data.length - 1,
   });
 
+  useLayoutEffect(() => {
+    if (!containerRef.current) return;
+
+    const containersSize = containerRef.current.getBoundingClientRect();
+    const width = containersSize.width,
+      height = containersSize.height;
+
+    if (width !== containerWidth) {
+      setContainerWidth(width);
+    }
+
+    if (height !== containersHeight) {
+      setContainersHeight(height);
+    }
+  }, [containerRef, data]);
+
   return (
-    <div className="ml-5 overflow-hidden">
+    <div ref={containerRef} className="overflow-hidden w-full h-full ">
       <Controllers
         data={data}
         margins={margins}
@@ -264,19 +272,17 @@ const TimeLapsChart = ({ data }) => {
         setGraphMargins={setGraphMargins}
         displayText={displayText}
         setDisplayText={setDisplayText}
-        innerWidth={innerWidth}
+        width={containerWidth}
       />
 
       <Charts
         data={data}
         margins={margins}
-        width={width}
-        height={height}
         graphMargins={graphMargins}
         setGraphMargins={setGraphMargins}
         setDisplayText={setDisplayText}
-        innerWidth={innerWidth}
-        innerHeight={innerHeight}
+        height={containersHeight}
+        width={containerWidth}
       />
     </div>
   );

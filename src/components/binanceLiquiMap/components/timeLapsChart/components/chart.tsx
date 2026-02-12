@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Chart = ({ data, innerHeight, x, y, margins }) => {
+const Chart = ({ data, height, x, y, margins }) => {
   const gRef = useRef(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Chart = ({ data, innerHeight, x, y, margins }) => {
     const area = d3
       .area()
       .x((d) => x(new Date(d.date)))
-      .y0(innerHeight)
+      .y0(height)
       .y1((d) => y(d.value));
 
     // Line
