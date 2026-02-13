@@ -37,6 +37,19 @@ interface MainProps {
   data: Data[];
 }
 
+export type MoveGraphInterface = (
+  max: number,
+  min: number,
+  percentualClick: number,
+  setter: SetGraphMargins,
+) => void;
+
+export type TrackDragInterface = (
+  setter: SetGraphMargins,
+  max: number,
+  min: number,
+) => void;
+
 export interface InputRangeInterface {
   val: number;
   setter: (e: InputChangeEvent) => void;

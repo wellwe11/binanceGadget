@@ -1,8 +1,10 @@
-const trackDrag = (setter, max, min) => {
-  let animationFrameId = null;
+import { TrackDragInterface } from "../timeLapsChart";
+
+const trackDrag: TrackDragInterface = (setter, max, min) => {
+  let animationFrameId = null as number | null;
   let accumulatedDelta = 0;
 
-  const handleMove = (moveEvent) => {
+  const handleMove = (moveEvent: MouseEvent) => {
     // Mouse-acceleration - current setting follows MY mouse fine.
     accumulatedDelta += moveEvent.movementX * 0.135; // Adjust for increased/decreased acceleration of mouse-speed
     if (animationFrameId) return;

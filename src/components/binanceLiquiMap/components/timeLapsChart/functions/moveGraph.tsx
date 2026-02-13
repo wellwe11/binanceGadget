@@ -1,4 +1,6 @@
-const moveGraph = (max, min, percentualClick, setter) => {
+import { MoveGraphInterface } from "../timeLapsChart";
+
+const moveGraph: MoveGraphInterface = (max, min, percentualClick, setter) => {
   setter((prev) => {
     // Return if user is clicking on the graph itself (Allows for more comfortable control)
     if (percentualClick > prev.start && percentualClick < prev.end) return prev;
