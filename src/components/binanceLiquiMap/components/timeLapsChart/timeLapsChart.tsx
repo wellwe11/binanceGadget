@@ -237,7 +237,7 @@ const Controllers = ({
     <div
       className="z-20 cursor-copy pointer-events-none"
       style={{
-        transform: `translate(0, 40px)`,
+        transform: `translate(0, 30px)`,
       }}
       onMouseEnter={() => setDisplayText(true)}
     >
