@@ -39,12 +39,6 @@ interface MainProps {
   data: Data[];
 }
 
-export interface InputRangeInterface {
-  val: number;
-  setter: (e: InputChangeEvent) => void;
-  max: number;
-}
-
 export interface ChartInterface {
   data: Data[];
   height: number;
