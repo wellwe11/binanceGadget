@@ -1,6 +1,12 @@
 import { useRef } from "react";
 
-const Axis = ({ children, width }) => {
+const Axis = ({
+  children,
+  width,
+}: {
+  children: React.ReactNode;
+  width: number;
+}) => {
   return (
     <svg
       className="block w-full h-full"
