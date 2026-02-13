@@ -1,7 +1,16 @@
 import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
-import { ChartInterface, Data } from "../timeLapsChart";
+
+import { Data } from "../timeLapsChart";
+
+interface ChartInterface {
+  data: Data[];
+  height: number;
+  width: number;
+  x: d3.scaleTime<number, number>;
+  y: d3.scaleLinear<number, number>;
+}
 
 const Chart = ({ data, height, width, x, y }: ChartInterface) => {
   const gRef = useRef(null);

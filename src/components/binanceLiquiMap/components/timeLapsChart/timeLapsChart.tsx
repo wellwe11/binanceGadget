@@ -39,14 +39,6 @@ interface MainProps {
   data: Data[];
 }
 
-export interface ChartInterface {
-  data: Data[];
-  height: number;
-  width: number;
-  x: d3.scaleTime<number, number>;
-  y: d3.scaleLinear<number, number>;
-}
-
 const MoveableGraph = ({
   data,
   x,
