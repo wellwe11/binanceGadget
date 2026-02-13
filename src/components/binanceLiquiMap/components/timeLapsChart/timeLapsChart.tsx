@@ -1,5 +1,6 @@
 import React, {
   Activity,
+  useCallback,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -87,6 +88,7 @@ const MoveableGraphContainerRect = ({
   setHover: SetBoolean;
 }) => {
   const max = data.length - 1;
+  const containerRectRef = useRef(null);
 
   const start = graphMargins.start,
     end = graphMargins.end;
@@ -95,8 +97,17 @@ const MoveableGraphContainerRect = ({
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
 
-  const calcWhereUserClicked = (e: SVGRectClickEvent) =>
-    Math.round((data.length / width) * e.clientX) - 7.5;
+  const calcWhereUserClicked = useCallback(
+    (e: SVGRectClickEvent) => {
+      const rect = containerRectRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - rect.left;
+
+      console.log(relativeX);
+
+      return Math.round((data.length / width) * relativeX);
+    },
+    [data.length, width, lowestVal, highestVal, max, setGraphMargins],
+  );
 
   // User clicks somewhere on the fixed sized graph, and it moved the smaller, moveable rect (which is where the moveable graph also goes)
   const handleClickGraph = (e: SVGRectClickEvent) => {
@@ -118,6 +129,7 @@ const MoveableGraphContainerRect = ({
   return (
     <>
       <rect
+        ref={containerRectRef}
         onClick={handleClickGraph}
         style={{ cursor: "pointer" }}
         x="0"
