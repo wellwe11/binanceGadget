@@ -104,8 +104,6 @@ const MoveableGraphContainerRect = ({
       const rect = containerRectRef.current.getBoundingClientRect();
       const relativeX = e.clientX - rect.left;
 
-      console.log(relativeX);
-
       return Math.round((data.length / width) * relativeX);
     },
     [data.length, width, lowestVal, highestVal, max, setGraphMargins],

@@ -5,6 +5,8 @@ import LiquidationMap from "./components/LiquidationMap";
 import Nav from "./components/nav/nav";
 import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
 import generateHeatmapData from "./generateData";
+import getMinMaxFromArr from "./functions/getMinMaxFromArr";
+import sortDataIntoBuckets from "./functions/sortDataIntoBuckets";
 
 const BinanceGadget = () => {
   const placeholderCurrencies = useMemo(
@@ -86,6 +88,10 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
+  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+
+  const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
+
   return (
     <div className="flex flex-col pt-5 pl-1 w-240 h-170">
       <div className="bg-gray-950">
@@ -110,7 +116,7 @@ const BinanceGadget = () => {
         </div>
 
         <HeatMap />
-        <LiquidationMap />
+        <LiquidationMap data={binnedData} min={min} max={max} />
       </div>
     </div>
   );

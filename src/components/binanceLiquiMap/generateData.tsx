@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 90) => {
+const generateHeatmapData = (names: string[], days = 400) => {
   const data = [];
   const today = new Date();
 
@@ -32,6 +32,8 @@ const generateHeatmapData = (names: string[], days = 90) => {
         date: date,
         value: Math.floor(Math.random() * 500) + priceClarity,
         openInterest: Math.floor(Math.random() * 100000) + 50000,
+        type: Math.random() > 0.5 ? "long" : "short",
+        volume: Math.floor(Math.random() * 500) + priceClarity,
       });
     });
   }
