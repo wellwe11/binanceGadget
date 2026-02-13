@@ -1,6 +1,6 @@
 import { SetGraphMargins } from "../timeLapsChart";
 
-export type MoveGraphInterface = (
+type MoveGraphInterface = (
   max: number,
   min: number,
   percentualClick: number,

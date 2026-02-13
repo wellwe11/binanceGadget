@@ -1,6 +1,6 @@
 import { SetGraphMargins } from "../timeLapsChart";
 
-export type TrackDragInterface = (
+type TrackDragInterface = (
   setter: SetGraphMargins,
   max: number,
   min: number,

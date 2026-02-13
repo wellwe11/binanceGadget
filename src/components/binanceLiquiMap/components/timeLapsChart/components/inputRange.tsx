@@ -1,6 +1,6 @@
 import { InputChangeEvent } from "../timeLapsChart";
 
-export interface InputRangeInterface {
+interface InputRangeInterface {
   val: number;
   setter: (e: InputChangeEvent) => void;
   max: number;
