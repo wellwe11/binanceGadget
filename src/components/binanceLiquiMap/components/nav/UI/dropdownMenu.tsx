@@ -12,6 +12,8 @@ const FallMenu = ({
 }: {
   showMenu: boolean;
   children: string[];
+  setShow: (active: boolean) => void;
+  handler: (n: number) => void;
 }) => {
   const cleanInputHandler = (s: string) => s.replace("_", " ");
 
@@ -57,7 +59,7 @@ const MainInput = ({
   const [inputVal, setInputVal] = useState(children);
 
   // Update inputs value
-  const handleInput = (e) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVal = e.target.value;
 
     setInputVal(newVal);
