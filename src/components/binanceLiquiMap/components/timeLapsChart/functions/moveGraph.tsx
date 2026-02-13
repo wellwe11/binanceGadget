@@ -1,4 +1,11 @@
-import { MoveGraphInterface } from "../timeLapsChart";
+import { SetGraphMargins } from "../timeLapsChart";
+
+export type MoveGraphInterface = (
+  max: number,
+  min: number,
+  percentualClick: number,
+  setter: SetGraphMargins,
+) => void;
 
 const moveGraph: MoveGraphInterface = (max, min, percentualClick, setter) => {
   setter((prev) => {
