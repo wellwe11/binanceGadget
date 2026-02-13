@@ -88,7 +88,7 @@ const MoveableGraphContainerRect = ({
   setHover: SetBoolean;
 }) => {
   const max = data.length - 1;
-  const containerRectRef = useRef(null);
+  const containerRectRef = useRef<SVGRectElement | null>(null);
 
   const start = graphMargins.start,
     end = graphMargins.end;
@@ -99,6 +99,8 @@ const MoveableGraphContainerRect = ({
 
   const calcWhereUserClicked = useCallback(
     (e: SVGRectClickEvent) => {
+      if (!containerRectRef.current) return 0;
+
       const rect = containerRectRef.current.getBoundingClientRect();
       const relativeX = e.clientX - rect.left;
 
