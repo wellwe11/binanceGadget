@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
+import { ChartInterface, Data } from "../timeLapsChart";
 
-const Chart = ({ data, height, width, x, y }) => {
+const Chart = ({ data, height, width, x, y }: ChartInterface) => {
   const gRef = useRef(null);
 
   useEffect(() => {
@@ -13,14 +14,14 @@ const Chart = ({ data, height, width, x, y }) => {
 
     const line = d3
       .line()
-      .x((d) => x(new Date(d.date)))
-      .y((d) => y(d.value));
+      .x((d: Data) => x(new Date(d.date)))
+      .y((d: Data) => y(d.value));
 
     const area = d3
       .area()
-      .x((d) => x(new Date(d.date)))
+      .x((d: Data) => x(new Date(d.date)))
       .y0(height)
-      .y1((d) => y(d.value));
+      .y1((d: Data) => y(d.value));
 
     // Line
     g.append("path")

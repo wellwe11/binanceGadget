@@ -14,7 +14,7 @@ import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 
-type Data = {
+export type Data = {
   coin: string;
   date: Date;
   value: number;
@@ -41,6 +41,14 @@ export interface InputRangeInterface {
   val: number;
   setter: (e: InputChangeEvent) => void;
   max: number;
+}
+
+export interface ChartInterface {
+  data: Data[];
+  height: number;
+  width: number;
+  x: d3.scaleTime<number, number>;
+  y: d3.scaleLinear<number, number>;
 }
 
 const MoveableGraph = ({
