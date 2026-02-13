@@ -1,4 +1,10 @@
-import { InputRangeInterface } from "../timeLapsChart";
+import { InputChangeEvent } from "../timeLapsChart";
+
+export interface InputRangeInterface {
+  val: number;
+  setter: (e: InputChangeEvent) => void;
+  max: number;
+}
 
 const InputRange = ({ val, setter, max = 100 }: InputRangeInterface) => {
   return (

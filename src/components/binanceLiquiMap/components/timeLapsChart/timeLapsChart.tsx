@@ -27,28 +27,17 @@ type GraphMargins = {
 };
 
 type SVGRectClickEvent = React.MouseEvent<SVGRectElement>;
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
-type SetGraphMargins = React.Dispatch<React.SetStateAction<GraphMargins>>;
+export type SetGraphMargins = React.Dispatch<
+  React.SetStateAction<GraphMargins>
+>;
 
 type SetBoolean = React.Dispatch<React.SetStateAction<boolean>>;
 
 interface MainProps {
   data: Data[];
 }
-
-export type MoveGraphInterface = (
-  max: number,
-  min: number,
-  percentualClick: number,
-  setter: SetGraphMargins,
-) => void;
-
-export type TrackDragInterface = (
-  setter: SetGraphMargins,
-  max: number,
-  min: number,
-) => void;
 
 export interface InputRangeInterface {
   val: number;
