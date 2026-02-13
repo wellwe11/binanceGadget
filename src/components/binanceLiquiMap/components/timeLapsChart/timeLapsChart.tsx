@@ -14,6 +14,7 @@ import Axis from "./components/axis";
 import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
+import useSetHighSetLow from "./hooks/useSetHighSetLow";
 
 export type Data = {
   coin: string;
@@ -40,28 +41,6 @@ interface MainProps {
   data: Data[];
 }
 
-const useSetCorrectVal = (low, high) => {
-  const [lowestVal, setLowestVal] = useState(low);
-  const [highestVal, setHighestVal] = useState(high);
-  const [isReversed, setIsReversed] = useState(false);
-
-  useEffect(() => {
-    const highestVal = low > high ? low : high;
-    const lowestVal = low < high ? low : high;
-
-    if (low > high) {
-      setIsReversed(true);
-    } else {
-      setIsReversed(false);
-    }
-
-    setLowestVal(lowestVal);
-    setHighestVal(highestVal);
-  }, [low, high]);
-
-  return [lowestVal, highestVal, isReversed];
-};
-
 const MoveableGraph = ({
   data,
   x,
@@ -79,7 +58,7 @@ const MoveableGraph = ({
   sliceStart: number;
   sliceEnd: number;
 }) => {
-  const [lowestVal, highestVal] = useSetCorrectVal(sliceStart, sliceEnd);
+  const [lowestVal, highestVal] = useSetHighSetLow(sliceStart, sliceEnd);
 
   const min = data.length - highestVal - 1;
   const max = data.length - lowestVal + 1;
@@ -112,7 +91,7 @@ const MoveableGraphContainerRect = ({
 
   const start = graphMargins.start,
     end = graphMargins.end;
-  const [lowestVal, highestVal] = useSetCorrectVal(start, end);
+  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
 
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
@@ -247,7 +226,7 @@ const Controllers = ({
   const start = graphMargins.start;
   const end = graphMargins.end;
 
-  const [lowestVal, highestVal] = useSetCorrectVal(start, end);
+  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
 
   // This is the actual text that is shown on left and right handler (The ones that control the size of the movable graph).
   const firstObjectDate = data[data.length - 1 - Math.round(lowestVal)]?.date;
