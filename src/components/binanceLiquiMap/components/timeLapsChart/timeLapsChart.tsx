@@ -87,8 +87,6 @@ const MoveableGraphContainerRect = ({
   setHover: SetBoolean;
 }) => {
   const max = data.length - 1;
-  const calcWhereUserClicked = (e: SVGRectClickEvent) =>
-    Math.round((data.length / width) * e.clientX) - 7.5;
 
   const start = graphMargins.start,
     end = graphMargins.end;
@@ -96,6 +94,9 @@ const MoveableGraphContainerRect = ({
 
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
+
+  const calcWhereUserClicked = (e: SVGRectClickEvent) =>
+    Math.round((data.length / width) * e.clientX) - 7.5;
 
   // User clicks somewhere on the fixed sized graph, and it moved the smaller, moveable rect (which is where the moveable graph also goes)
   const handleClickGraph = (e: SVGRectClickEvent) => {
@@ -237,8 +238,6 @@ const Controllers = ({
   // <p> for left and right handle style.
   const textStyle =
     "absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white";
-
-  // Checks if text should be on the right side or left side of the handlers
 
   const maxRange = data.length;
 
