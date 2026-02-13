@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {
+import React, {
   Activity,
   useEffect,
   useLayoutEffect,
@@ -14,6 +14,32 @@ import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 
+// Will change to fit future data
+type Data = {
+  coin: string;
+  date: Date;
+  value: number;
+  openInterest: number;
+};
+
+type GraphMargins = {
+  start: number;
+  end: number;
+};
+
+// TimeLapsChart
+interface MainProps {
+  data: Data[];
+}
+
+interface Margins {
+  data: Data[];
+  height: number;
+  width: number;
+  graphMargins: GraphMargins;
+  setGraphMargins: React.Dispatch<React.SetStateAction<GraphMargins>>;
+}
+
 const MoveableGraph = ({
   data,
   x,
@@ -22,6 +48,14 @@ const MoveableGraph = ({
   width,
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
+}: {
+  data: Data[];
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  sliceStart: number;
+  sliceEnd: number;
 }) => {
   const start = sliceStart > sliceEnd ? sliceEnd : sliceStart;
   const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
@@ -29,7 +63,10 @@ const MoveableGraph = ({
   const max = data.length - start + 1;
 
   // Data that will adjust the width of top-chart
-  const slicedData = useMemo(() => data.slice(min, max), [min, max, width]);
+  const slicedData = useMemo(
+    () => data.slice(min, max),
+    [min, max, width, height],
+  );
 
   return <Chart data={slicedData} x={x} y={y} height={height} width={width} />;
 };
@@ -38,23 +75,38 @@ const MoveableGraphContainerRect = ({
   data,
   graphMargins,
   setGraphMargins,
-  setHover,
   width,
-}) => {
+  setHover,
+}: Margins & { setHover: (active: boolean) => void }) => {
   const max = data.length - 1;
   const calcWhereUserClicked = (e) =>
     Math.round((data.length / width) * e.clientX) - 7.5;
 
+  const handleHoverTrue = () => setHover(true);
+  const handleHoverFalse = () => setHover(false);
+
+  // User clicks somewhere on the fixed sized graph, and it moved the smaller, moveable rect (which is where the moveable graph also goes)
+  const handleClickGraph = (e) => {
+    const clickedVal = calcWhereUserClicked(e);
+    moveGraph(max, 0, clickedVal, setGraphMargins);
+  };
+
+  // User drags the current moveable graph, which also moves the smaller moveable rect as well
+  const handleMoveGraph = (e) => {
+    const clickedVal = calcWhereUserClicked(e);
+    if (clickedVal > graphMargins.start && clickedVal < graphMargins.end) {
+      trackDrag(setGraphMargins, max, 1);
+    }
+  };
+
   const x = (graphMargins.start / (data.length - 1)) * width;
+  const adaptedWidth =
+    (width / (data.length - 1)) * (graphMargins.end - graphMargins.start);
 
   return (
     <>
       <rect
-        onMouseDown={(e) => {
-          const clickedVal = calcWhereUserClicked(e);
-
-          moveGraph(max, 0, clickedVal, setGraphMargins);
-        }}
+        onClick={handleClickGraph}
         style={{ cursor: "pointer" }}
         x="0"
         width="100%"
@@ -63,22 +115,14 @@ const MoveableGraphContainerRect = ({
       />
 
       <rect
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        width={`${(width / (data.length - 1)) * (graphMargins.end - graphMargins.start)}px`}
+        onMouseEnter={handleHoverTrue}
+        onMouseLeave={handleHoverFalse}
+        onMouseDown={handleMoveGraph}
+        width={`${adaptedWidth}px`}
         height="100%"
         x={x}
         fill="transparent"
         style={{ cursor: "ew-resize" }}
-        onMouseDown={(e) => {
-          const clickedVal = calcWhereUserClicked(e);
-          if (
-            clickedVal > graphMargins.start &&
-            clickedVal < graphMargins.end
-          ) {
-            trackDrag(setGraphMargins, max, 1);
-          }
-        }}
       />
     </>
   );
@@ -92,7 +136,7 @@ const Charts = ({
   setDisplayText,
   height,
   width,
-}) => {
+}: Margins & { setDisplayText: (active: boolean) => void }) => {
   const x = useMemo(
     () =>
       d3
@@ -142,6 +186,12 @@ const Controllers = ({
   setGraphMargins,
   displayText,
   setDisplayText,
+}: {
+  data: Data[];
+  graphMargins: GraphMargins;
+  setGraphMargins: React.Dispatch<React.SetStateAction<GraphMargins>>;
+  displayText: boolean;
+  setDisplayText: (active: boolean) => void;
 }) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
@@ -222,16 +272,16 @@ const Controllers = ({
 };
 
 // Parent wrapper.
-const TimeLapsChart = ({ data }) => {
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [containersHeight, setContainersHeight] = useState(0);
-  const containerRef = useRef(null);
+const TimeLapsChart = ({ data }: MainProps) => {
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [containersHeight, setContainersHeight] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Shows/hides text when user hovers the component.
-  const [displayText, setDisplayText] = useState(false);
+  const [displayText, setDisplayText] = useState<boolean>(false);
 
   // Adjusts smaller graphs size
-  const [graphMargins, setGraphMargins] = useState({
+  const [graphMargins, setGraphMargins] = useState<GraphMargins>({
     start: 1,
     end: data.length - 1,
   });
@@ -240,10 +290,8 @@ const TimeLapsChart = ({ data }) => {
     if (!containerRef.current) return;
 
     const containersSize = containerRef.current.getBoundingClientRect();
-    const width = containersSize.width,
-      height = containersSize.height;
-
-    console.log(width, height);
+    const width = containersSize.width as number,
+      height = containersSize.height as number;
 
     if (width !== containerWidth) {
       setContainerWidth(width);
