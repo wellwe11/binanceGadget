@@ -236,7 +236,6 @@ const Controllers = ({
     "absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white";
 
   // Checks if text should be on the right side or left side of the handlers
-  const isHandleOnOppositeSide = graphMargins.end < graphMargins.start;
 
   const maxRange = data.length;
 
@@ -260,7 +259,7 @@ const Controllers = ({
             className={textStyle}
             style={{
               left: `calc(${(lowestVal / (data.length - 1)) * 100}% - 5px)`,
-              transform: `translateX(${isHandleOnOppositeSide ? "10" : "-110"}%)`,
+              transform: `translateX(-110%)`,
             }}
           >
             {dateFormat(firstObjectDate)}
@@ -281,7 +280,7 @@ const Controllers = ({
             className={textStyle}
             style={{
               left: `calc(${(highestVal / (data.length - 1)) * 100}% + 5px)`,
-              transform: `translateX(${isHandleOnOppositeSide ? "-110" : "5"}%)`,
+              transform: `translateX(10%)`,
             }}
           >
             {dateFormat(lastObjectDate)}
