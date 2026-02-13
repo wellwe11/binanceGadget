@@ -1,4 +1,10 @@
-import { TrackDragInterface } from "../timeLapsChart";
+import { SetGraphMargins } from "../timeLapsChart";
+
+export type TrackDragInterface = (
+  setter: SetGraphMargins,
+  max: number,
+  min: number,
+) => void;
 
 const trackDrag: TrackDragInterface = (setter, max, min) => {
   let animationFrameId = null as number | null;
