@@ -37,6 +37,12 @@ interface MainProps {
   data: Data[];
 }
 
+export interface InputRangeInterface {
+  val: number;
+  setter: (e: InputChangeEvent) => void;
+  max: number;
+}
+
 const MoveableGraph = ({
   data,
   x,
@@ -199,9 +205,9 @@ const Controllers = ({
 }: {
   data: Data[];
   graphMargins: GraphMargins;
-  setGraphMargins: React.Dispatch<React.SetStateAction<GraphMargins>>;
+  setGraphMargins: SetGraphMargins;
   displayText: boolean;
-  setDisplayText: (active: boolean) => void;
+  setDisplayText: SetBoolean;
 }) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");

@@ -1,4 +1,6 @@
-const InputRange = ({ val, setter, max = 100 }) => {
+import { InputRangeInterface } from "../timeLapsChart";
+
+const InputRange = ({ val, setter, max = 100 }: InputRangeInterface) => {
   return (
     <input
       className="absolute top-0 right-0 w-full
