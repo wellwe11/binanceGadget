@@ -1,5 +1,6 @@
 import React, {
   Activity,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -39,6 +40,28 @@ interface MainProps {
   data: Data[];
 }
 
+const useSetCorrectVal = (low, high) => {
+  const [lowestVal, setLowestVal] = useState(low);
+  const [highestVal, setHighestVal] = useState(high);
+  const [isReversed, setIsReversed] = useState(false);
+
+  useEffect(() => {
+    const highestVal = low > high ? low : high;
+    const lowestVal = low < high ? low : high;
+
+    if (low > high) {
+      setIsReversed(true);
+    } else {
+      setIsReversed(false);
+    }
+
+    setLowestVal(lowestVal);
+    setHighestVal(highestVal);
+  }, [low, high]);
+
+  return [lowestVal, highestVal, isReversed];
+};
+
 const MoveableGraph = ({
   data,
   x,
@@ -49,17 +72,17 @@ const MoveableGraph = ({
   sliceEnd, // graphWidthEnd
 }: {
   data: Data[];
-  x: number;
-  y: number;
+  x: d3.scaleTime<number, number>;
+  y: d3.scaleLinear<number, number>;
   height: number;
   width: number;
   sliceStart: number;
   sliceEnd: number;
 }) => {
-  const start = sliceStart > sliceEnd ? sliceEnd : sliceStart;
-  const end = sliceEnd > sliceStart ? sliceEnd : sliceStart;
-  const min = data.length - end - 1;
-  const max = data.length - start + 1;
+  const [lowestVal, highestVal] = useSetCorrectVal(sliceStart, sliceEnd);
+
+  const min = data.length - highestVal - 1;
+  const max = data.length - lowestVal + 1;
 
   // Data that will adjust the width of top-chart
   const slicedData = useMemo(
@@ -87,6 +110,10 @@ const MoveableGraphContainerRect = ({
   const calcWhereUserClicked = (e: SVGRectClickEvent) =>
     Math.round((data.length / width) * e.clientX) - 7.5;
 
+  const start = graphMargins.start,
+    end = graphMargins.end;
+  const [lowestVal, highestVal] = useSetCorrectVal(start, end);
+
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
 
@@ -99,14 +126,13 @@ const MoveableGraphContainerRect = ({
   // User drags the current moveable graph, which also moves the smaller moveable rect as well
   const handleMoveGraph = (e: SVGRectClickEvent) => {
     const clickedVal = calcWhereUserClicked(e);
-    if (clickedVal > graphMargins.start && clickedVal < graphMargins.end) {
+    if (clickedVal > lowestVal && clickedVal < highestVal) {
       trackDrag(setGraphMargins, max, 1);
     }
   };
 
-  const x = (graphMargins.start / (data.length - 1)) * width;
-  const adaptedWidth =
-    (width / (data.length - 1)) * (graphMargins.end - graphMargins.start);
+  const x = (lowestVal / (data.length - 1)) * width;
+  const adaptedWidth = (width / (data.length - 1)) * (highestVal - lowestVal);
 
   return (
     <>
@@ -218,11 +244,14 @@ const Controllers = ({
     setGraphMargins((prev) => ({ ...prev, end: value }));
   };
 
+  const start = graphMargins.start;
+  const end = graphMargins.end;
+
+  const [lowestVal, highestVal] = useSetCorrectVal(start, end);
+
   // This is the actual text that is shown on left and right handler (The ones that control the size of the movable graph).
-  const firstObjectDate =
-    data[data.length - 1 - Math.round(graphMargins.start)]?.date;
-  const lastObjectDate =
-    data[data.length - 1 - Math.round(graphMargins.end)]?.date;
+  const firstObjectDate = data[data.length - 1 - Math.round(lowestVal)]?.date;
+  const lastObjectDate = data[data.length - 1 - Math.round(highestVal)]?.date;
 
   // <p> for left and right handle style.
   const textStyle =
@@ -246,13 +275,14 @@ const Controllers = ({
           val={graphMargins.start}
           setter={handleGraphStart}
           max={maxRange}
+          min={0}
         />
         <Activity mode={displayText ? "visible" : "hidden"}>
           <p
             className={textStyle}
             style={{
-              left: `calc(${(graphMargins.start / (data.length - 1)) * 100}% - 5px)`,
-              transform: `translateX(${isHandleOnOppositeSide ? "5" : "-110"}%)`,
+              left: `calc(${(lowestVal / (data.length - 1)) * 100}% - 5px)`,
+              transform: `translateX(${isHandleOnOppositeSide ? "10" : "-110"}%)`,
             }}
           >
             {dateFormat(firstObjectDate)}
@@ -264,14 +294,15 @@ const Controllers = ({
         <InputRange
           val={graphMargins.end}
           setter={handleGraphEnd}
-          max={maxRange}
+          max={maxRange - 1}
+          min={1}
         />
 
         <Activity mode={displayText ? "visible" : "hidden"}>
           <p
             className={textStyle}
             style={{
-              left: `calc(${(graphMargins.end / (data.length - 1)) * 100}% + 5px)`,
+              left: `calc(${(highestVal ? start : end / (data.length - 1)) * 100}% + 5px)`,
               transform: `translateX(${isHandleOnOppositeSide ? "-110" : "5"}%)`,
             }}
           >

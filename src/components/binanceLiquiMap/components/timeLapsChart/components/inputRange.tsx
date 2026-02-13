@@ -4,9 +4,15 @@ interface InputRangeInterface {
   val: number;
   setter: (e: InputChangeEvent) => void;
   max: number;
+  min: number;
 }
 
-const InputRange = ({ val, setter, max = 100 }: InputRangeInterface) => {
+const InputRange = ({
+  val,
+  setter,
+  max = 100,
+  min = 0,
+}: InputRangeInterface) => {
   return (
     <input
       className="absolute top-0 right-0 w-full
@@ -41,8 +47,8 @@ const InputRange = ({ val, setter, max = 100 }: InputRangeInterface) => {
           hover:[&::-moz-range-thumb]:bg-[#4b4b4b]
           "
       type="range"
-      min="1"
-      max={max - 1}
+      min={min}
+      max={max}
       value={val}
       onChange={setter}
     />
