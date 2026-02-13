@@ -14,7 +14,6 @@ import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 
-// Will change to fit future data
 type Data = {
   coin: string;
   date: Date;
@@ -27,17 +26,15 @@ type GraphMargins = {
   end: number;
 };
 
-// TimeLapsChart
+type SVGRectClickEvent = React.MouseEvent<SVGRectElement>;
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+type SetGraphMargins = React.Dispatch<React.SetStateAction<GraphMargins>>;
+
+type SetBoolean = React.Dispatch<React.SetStateAction<boolean>>;
+
 interface MainProps {
   data: Data[];
-}
-
-interface Margins {
-  data: Data[];
-  height: number;
-  width: number;
-  graphMargins: GraphMargins;
-  setGraphMargins: React.Dispatch<React.SetStateAction<GraphMargins>>;
 }
 
 const MoveableGraph = ({
@@ -77,22 +74,28 @@ const MoveableGraphContainerRect = ({
   setGraphMargins,
   width,
   setHover,
-}: Margins & { setHover: (active: boolean) => void }) => {
+}: {
+  data: Data[];
+  graphMargins: GraphMargins;
+  setGraphMargins: SetGraphMargins;
+  width: number;
+  setHover: SetBoolean;
+}) => {
   const max = data.length - 1;
-  const calcWhereUserClicked = (e) =>
+  const calcWhereUserClicked = (e: SVGRectClickEvent) =>
     Math.round((data.length / width) * e.clientX) - 7.5;
 
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
 
   // User clicks somewhere on the fixed sized graph, and it moved the smaller, moveable rect (which is where the moveable graph also goes)
-  const handleClickGraph = (e) => {
+  const handleClickGraph = (e: SVGRectClickEvent) => {
     const clickedVal = calcWhereUserClicked(e);
     moveGraph(max, 0, clickedVal, setGraphMargins);
   };
 
   // User drags the current moveable graph, which also moves the smaller moveable rect as well
-  const handleMoveGraph = (e) => {
+  const handleMoveGraph = (e: SVGRectClickEvent) => {
     const clickedVal = calcWhereUserClicked(e);
     if (clickedVal > graphMargins.start && clickedVal < graphMargins.end) {
       trackDrag(setGraphMargins, max, 1);
@@ -136,13 +139,20 @@ const Charts = ({
   setDisplayText,
   height,
   width,
-}: Margins & { setDisplayText: (active: boolean) => void }) => {
+}: {
+  data: Data[];
+  graphMargins: GraphMargins;
+  setGraphMargins: SetGraphMargins;
+  setDisplayText: SetBoolean;
+  height: number;
+  width: number;
+}) => {
   const x = useMemo(
     () =>
       d3
         .scaleTime()
         .range([0, width])
-        .domain(d3.extent(data, (d) => new Date(d.date))),
+        .domain(d3.extent(data, (d: Data) => new Date(d.date))),
     [data, width, height],
   );
 
@@ -151,7 +161,7 @@ const Charts = ({
       d3
         .scaleLinear()
         .range([height, 0])
-        .domain([0, d3.max(data, (d) => d.value)]),
+        .domain([0, d3.max(data, (d: Data) => d.value)]),
     [data, height, width],
   );
 
@@ -196,12 +206,12 @@ const Controllers = ({
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
 
-  const handleGraphStart = (e) => {
+  const handleGraphStart = (e: InputChangeEvent) => {
     const value = +e.target.value;
     setGraphMargins((prev) => ({ ...prev, start: value }));
   };
 
-  const handleGraphEnd = (e) => {
+  const handleGraphEnd = (e: InputChangeEvent) => {
     const value = +e.target.value;
     setGraphMargins((prev) => ({ ...prev, end: value }));
   };
