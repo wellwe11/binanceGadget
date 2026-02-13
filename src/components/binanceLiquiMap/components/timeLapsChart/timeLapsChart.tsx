@@ -1,12 +1,12 @@
-import * as d3 from "d3";
 import React, {
   Activity,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+
+import * as d3 from "d3";
 
 import Chart from "./components/chart";
 import Axis from "./components/axis";

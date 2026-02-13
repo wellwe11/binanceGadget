@@ -12,6 +12,13 @@ import DragInput from "./UI/dragInput";
 // Each wrapper handles it's own logic
 // Each wrapper has abstract and un-direct components
 
+type setShowArrayStringType = React.Dispatch<
+  React.SetStateAction<liquidationType[]>
+>;
+type liquidationType = "Liquidation Leverage" | "Supercharts";
+
+type setPairType = React.Dispatch<React.SetStateAction<string[]>>;
+
 const SnapShotButton = () => {
   const [rotation, setRotation] = useState(0);
 
@@ -91,7 +98,7 @@ const PairSymbolClickMenu = ({
 }: {
   symbol: string[];
   pair: string[];
-  setter: (e: string[]) => void;
+  setter: setPairType;
 }) => {
   const Pair_SymbolButtons = ["Pair", "Symbol"];
   const pairOrSymbolArr = [pair, symbol];
@@ -107,7 +114,13 @@ const PairSymbolClickMenu = ({
   );
 };
 
-const GraphTypeControllerMenu = ({ arr, setter }) => {
+const GraphTypeControllerMenu = ({
+  arr,
+  setter,
+}: {
+  arr: liquidationType[];
+  setter: setShowArrayStringType;
+}) => {
   const buttons = [
     {
       name: "Liquidation Leverage",
@@ -117,9 +130,9 @@ const GraphTypeControllerMenu = ({ arr, setter }) => {
       name: "Supercharts",
       color: "green",
     },
-  ];
+  ] as const;
 
-  const handleEvent = (n) => {
+  const handleEvent = (n: liquidationType) => {
     if (!arr.includes(n)) {
       return setter((prev) => [...prev, n]);
     }
@@ -131,35 +144,43 @@ const GraphTypeControllerMenu = ({ arr, setter }) => {
 
   return (
     <div className="flex gap-5">
-      {buttons.map(({ name, color }, index) => (
-        <button
-          key={index + " " + name}
-          onClick={() => handleEvent(name)}
-          className="flex gap-1 justify-center items-center cursor-pointer"
-        >
-          <div className="relative w-2.5 h-2.5">
-            <div
-              className="absolute h-2.5 w-2.5 z-1"
-              style={{
-                backgroundColor: "gray",
-                transition: "background-color 0.15s ease",
-              }}
-            />
-            <div
-              className="absolute h-2.5 w-2.5 z-2"
-              style={{
-                backgroundColor: color,
-                transform: `scale(${arr.includes(name) ? "1" : "0"})`,
-                transformOrigin: "center",
-                transition: `transform ${arr.includes(name) ? "0.3" : "0.2"}s ease`,
-              }}
-            />
-          </div>
-          <p className="text-white" style={{ fontSize: "12px" }}>
-            {name}
-          </p>
-        </button>
-      ))}
+      {buttons.map(
+        (
+          { name, color }: { name: liquidationType; color: string },
+          index: number,
+        ) => {
+          const isActive = arr.includes(name);
+          return (
+            <button
+              key={index + " " + name}
+              onClick={() => handleEvent(name)}
+              className="flex gap-1 justify-center items-center cursor-pointer"
+            >
+              <div className="relative w-2.5 h-2.5">
+                <div
+                  className="absolute h-2.5 w-2.5 z-1"
+                  style={{
+                    backgroundColor: "gray",
+                    transition: "background-color 0.15s ease",
+                  }}
+                />
+                <div
+                  className="absolute h-2.5 w-2.5 z-2"
+                  style={{
+                    backgroundColor: color,
+                    transform: `scale(${isActive ? "1" : "0"})`,
+                    transformOrigin: "center",
+                    transition: `transform ${isActive ? "0.3" : "0.2"}s ease`,
+                  }}
+                />
+              </div>
+              <p className="text-white" style={{ fontSize: "12px" }}>
+                {name}
+              </p>
+            </button>
+          );
+        },
+      )}
     </div>
   );
 };
@@ -173,8 +194,8 @@ const Nav = ({
   pair: string[];
   time: Object[];
 }) => {
-  const [pairOrSymbol, setPairOrSymbol] = useState(pair);
-  const [showCharts, setShowCharts] = useState([
+  const [pairOrSymbol, setPairOrSymbol] = useState<string[]>(pair);
+  const [showCharts, setShowCharts] = useState<liquidationType[]>([
     "Liquidation Leverage",
     "Supercharts",
   ]);
