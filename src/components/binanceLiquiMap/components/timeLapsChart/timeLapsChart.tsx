@@ -1,6 +1,5 @@
 import React, {
   Activity,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -281,7 +280,7 @@ const Controllers = ({
           <p
             className={textStyle}
             style={{
-              left: `calc(${(highestVal ? start : end / (data.length - 1)) * 100}% + 5px)`,
+              left: `calc(${(highestVal / (data.length - 1)) * 100}% + 5px)`,
               transform: `translateX(${isHandleOnOppositeSide ? "-110" : "5"}%)`,
             }}
           >
