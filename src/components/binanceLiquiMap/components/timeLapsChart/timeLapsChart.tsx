@@ -76,12 +76,14 @@ const MoveableGraphContainerRect = ({
   graphMargins,
   setGraphMargins,
   width,
+  height,
   setHover,
 }: {
   data: Data[];
   graphMargins: GraphMargins;
   setGraphMargins: SetGraphMargins;
   width: number;
+  height: number;
   setHover: SetBoolean;
 }) => {
   const max = data.length - 1;
@@ -119,7 +121,7 @@ const MoveableGraphContainerRect = ({
         style={{ cursor: "pointer" }}
         x="0"
         width="100%"
-        height="100%"
+        height={height}
         fill="transparent"
       />
 
@@ -128,7 +130,7 @@ const MoveableGraphContainerRect = ({
         onMouseLeave={handleHoverFalse}
         onMouseDown={handleMoveGraph}
         width={`${adaptedWidth}px`}
-        height="100%"
+        height={height}
         x={x}
         fill="transparent"
         style={{ cursor: "ew-resize" }}
@@ -179,6 +181,7 @@ const Charts = ({
         setGraphMargins={setGraphMargins}
         setHover={setDisplayText}
         width={width}
+        height={height}
       />
 
       <MoveableGraph
