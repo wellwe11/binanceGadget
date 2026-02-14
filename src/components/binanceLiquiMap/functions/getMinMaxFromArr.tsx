@@ -5,9 +5,10 @@ const getMinMaxFromArr = (arr) => {
   let max = arr[0];
 
   for (let i = 0; i < arr.length; i++) {
-    const value = arr[i];
-    if (value < min) min = value;
-    if (value > max) max = value;
+    const obj = arr[i];
+
+    if (obj.value < min.value) min = obj;
+    if (obj.value > max.value) max = obj;
   }
 
   return { min, max };
