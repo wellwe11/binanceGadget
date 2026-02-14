@@ -32,7 +32,7 @@ const LiquidationMap = ({ data, min, max }) => {
   );
 
   // step 2, create a common x and y axis
-  const x = d3.scaleLinear().range([0, width]).domain([min.value, max.value]);
+  const x = d3.scaleLinear().range([0, width]).domain([0, max.value]);
   const y = d3
     .scaleBand()
     .range([height, 0])
@@ -65,21 +65,32 @@ const LiquidationMap = ({ data, min, max }) => {
       .attr("transform", `translate(40, ${10})`)
       .call(yAxis);
 
+    console.log(filteredShorts, filteredLongs);
+
     svg
-      .selectAll(".bar")
-      .data(data)
+      .selectAll(".barShort")
+      .data(filteredShorts)
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("y", (d) => y(d.price) + 10)
+      .attr("y", (d) => y(d.price))
       .attr("height", y.bandwidth())
       .attr("x", 40)
-      .attr("width", (d) => x(d.shortVol))
+      .attr("width", (d) => x(d.vol))
+      .style("fill", "skyblue");
+
+    svg
+      .selectAll(".barLong")
+      .data(filteredLongs)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("y", (d) => y(d.price))
+      .attr("height", y.bandwidth())
+      .attr("x", 40)
+      .attr("width", (d) => x(d.vol))
       .style("fill", "skyblue");
   }, [data, svgRef, x, y, xAxis, yAxis]);
-
-  // OR
-  // Find Current Price? (location for where the graph will be divided into 2)
 
   return (
     <svg
