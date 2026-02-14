@@ -26,6 +26,8 @@ const LiquidationMap = ({ data, min, max }) => {
     (d) => d.price > currentPrice,
   );
 
+  console.log(filteredShorts);
+
   // Display only contracts that are located below current price
   const filteredLongs = Object.values(filteredData.long).filter(
     (d) => d.price < currentPrice,
@@ -65,8 +67,6 @@ const LiquidationMap = ({ data, min, max }) => {
       .attr("transform", `translate(40, ${10})`)
       .call(yAxis);
 
-    console.log(filteredShorts, filteredLongs);
-
     svg
       .selectAll(".barShort")
       .data(filteredShorts)
@@ -90,6 +90,34 @@ const LiquidationMap = ({ data, min, max }) => {
       .attr("x", 40)
       .attr("width", (d) => x(d.vol))
       .style("fill", "skyblue");
+
+    const line = d3
+      .line()
+      .x((d) => x(d.price))
+      .y((d) => y(d.vol));
+
+    const area = d3
+      .area()
+      .y((d) => y(d.price) + y.bandwidth() / 2)
+      .x0(40)
+      .x1((d) => x(d.vol) + 40)
+      .curve(d3.curveBasis);
+
+    svg
+      .append("path")
+      .datum(filteredShorts)
+      .attr("class", "areaShort")
+      .attr("d", area)
+      .style("fill", "#85bb65")
+      .style("opacity", 0.5);
+
+    svg
+      .append("path")
+      .datum(filteredLongs)
+      .attr("class", "areaLong")
+      .attr("d", area)
+      .style("fill", "#85bb65")
+      .style("opacity", 0.5);
   }, [data, svgRef, x, y, xAxis, yAxis]);
 
   return (
