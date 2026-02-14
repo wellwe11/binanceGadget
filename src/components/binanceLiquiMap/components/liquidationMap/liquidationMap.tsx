@@ -16,27 +16,20 @@ const LiquidationMap = ({ data, min, max }) => {
     width = 400 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
 
-  // Data is not based on any time-frame. Y-axis is simply liquidations clubbed together at same price-point.
-  // y is the amount of data on each point.
-
-  // const x = useMemo(() => d3.scaleLinear().range([height, 0]).domain(0, d3.max(data, (d) => d.data)))
-
-  // The bars:
-  // x-axis: Each bar is simply a solo-bucket that contains a collection of liquidations at price poitns
-  // y axis: Price poitns for each bar
-
-  // The curve:
-  // goes from current price (lets say 50000), and increases in size for each buckets amount of liquidation
-  // x-axis is the amount
-  // y-axis is each bucket
-
-  // The data in this object, will be sorted by parent.
-  // It will contain buckets
-  // y-axis defines creates bars, for each bucket. Increases height depending on amount
-  // -- Hovering bar will give a toolbox that shows bars amount, as well as accumulated liqudation amount + current bar
-
   // Step 1, filter type
+  // This data will be used inside of the 2 graps.
   const filteredData = filterByType(data);
+  const currentPrice = 1000; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+
+  // Display only contracts that are located above current price
+  const filteredShorts = Object.values(filteredData.short).filter(
+    (d) => d.price > currentPrice,
+  );
+
+  // Display only contracts that are located below current price
+  const filteredLongs = Object.values(filteredData.long).filter(
+    (d) => d.price < currentPrice,
+  );
 
   // step 2, create a common x and y axis
   const x = d3.scaleLinear().range([0, width]).domain([min.value, max.value]);
@@ -71,6 +64,18 @@ const LiquidationMap = ({ data, min, max }) => {
       .attr("class", "y_axis")
       .attr("transform", `translate(40, ${10})`)
       .call(yAxis);
+
+    svg
+      .selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("y", (d) => y(d.price) + 10)
+      .attr("height", y.bandwidth())
+      .attr("x", 40)
+      .attr("width", (d) => x(d.shortVol))
+      .style("fill", "skyblue");
   }, [data, svgRef, x, y, xAxis, yAxis]);
 
   // OR
