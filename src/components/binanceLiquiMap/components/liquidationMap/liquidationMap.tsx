@@ -38,8 +38,6 @@ const LiquidationMap = ({ data, min, max }) => {
   // Step 1, filter type
   const filteredData = filterByType(data);
 
-  console.log(min, max);
-
   // step 2, create a common x and y axis
   const x = d3.scaleLinear().range([0, width]).domain([min.value, max.value]);
   const y = d3
@@ -48,7 +46,9 @@ const LiquidationMap = ({ data, min, max }) => {
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
-  const xAxis = d3.axisBottom(x);
+  const xAxis = d3
+    .axisBottom(x)
+    .tickValues(x.domain().filter((d, i) => i % 1 === 0));
 
   const yAxis = d3
     .axisLeft(y)
