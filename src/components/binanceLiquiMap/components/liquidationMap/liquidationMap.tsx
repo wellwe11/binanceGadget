@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { useMemo } from "react";
+import filterByType from "./functions";
 
 // Create two graphs, one for short holders and one for long holdest
 // Cumulative short/long liquidation leverage data
@@ -32,6 +33,9 @@ const LiquidationMap = ({ data, min, max }) => {
   // It will contain buckets
   // y-axis defines creates bars, for each bucket. Increases height depending on amount
   // -- Hovering bar will give a toolbox that shows bars amount, as well as accumulated liqudation amount + current bar
+
+  // Step 1, filter type
+  const filteredData = filterByType(data);
 
   return (
     <svg

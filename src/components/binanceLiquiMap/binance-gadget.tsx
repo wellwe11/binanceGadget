@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import Gradient from "./components/gradient";
 import HeatMap from "./components/Heatmap";
-import LiquidationMap from "./components/LiquidationMap";
+import LiquidationMap from "./components/liquidationMap/liquidationMap";
 import Nav from "./components/nav/nav";
 import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
 import generateHeatmapData from "./generateData";
