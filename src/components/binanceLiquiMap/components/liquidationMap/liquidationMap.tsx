@@ -2,12 +2,83 @@ import * as d3 from "d3";
 import { useEffect, useMemo, useRef } from "react";
 import filterByType from "./functions/filterByType";
 
-const LiquidationMap = ({ data }) => {
+const Axis = ({ children, height, width, margin, x, xBars, y }) => {
   const svgRef = useRef(null);
   const xAxisRef = useRef(null);
   const xBarAxisRef = useRef(null);
   const yAxisRef = useRef(null);
 
+  const xAxis = d3
+    .axisBottom(x)
+    .tickValues(x.domain().filter((d, i) => i % 1 === 0));
+
+  const xBarAxis = d3.axisBottom(xBars).tickValues(xBars.domain());
+
+  const yAxis = d3
+    .axisLeft(y)
+    .tickValues(y.domain().filter((d, i) => i % 5 === 0));
+
+  useEffect(() => {
+    if (
+      !svgRef.current ||
+      !xAxisRef.current ||
+      !xBarAxisRef.current ||
+      !yAxisRef.current
+    )
+      return;
+
+    const xAxisEl = d3.select(xAxisRef.current);
+    const xBarAxisEl = d3.select(xBarAxisRef.current);
+    const yAxisEl = d3.select(yAxisRef.current);
+
+    xAxisEl.call(xAxis);
+    xBarAxisEl.call(xBarAxis);
+    yAxisEl.call(yAxis);
+  }, [svgRef, xAxisRef, xBarAxisRef, yAxisRef]);
+  return (
+    <svg
+      ref={svgRef}
+      className="bg-amber-100"
+      style={{
+        width: `${width + margin.left + margin.right}`,
+        height: `${height + margin.top + margin.bottom}`,
+      }}
+    >
+      <g ref={yAxisRef} transform="translate(40, 0)" />
+      <g ref={xAxisRef} transform={`translate(40, ${height})`} />
+      <g ref={xBarAxisRef} transform={`translate(40, ${height})`} />
+      {children}
+    </svg>
+  );
+};
+
+const BarChart = ({ data, x, y }) => {
+  const gRef = useRef(null);
+
+  useEffect(() => {
+    if (!gRef.current) return;
+
+    const g = d3.select(gRef.current);
+
+    g.selectAll("*").remove();
+
+    g.selectAll(".bar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("y", (d) => y(d.price))
+      .attr("height", y.bandwidth())
+      .attr("x", 40)
+      .attr("width", (d) => x(d.vol))
+      .style("fill", "skyblue");
+  }, [gRef, data, x, y]);
+
+  return <g ref={gRef} />;
+};
+
+const LiquidationMap = ({ data }) => {
+  const gRef = useRef(null);
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 400 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
@@ -60,7 +131,6 @@ const LiquidationMap = ({ data }) => {
     (e) => e.vol,
   );
 
-  // step 2, create a common x and y axis
   const x = d3.scaleLinear().range([0, width]).domain([0, maxVol]);
 
   const xBars = d3
@@ -74,59 +144,9 @@ const LiquidationMap = ({ data }) => {
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
-  const xAxis = d3
-    .axisBottom(x)
-    .tickValues(x.domain().filter((d, i) => i % 1 === 0));
-
-  const xBarAxis = d3.axisBottom(xBars).tickValues(xBars.domain());
-
-  const yAxis = d3
-    .axisLeft(y)
-    .tickValues(y.domain().filter((d, i) => i % 5 === 0));
-
   useEffect(() => {
-    if (
-      !svgRef.current ||
-      !yAxisRef.current ||
-      !xAxisRef.current ||
-      !xBarAxisRef.current
-    )
-      return;
-
-    const svg = d3.select(svgRef.current),
-      xAxisEl = d3.select(xAxisRef.current),
-      xBarAxisEl = d3.select(xBarAxisRef.current),
-      yAxisEl = d3.select(yAxisRef.current);
-
-    svg.selectAll("rect.bar, path.areaShort, path.areaLong").remove();
-
-    xAxisEl.call(xAxis);
-    xBarAxisEl.call(xBarAxis);
-    yAxisEl.call(yAxis);
-
-    svg
-      .selectAll(".barShort")
-      .data(accumulatedShorts)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("y", (d) => y(d.price))
-      .attr("height", y.bandwidth())
-      .attr("x", 40)
-      .attr("width", (d) => xBars(d.vol))
-      .style("fill", "skyblue");
-
-    svg
-      .selectAll(".barLong")
-      .data(accumulatedLongs)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("y", (d) => y(d.price))
-      .attr("height", y.bandwidth())
-      .attr("x", 40)
-      .attr("width", (d) => xBars(d.vol))
-      .style("fill", "skyblue");
+    if (!gRef.current || !data) return;
+    const g = d3.select(gRef.current);
 
     const line = d3
       .line()
@@ -140,36 +160,35 @@ const LiquidationMap = ({ data }) => {
       .x1((d) => x(d.accumulatedVol) + 40)
       .curve(d3.curveBasis);
 
-    svg
-      .append("path")
+    g.append("path")
       .datum(accumulatedShorts)
       .attr("class", "areaShort")
       .attr("d", area)
       .style("fill", "#85bb65")
       .style("opacity", 0.5);
 
-    svg
-      .append("path")
+    g.append("path")
       .datum(accumulatedLongs)
       .attr("class", "areaLong")
       .attr("d", area)
       .style("fill", "#85bb65")
       .style("opacity", 0.5);
-  }, [data, svgRef, x, y, xAxis, yAxis, xAxisRef, yAxisRef, xBarAxisRef]);
+  }, [data, x, y]);
 
   return (
-    <svg
-      ref={svgRef}
-      className="bg-amber-100"
-      style={{
-        width: `${width + margin.left + margin.right}`,
-        height: `${height + margin.top + margin.bottom}`,
-      }}
+    <Axis
+      height={height}
+      width={width}
+      margin={margin}
+      // vv Will remove these below in future vv
+      x={x}
+      y={y}
+      xBars={xBars}
     >
-      <g ref={yAxisRef} transform="translate(40, 0)" />
-      <g ref={xAxisRef} transform={`translate(40, ${height})`} />
-      <g ref={xBarAxisRef} transform={`translate(40, ${height})`} />
-    </svg>
+      <BarChart data={accumulatedLongs} x={xBars} y={y} />
+      <BarChart data={accumulatedShorts} x={xBars} y={y} />
+      <g ref={gRef}></g>
+    </Axis>
   );
 };
 
