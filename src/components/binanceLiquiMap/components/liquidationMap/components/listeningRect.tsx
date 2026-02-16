@@ -11,15 +11,21 @@ const ListeningRect = ({ data, xBars, x, y }) => {
   const rectRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
-
-  const tooltip = d3.select("body").append("div").attr("class", "tooltip");
+  const tooltipRef = useRef(null);
 
   useEffect(() => {
-    if (!rectRef.current || !lineRef.current || !circleRef.current) return;
+    if (
+      !rectRef.current ||
+      !lineRef.current ||
+      !circleRef.current ||
+      !tooltipRef.current
+    )
+      return;
 
     const listeningRect = d3.select(rectRef.current);
     const tooltipLineY = d3.select(lineRef.current);
     const circle = d3.select(circleRef.current);
+    const tooltip = d3.select(tooltipRef.current);
 
     listeningRect.on("mousemove", (event) => {
       const [_, yCoord] = d3.pointer(event, event.currentTarget);
@@ -36,6 +42,11 @@ const ListeningRect = ({ data, xBars, x, y }) => {
       circle.attr("cx", xPos).attr("cy", yPos);
       circle.transition().duration(50).attr("r", 5);
       tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
+      tooltip
+        .style("width", "80")
+        .style("height", "30")
+        .attr("x", xPos)
+        .attr("y", yPos);
     });
   }, []);
 
@@ -65,6 +76,10 @@ const ListeningRect = ({ data, xBars, x, y }) => {
         pointerEvents="auto"
         cursor="pointer"
       />
+
+      <foreignObject ref={tooltipRef}>
+        <div className="bg-white">some text</div>
+      </foreignObject>
     </g>
   );
 };
