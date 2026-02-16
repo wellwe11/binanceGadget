@@ -55,60 +55,46 @@ const Axis = ({ children, height, width, margin, x, xBars, y }) => {
 const BarChart = ({ data, x, y }) => {
   const gRef = useRef(null);
 
-  useEffect(() => {
-    if (!gRef.current) return;
-
-    const g = d3.select(gRef.current);
-
-    g.selectAll("*").remove();
-
-    g.selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("y", (d) => y(d.price))
-      .attr("height", y.bandwidth())
-      .attr("x", 40)
-      .attr("width", (d) => x(d.vol))
-      .style("fill", "skyblue");
-  }, [gRef, data, x, y]);
-
-  return <g ref={gRef} />;
+  return (
+    <g ref={gRef} transform="translate(40, 0)">
+      {data.map((d, i) => (
+        <rect
+          key={i}
+          className="bar"
+          y={y(d.price)}
+          height={y.bandwidth()}
+          x="0"
+          width={x(d.vol)}
+          fill="skyblue"
+        />
+      ))}
+    </g>
+  );
 };
 
 const AreaChart = ({ data, x, y }) => {
   const gRef = useRef(null);
-  useEffect(() => {
-    if (!gRef.current) return;
+  const pathRef = useRef(null);
+  const line = d3
+    .line()
+    .x((d) => x(d.price))
+    .y((d) => y(d.vol));
 
-    const g = d3.select(gRef.current);
+  const area = d3
+    .area()
+    .y((d) => y(d.price) + y.bandwidth() / 2)
+    .x0(40)
+    .x1((d) => x(d.accumulatedVol) + 40)
+    .curve(d3.curveBasis);
 
-    const line = d3
-      .line()
-      .x((d) => x(d.price))
-      .y((d) => y(d.vol));
-
-    const area = d3
-      .area()
-      .y((d) => y(d.price) + y.bandwidth() / 2)
-      .x0(40)
-      .x1((d) => x(d.accumulatedVol) + 40)
-      .curve(d3.curveBasis);
-
-    g.append("path")
-      .datum(data)
-      .attr("class", "areaShort")
-      .attr("d", area)
-      .style("fill", "#85bb65")
-      .style("opacity", 0.5);
-  }, [gRef]);
-
-  return <g ref={gRef} />;
+  return (
+    <g ref={gRef}>
+      <path ref={pathRef} d={area(data)} fill="#85bb65" opacity="0.5" />
+    </g>
+  );
 };
 
 const LiquidationMap = ({ data }) => {
-  const gRef = useRef(null);
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 400 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
@@ -179,16 +165,15 @@ const LiquidationMap = ({ data }) => {
       height={height}
       width={width}
       margin={margin}
-      // vv Will remove these below in future vv
       x={x}
       y={y}
       xBars={xBars}
     >
-      <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <BarChart data={accumulatedShorts} x={xBars} y={y} />
       <AreaChart data={accumulatedShorts} x={x} y={y} />
+
+      <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <AreaChart data={accumulatedLongs} x={x} y={y} />
-      <g ref={gRef}></g>
     </Axis>
   );
 };
