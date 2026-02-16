@@ -24,7 +24,7 @@ const BarChart = ({ data, x, y, max }) => {
           style={{
             transformOrigin: "left",
 
-            animation: `grow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
+            animation: `grow 0.3s cubic-bezier(0.34, 1.3, 0.34, 1) forwards`,
             animationDelay: `${i * 0.005}s`,
 
             transform: "scaleX(0)",

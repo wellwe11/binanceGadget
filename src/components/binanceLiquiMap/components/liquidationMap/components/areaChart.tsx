@@ -26,7 +26,7 @@ const AreaChart = ({ data, x, y, color = "green" }) => {
         strokeDasharray={"100%"}
         strokeDashoffset={"100%"}
         style={{
-          animation: "draw 3.5s forwards ease-out",
+          animation: "draw 4.5s forwards cubic-bezier(0.34, 1.3, 0.34, 1)",
         }}
       />
       <style>

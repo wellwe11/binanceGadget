@@ -110,7 +110,7 @@ const BinanceGadget = () => {
 
         <div>
           <HeatMap />
-          <LiquidationMap data={binnedData} />
+          <LiquidationMap data={binnedData} valMax={max} />
         </div>
       </div>
 
