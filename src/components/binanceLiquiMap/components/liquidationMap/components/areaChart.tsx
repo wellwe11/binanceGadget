@@ -3,12 +3,11 @@ import { useRef } from "react";
 import * as d3 from "d3";
 
 const AreaChart = ({ data, x, y }) => {
-  const gRef = useRef(null);
-  const pathRef = useRef(null);
   const line = d3
     .line()
-    .x((d) => x(d.price))
-    .y((d) => y(d.vol));
+    .y((d) => y(d.price) + y.bandwidth() / 2)
+    .x((d) => x(d.accumulatedVol) + 40)
+    .curve(d3.curveBasis);
 
   const area = d3
     .area()
@@ -18,8 +17,9 @@ const AreaChart = ({ data, x, y }) => {
     .curve(d3.curveBasis);
 
   return (
-    <g ref={gRef}>
-      <path ref={pathRef} d={area(data)} fill="#85bb65" opacity="0.5" />
+    <g>
+      <path d={area(data)} fill="#85bb65" opacity="0.2" />
+      <path d={line(data)} fill="none" stroke="#85bb65" strokeWidth="1" />
     </g>
   );
 };
