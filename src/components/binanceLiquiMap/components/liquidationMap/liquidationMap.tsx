@@ -2,35 +2,27 @@ import * as d3 from "d3";
 import { useEffect, useMemo, useRef } from "react";
 import filterByType from "./functions/filterByType";
 
-// Create two graphs, one for short holders and one for long holdest
-// Cumulative short/long liquidation leverage data
-
-// liquidation leverage vs cumulative liqudation leverage
-
-// data has to have what type of contract it is (long/short)
-// At what price that contract is
-
 const LiquidationMap = ({ data }) => {
   const svgRef = useRef(null);
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 400 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
 
-  // Step 1, filter type
-  // This data will be used inside of the 2 graps.
+  // Filter data by type (i.e. long, short)
   const filteredData = filterByType(data);
   const currentPrice = 2100; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
-  // Display only contracts that are located above current price
+  // Filter away shorts that are below currentPrice
   const filteredShorts = Object.values(filteredData.short).filter(
     (d) => d.price > currentPrice,
   );
 
-  // Display only contracts that are located below current price
+  // Filter longs that are above current price
   const filteredLongs = Object.values(filteredData.long).filter(
     (d) => d.price < currentPrice,
   );
 
+  // Accumulate data vol += vol
   const areaData = (d) => {
     let totalVol = 0;
     const calcTotal = [];
@@ -45,28 +37,32 @@ const LiquidationMap = ({ data }) => {
     return calcTotal;
   };
 
-  // Area-sharts data
+  // Area data
   const accumulatedShorts = areaData(filteredShorts);
   const accumulatedLongs = areaData(filteredLongs.toReversed());
 
-  const max = d3.max(
+  // Define highest referal-point for VOL (xBars)
+  const maxVol = d3.max(
     [
       accumulatedShorts[accumulatedShorts.length - 1],
       accumulatedLongs[accumulatedLongs.length - 1],
     ].flat(),
+    (d) => d.accumulatedVol,
   );
 
-  const maxVolume = d3.max(
+  // Define highest referal-point for PRICE (xBars)
+  const max = d3.max(
     [accumulatedShorts, accumulatedLongs].flat(),
     (e) => e.vol,
   );
 
   // step 2, create a common x and y axis
-  const x = d3.scaleLinear().range([0, width]).domain([0, max.accumulatedVol]);
+  const x = d3.scaleLinear().range([0, width]).domain([0, maxVol]);
+
   const xBars = d3
     .scaleLinear()
     .range([0, width * 0.8])
-    .domain([0, maxVolume]);
+    .domain([0, max]);
 
   const y = d3
     .scaleBand()
@@ -144,7 +140,6 @@ const LiquidationMap = ({ data }) => {
       .x1((d) => x(d.accumulatedVol) + 40)
       .curve(d3.curveBasis);
 
-    console.log(accumulatedLongs);
     svg
       .append("path")
       .datum(accumulatedShorts)
