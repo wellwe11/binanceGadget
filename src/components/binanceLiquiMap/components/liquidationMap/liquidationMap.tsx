@@ -19,7 +19,7 @@ const LiquidationMap = ({ data }) => {
   // Step 1, filter type
   // This data will be used inside of the 2 graps.
   const filteredData = filterByType(data);
-  const currentPrice = 1000; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+  const currentPrice = 2100; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Display only contracts that are located above current price
   const filteredShorts = Object.values(filteredData.short).filter(
@@ -33,13 +33,7 @@ const LiquidationMap = ({ data }) => {
 
   const areaData = (d) => {
     let totalVol = 0;
-    const calcTotal = [
-      {
-        price: d[0].price,
-        vol: 0,
-        accumulatedVol: 0,
-      },
-    ];
+    const calcTotal = [];
 
     d.forEach((i) => {
       const vol = i.vol;
@@ -54,8 +48,6 @@ const LiquidationMap = ({ data }) => {
   // Area-sharts data
   const accumulatedShorts = areaData(filteredShorts);
   const accumulatedLongs = areaData(filteredLongs.toReversed());
-
-  console.log(accumulatedLongs);
 
   const max = d3.max(
     [
@@ -75,9 +67,10 @@ const LiquidationMap = ({ data }) => {
     .scaleLinear()
     .range([0, width * 0.8])
     .domain([0, maxVolume]);
+
   const y = d3
     .scaleBand()
-    .range([height, 0])
+    .range([height, 200])
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
@@ -101,23 +94,23 @@ const LiquidationMap = ({ data }) => {
     svg
       .append("g")
       .attr("class", "x_axis")
-      .attr("transform", `translate(40, ${height + 10})`)
+      .attr("transform", `translate(40, ${height})`)
       .call(xAxis);
     svg
       .append("g")
       .attr("class", "x_axis")
-      .attr("transform", `translate(40, ${height + 10})`)
+      .attr("transform", `translate(40, ${height})`)
       .call(xBarAxis);
 
     svg
       .append("g")
       .attr("class", "y_axis")
-      .attr("transform", `translate(40, ${10})`)
+      .attr("transform", `translate(40, 0)`)
       .call(yAxis);
 
     svg
       .selectAll(".barShort")
-      .data(filteredShorts)
+      .data(accumulatedShorts)
       .enter()
       .append("rect")
       .attr("class", "bar")
@@ -129,7 +122,7 @@ const LiquidationMap = ({ data }) => {
 
     svg
       .selectAll(".barLong")
-      .data(filteredLongs)
+      .data(accumulatedLongs)
       .enter()
       .append("rect")
       .attr("class", "bar")
@@ -148,8 +141,10 @@ const LiquidationMap = ({ data }) => {
       .area()
       .y((d) => y(d.price) + y.bandwidth() / 2)
       .x0(40)
-      .x1((d) => x(d.accumulatedVol) + 40);
+      .x1((d) => x(d.accumulatedVol) + 40)
+      .curve(d3.curveBasis);
 
+    console.log(accumulatedLongs);
     svg
       .append("path")
       .datum(accumulatedShorts)
