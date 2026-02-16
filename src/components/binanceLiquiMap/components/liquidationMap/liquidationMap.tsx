@@ -5,6 +5,7 @@ import BarChart from "./components/barChart";
 import AreaChart from "./components/areaChart";
 
 import filterByType from "./functions/filterByType";
+import { useEffect, useRef } from "react";
 
 const LiquidationMap = ({ data }) => {
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
@@ -24,6 +25,10 @@ const LiquidationMap = ({ data }) => {
   const filteredLongs = Object.values(filteredData.long).filter(
     (d) => d.price < currentPrice,
   );
+
+  const filteredConcat = filteredShorts.concat(filteredLongs);
+
+  console.log(filteredConcat);
 
   // Accumulate data vol += vol
   const areaData = (d) => {
@@ -72,6 +77,54 @@ const LiquidationMap = ({ data }) => {
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
+  const svgRef = useRef(null);
+
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+
+    const tooltipLineY = svg
+      .append("line")
+      .attr("class", "tooltip-line")
+      .attr("id", "tooltip-line-x")
+      .attr("stroke", "red")
+      .attr("stroke-width", 10)
+      .attr("stroke-height", 20)
+      .attr("stroke-dasharray", "10")
+      .attr("stroke-opacity", 5);
+
+    const listeningRect = svg
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("fill-opacity", "0")
+      .attr("stroke-opacity", "0")
+      .attr("pointer-events", "all")
+      .attr("z-index", "1");
+
+    listeningRect.on("mousemove", (event) => {
+      const [_, yCoord] = d3.pointer(event, event.currentTarget);
+
+      const eachBand = y.step();
+      const index = Math.floor(yCoord / eachBand);
+      const d = data.toReversed()[index];
+
+      if (!d) return;
+
+      const xPos = xBars(d.vol) + 40;
+      const yPos = y(d.price) + y.bandwidth() / 2;
+
+      console.log(d);
+
+      tooltipLineY
+        .style("display", "block")
+        .attr("y1", yPos)
+        .attr("y2", yPos)
+        .attr("x1", 40)
+        .attr("x2", width);
+    });
+  }, [svgRef]);
+
   return (
     <Axis
       height={height}
@@ -86,6 +139,7 @@ const LiquidationMap = ({ data }) => {
 
       <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <AreaChart data={accumulatedLongs} x={x} y={y} />
+      <svg ref={svgRef} />
     </Axis>
   );
 };
