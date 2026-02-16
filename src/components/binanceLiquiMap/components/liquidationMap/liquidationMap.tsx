@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import filterByType from "./functions/filterByType";
 
 const Axis = ({ children, height, width, margin, x, xBars, y }) => {
@@ -44,10 +44,10 @@ const Axis = ({ children, height, width, margin, x, xBars, y }) => {
         height: `${height + margin.top + margin.bottom}`,
       }}
     >
+      {children}
       <g ref={yAxisRef} transform="translate(40, 0)" />
       <g ref={xAxisRef} transform={`translate(40, ${height})`} />
       <g ref={xBarAxisRef} transform={`translate(40, ${height})`} />
-      {children}
     </svg>
   );
 };
@@ -73,6 +73,36 @@ const BarChart = ({ data, x, y }) => {
       .attr("width", (d) => x(d.vol))
       .style("fill", "skyblue");
   }, [gRef, data, x, y]);
+
+  return <g ref={gRef} />;
+};
+
+const AreaChart = ({ data, x, y }) => {
+  const gRef = useRef(null);
+  useEffect(() => {
+    if (!gRef.current) return;
+
+    const g = d3.select(gRef.current);
+
+    const line = d3
+      .line()
+      .x((d) => x(d.price))
+      .y((d) => y(d.vol));
+
+    const area = d3
+      .area()
+      .y((d) => y(d.price) + y.bandwidth() / 2)
+      .x0(40)
+      .x1((d) => x(d.accumulatedVol) + 40)
+      .curve(d3.curveBasis);
+
+    g.append("path")
+      .datum(data)
+      .attr("class", "areaShort")
+      .attr("d", area)
+      .style("fill", "#85bb65")
+      .style("opacity", 0.5);
+  }, [gRef]);
 
   return <g ref={gRef} />;
 };
@@ -144,37 +174,6 @@ const LiquidationMap = ({ data }) => {
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
-  useEffect(() => {
-    if (!gRef.current || !data) return;
-    const g = d3.select(gRef.current);
-
-    const line = d3
-      .line()
-      .x((d) => x(d.price))
-      .y((d) => y(d.vol));
-
-    const area = d3
-      .area()
-      .y((d) => y(d.price) + y.bandwidth() / 2)
-      .x0(40)
-      .x1((d) => x(d.accumulatedVol) + 40)
-      .curve(d3.curveBasis);
-
-    g.append("path")
-      .datum(accumulatedShorts)
-      .attr("class", "areaShort")
-      .attr("d", area)
-      .style("fill", "#85bb65")
-      .style("opacity", 0.5);
-
-    g.append("path")
-      .datum(accumulatedLongs)
-      .attr("class", "areaLong")
-      .attr("d", area)
-      .style("fill", "#85bb65")
-      .style("opacity", 0.5);
-  }, [data, x, y]);
-
   return (
     <Axis
       height={height}
@@ -187,6 +186,8 @@ const LiquidationMap = ({ data }) => {
     >
       <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <BarChart data={accumulatedShorts} x={xBars} y={y} />
+      <AreaChart data={accumulatedShorts} x={x} y={y} />
+      <AreaChart data={accumulatedLongs} x={x} y={y} />
       <g ref={gRef}></g>
     </Axis>
   );
