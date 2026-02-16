@@ -7,6 +7,54 @@ import AreaChart from "./components/areaChart";
 import filterByType from "./functions/filterByType";
 import { useEffect, useRef } from "react";
 
+const ListeningRect = ({ data, width, height, x, xBars, y }) => {
+  const rectRef = useRef(null);
+  const lineRef = useRef(null);
+
+  useEffect(() => {
+    if (!rectRef.current || !lineRef.current) return;
+
+    const listeningRect = d3.select(rectRef.current);
+    const tooltipLineY = d3.select(lineRef.current);
+
+    listeningRect.on("mousemove", (event) => {
+      const [_, yCoord] = d3.pointer(event, event.currentTarget);
+
+      const eachBand = y.step();
+      const index = Math.floor(yCoord / eachBand);
+      const d = data.toReversed()[index];
+
+      if (!d) return;
+
+      const xPos = xBars(d.price);
+      const yPos = y(d.price) + y.bandwidth() / 2;
+
+      tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
+    });
+  }, []);
+
+  return (
+    <g>
+      <rect
+        className="w-full h-full"
+        ref={rectRef}
+        fillOpacity="0"
+        strokeOpacity="0"
+        pointerEvents="all"
+        style={{ zIndex: "1" }}
+      />
+      <line
+        x1="40"
+        x2="100%"
+        ref={lineRef}
+        stroke="red"
+        strokeWidth={y.bandwidth()}
+        strokeOpacity="0.3"
+      />
+    </g>
+  );
+};
+
 const LiquidationMap = ({ data }) => {
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 400 - margin.left - margin.right,
@@ -77,54 +125,6 @@ const LiquidationMap = ({ data }) => {
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
-  const svgRef = useRef(null);
-
-  useEffect(() => {
-    if (!svgRef.current) return;
-    const svg = d3.select(svgRef.current);
-
-    const tooltipLineY = svg
-      .append("line")
-      .attr("class", "tooltip-line")
-      .attr("id", "tooltip-line-x")
-      .attr("stroke", "red")
-      .attr("stroke-width", 10)
-      .attr("stroke-height", 20)
-      .attr("stroke-dasharray", "10")
-      .attr("stroke-opacity", 5);
-
-    const listeningRect = svg
-      .append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("fill-opacity", "0")
-      .attr("stroke-opacity", "0")
-      .attr("pointer-events", "all")
-      .attr("z-index", "1");
-
-    listeningRect.on("mousemove", (event) => {
-      const [_, yCoord] = d3.pointer(event, event.currentTarget);
-
-      const eachBand = y.step();
-      const index = Math.floor(yCoord / eachBand);
-      const d = data.toReversed()[index];
-
-      if (!d) return;
-
-      const xPos = xBars(d.vol) + 40;
-      const yPos = y(d.price) + y.bandwidth() / 2;
-
-      console.log(d);
-
-      tooltipLineY
-        .style("display", "block")
-        .attr("y1", yPos)
-        .attr("y2", yPos)
-        .attr("x1", 40)
-        .attr("x2", width);
-    });
-  }, [svgRef]);
-
   return (
     <Axis
       height={height}
@@ -139,7 +139,15 @@ const LiquidationMap = ({ data }) => {
 
       <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <AreaChart data={accumulatedLongs} x={x} y={y} />
-      <svg ref={svgRef} />
+
+      <ListeningRect
+        data={data}
+        width={width}
+        height={height}
+        x={x}
+        xBars={xBars}
+        y={y}
+      />
     </Axis>
   );
 };
