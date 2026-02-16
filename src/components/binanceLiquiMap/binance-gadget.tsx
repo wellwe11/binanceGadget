@@ -116,7 +116,7 @@ const BinanceGadget = () => {
         </div>
 
         <HeatMap />
-        <LiquidationMap data={binnedData} min={min} max={max} />
+        <LiquidationMap data={binnedData} />
       </div>
     </div>
   );
