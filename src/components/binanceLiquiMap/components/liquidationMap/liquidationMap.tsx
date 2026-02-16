@@ -7,7 +7,7 @@ import AreaChart from "./components/areaChart";
 import filterByType from "./functions/filterByType";
 import { useEffect, useRef } from "react";
 
-const ListeningRect = ({ data, width, height, x, xBars, y }) => {
+const ListeningRect = ({ data, xBars, y }) => {
   const rectRef = useRef(null);
   const lineRef = useRef(null);
 
@@ -140,14 +140,7 @@ const LiquidationMap = ({ data }) => {
       <BarChart data={accumulatedLongs} x={xBars} y={y} />
       <AreaChart data={accumulatedLongs} x={x} y={y} />
 
-      <ListeningRect
-        data={data}
-        width={width}
-        height={height}
-        x={x}
-        xBars={xBars}
-        y={y}
-      />
+      <ListeningRect data={data} xBars={xBars} y={y} />
     </Axis>
   );
 };
