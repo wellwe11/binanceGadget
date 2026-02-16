@@ -47,9 +47,9 @@ const ListeningRect = ({ data, xBars, y }) => {
         x1="40"
         x2="100%"
         ref={lineRef}
-        stroke="red"
+        stroke="gray"
         strokeWidth={y.bandwidth()}
-        strokeOpacity="0.3"
+        strokeOpacity="0.5"
       />
     </g>
   );

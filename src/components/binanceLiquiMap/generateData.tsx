@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 400) => {
+const generateHeatmapData = (names: string[], days = 800) => {
   const data = [];
   const today = new Date();
 
