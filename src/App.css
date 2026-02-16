@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "./components/binanceLiquiMap/components/nav/nav.css";
+
+.asd {
+  background-color: #7300ff;
+  background-color: #00f2ff;
+  background-color: #2fff3d;
+  background-color: #ffff00;
+}

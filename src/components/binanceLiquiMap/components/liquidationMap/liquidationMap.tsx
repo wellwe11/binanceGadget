@@ -74,10 +74,6 @@ const LiquidationMap = ({ data }) => {
     (d) => d.price < currentPrice,
   );
 
-  const filteredConcat = filteredShorts.concat(filteredLongs);
-
-  console.log(filteredConcat);
-
   // Accumulate data vol += vol
   const areaData = (d) => {
     let totalVol = 0;
@@ -134,11 +130,11 @@ const LiquidationMap = ({ data }) => {
       y={y}
       xBars={xBars}
     >
-      <BarChart data={accumulatedShorts} x={xBars} y={y} />
-      <AreaChart data={accumulatedShorts} x={x} y={y} />
+      <BarChart data={accumulatedShorts} x={xBars} y={y} max={max} />
+      <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
-      <BarChart data={accumulatedLongs} x={xBars} y={y} />
-      <AreaChart data={accumulatedLongs} x={x} y={y} />
+      <BarChart data={accumulatedLongs} x={xBars} y={y} max={max} />
+      <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
       <ListeningRect data={data} xBars={xBars} y={y} />
     </Axis>
