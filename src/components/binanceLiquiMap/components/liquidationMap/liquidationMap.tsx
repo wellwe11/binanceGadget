@@ -4,6 +4,10 @@ import filterByType from "./functions/filterByType";
 
 const LiquidationMap = ({ data }) => {
   const svgRef = useRef(null);
+  const xAxisRef = useRef(null);
+  const xBarAxisRef = useRef(null);
+  const yAxisRef = useRef(null);
+
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 400 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
@@ -41,7 +45,7 @@ const LiquidationMap = ({ data }) => {
   const accumulatedShorts = areaData(filteredShorts);
   const accumulatedLongs = areaData(filteredLongs.toReversed());
 
-  // Define highest referal-point for VOL (xBars)
+  // Define highest referal-point for VOL (x)
   const maxVol = d3.max(
     [
       accumulatedShorts[accumulatedShorts.length - 1],
@@ -66,7 +70,7 @@ const LiquidationMap = ({ data }) => {
 
   const y = d3
     .scaleBand()
-    .range([height, 200])
+    .range([height, 0])
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
@@ -81,28 +85,24 @@ const LiquidationMap = ({ data }) => {
     .tickValues(y.domain().filter((d, i) => i % 5 === 0));
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (
+      !svgRef.current ||
+      !yAxisRef.current ||
+      !xAxisRef.current ||
+      !xBarAxisRef.current
+    )
+      return;
 
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select(svgRef.current),
+      xAxisEl = d3.select(xAxisRef.current),
+      xBarAxisEl = d3.select(xBarAxisRef.current),
+      yAxisEl = d3.select(yAxisRef.current);
 
-    svg.selectAll("*").remove();
+    svg.selectAll("rect.bar, path.areaShort, path.areaLong").remove();
 
-    svg
-      .append("g")
-      .attr("class", "x_axis")
-      .attr("transform", `translate(40, ${height})`)
-      .call(xAxis);
-    svg
-      .append("g")
-      .attr("class", "x_axis")
-      .attr("transform", `translate(40, ${height})`)
-      .call(xBarAxis);
-
-    svg
-      .append("g")
-      .attr("class", "y_axis")
-      .attr("transform", `translate(40, 0)`)
-      .call(yAxis);
+    xAxisEl.call(xAxis);
+    xBarAxisEl.call(xBarAxis);
+    yAxisEl.call(yAxis);
 
     svg
       .selectAll(".barShort")
@@ -155,22 +155,20 @@ const LiquidationMap = ({ data }) => {
       .attr("d", area)
       .style("fill", "#85bb65")
       .style("opacity", 0.5);
-  }, [data, svgRef, x, y, xAxis, yAxis]);
+  }, [data, svgRef, x, y, xAxis, yAxis, xAxisRef, yAxisRef, xBarAxisRef]);
 
   return (
     <svg
       ref={svgRef}
       className="bg-amber-100"
       style={{
-        width: `${width + margin.left + margin.right}px`,
-        height: `${height + margin.top + margin.bottom}px`,
+        width: `${width + margin.left + margin.right}`,
+        height: `${height + margin.top + margin.bottom}`,
       }}
     >
-      <g
-        style={{
-          transform: `translate(${margin.left},${margin.top}px)`,
-        }}
-      />
+      <g ref={yAxisRef} transform="translate(40, 0)" />
+      <g ref={xAxisRef} transform={`translate(40, ${height})`} />
+      <g ref={xBarAxisRef} transform={`translate(40, ${height})`} />
     </svg>
   );
 };
