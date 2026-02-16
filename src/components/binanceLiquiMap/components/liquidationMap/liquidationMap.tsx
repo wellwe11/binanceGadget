@@ -2,26 +2,7 @@ import * as d3 from "d3";
 import { useRef } from "react";
 import filterByType from "./functions/filterByType";
 import Axis from "./components/axis";
-
-const BarChart = ({ data, x, y }) => {
-  const gRef = useRef(null);
-
-  return (
-    <g ref={gRef} transform="translate(40, 0)">
-      {data.map((d, i) => (
-        <rect
-          key={i}
-          className="bar"
-          y={y(d.price)}
-          height={y.bandwidth()}
-          x="0"
-          width={x(d.vol)}
-          fill="skyblue"
-        />
-      ))}
-    </g>
-  );
-};
+import BarChart from "./components/barChart";
 
 const AreaChart = ({ data, x, y }) => {
   const gRef = useRef(null);
