@@ -17,7 +17,14 @@ const AreaChart = ({ data, x, y, color = "green" }) => {
 
   return (
     <g>
-      <path d={area(data)} fill={color} opacity="0.12" />
+      <path
+        d={area(data)}
+        fill={color}
+        opacity="0.12"
+        style={{
+          animation: `growArea 0.2s ease forwards`,
+        }}
+      />
       <path
         d={line(data)}
         fill="none"
@@ -34,6 +41,12 @@ const AreaChart = ({ data, x, y, color = "green" }) => {
           @keyframes draw {
             from { stroke-dashoffset: 100%; }
             to { stroke-dashoffset: 5%; }
+          }
+
+
+          @keyframes growArea {
+            from { transform: scaleX(0); opacity: 0; }
+            to { transform: scaleX(1); opacity: 0.12; }
           }
         `}
       </style>

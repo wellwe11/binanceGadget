@@ -12,7 +12,6 @@ const Axis = ({ children, height, width, margin, x, xBars, y }) => {
       style={{
         width: `${width}`,
         height: `${height}`,
-        border: "1px solid gray",
       }}
     >
       {children}
