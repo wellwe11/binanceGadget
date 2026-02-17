@@ -22,8 +22,7 @@ const ListeningRect = ({ data, xBars, x, y }) => {
       !rectRef.current ||
       !lineRef.current ||
       !circleRef.current ||
-      !tooltipRef.current ||
-      !tooltipTextRef.current
+      !tooltipRef.current
     )
       return;
 
@@ -45,19 +44,22 @@ const ListeningRect = ({ data, xBars, x, y }) => {
       const yPos = y(d.price) + y.bandwidth() / 2;
       const xPos = x(d.accumulatedVol) + 40;
 
-      console.log(d);
-
       circle.attr("cx", xPos).attr("cy", yPos);
       circle.transition().duration(50).attr("r", 5);
       tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
-      tooltip
-        .style("width", "80")
-        .style("height", "30")
-        .attr("x", xPos + 15)
-        .attr("y", yPos + 15);
+      tooltip.attr("y", yPos + 15);
+      console.log(d);
+      tooltipText.text(`
+        Price: ${d.price}
+        Cumulative Short Liquidation Leverage ${d.accumulatedVol}
+        ${d.vol ? "Liquidation Leverage: " + d.vol : ""}
+        `);
+
+      // Price
+      // Liquidation Leverage
+      // Cumulative short/long liquidation Leverage
     });
-    // tooltipText.html(`${"asd"}`);
-  }, []);
+  }, [displayToolbar]);
 
   return (
     <g onMouseEnter={handleDisplayToolbar} onMouseLeave={handleHideToolbar}>
@@ -86,10 +88,20 @@ const ListeningRect = ({ data, xBars, x, y }) => {
         cursor="pointer"
       />
 
-      <foreignObject ref={tooltipRef} style={{}}>
+      <foreignObject
+        ref={tooltipRef}
+        width="450"
+        height="150"
+        style={{ pointerEvents: "none" }}
+      >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
-          <div className="bg-white">
-            <p ref={tooltipTextRef}>some text</p>
+          <div className="bg-black w-full h-full text-white">
+            <p
+              ref={tooltipTextRef}
+              className="whitespace-pre-line ml-[40px] py-2"
+            >
+              some text
+            </p>
           </div>
         </Activity>
       </foreignObject>
