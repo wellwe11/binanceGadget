@@ -89,8 +89,6 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
-  console.log(displayLiquidationMap);
-
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);

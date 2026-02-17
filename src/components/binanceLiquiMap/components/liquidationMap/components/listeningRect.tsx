@@ -1,15 +1,12 @@
 import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-// To-do tomorrow:
-// Add a mouseout listener
-// Check if bar in long or short for toolbar text
 // Throttle the listener
 // add dots. Each dot should reflect same color as current bar hovering
 // Add a mouse to hovering the bars
 
-const ListeningRect = ({ data, xBars, x, y, currentPrice }) => {
-  const rectRef = useRef(null);
+const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
+  const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -18,23 +15,32 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice }) => {
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
 
+  const low = max * 0.2;
+  const normal = max * 0.4;
+  const high = max * 0.7;
+
+  const colorScale = d3
+    .scaleLinear()
+    .domain([low, normal, high, max])
+    .range(["#5600bf", "#00bcc6", "#00960a", "#b7b700"]);
+
   useEffect(() => {
     if (
-      !rectRef.current ||
+      !listeningRef.current ||
       !lineRef.current ||
       !circleRef.current ||
       !tooltipRef.current
     )
       return;
 
-    const listeningRect = d3.select(rectRef.current);
+    const listeningEl = d3.select(listeningRef.current);
     const tooltipLineY = d3.select(lineRef.current);
     const circle = d3.select(circleRef.current);
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
-    listeningRect.on("mousemove", (event) => {
-      const [_, yCoord] = d3.pointer(event, event.currentTarget);
+    listeningEl.on("mousemove", (event) => {
+      const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
 
       const eachBand = y.step();
       const index = Math.floor(yCoord / eachBand);
@@ -42,26 +48,41 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice }) => {
 
       if (!d) return;
 
-      const yPos = y(d.price) + y.bandwidth() / 2;
       const xPos = x(d.accumulatedVol) + 40;
+      const xBarPos = xBars(d.vol) + 40;
+      const yPos = y(d.price) + y.bandwidth() / 2;
+      const isPointerCursor =
+        xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
 
+      listeningEl.style("cursor", isPointerCursor);
       circle.attr("cx", xPos).attr("cy", yPos);
-      circle.transition().duration(50).attr("r", 5);
+      circle.attr("r", 5).style("display", "block");
+
       tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
+
       tooltip.attr("y", yPos + 15);
-      console.log(d);
       tooltipText.text(`
         Price: ${d.price}
         Cumulative ${d.price > currentPrice ? "Short" : "Long"} Liquidation Leverage ${d.accumulatedVol}
         ${d.vol ? "Liquidation Leverage: " + d.vol : ""}
         `);
     });
+
+    listeningEl.on("mouseleave", () => {
+      console.log("out");
+      circle.attr("r", 0).style("display", "none");
+      tooltipLineY.style("display", "none");
+    });
   }, [displayToolbar]);
 
   return (
-    <g onMouseEnter={handleDisplayToolbar} onMouseLeave={handleHideToolbar}>
+    <g
+      onMouseEnter={handleDisplayToolbar}
+      onMouseLeave={handleHideToolbar}
+      ref={listeningRef}
+      pointerEvents="auto"
+    >
       <rect
-        ref={rectRef}
         className="w-full h-full"
         fillOpacity="0"
         strokeOpacity="0"
@@ -75,13 +96,13 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice }) => {
         stroke="gray"
         strokeWidth={y.bandwidth()}
         strokeOpacity="0.5"
+        pointerEvents="none"
       />
       <circle
         ref={circleRef}
         r={0}
         fill="gray"
         stroke="white"
-        pointerEvents="auto"
         cursor="pointer"
       />
 

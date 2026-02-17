@@ -9,7 +9,7 @@ import filterByType from "./functions/filterByType";
 
 const LiquidationMap = ({ data }) => {
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
-    width = 500 - margin.left - margin.right,
+    width = 700 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
   // Filter data by type (i.e. long, short)
@@ -94,6 +94,7 @@ const LiquidationMap = ({ data }) => {
         xBars={xBars}
         y={y}
         currentPrice={currentPrice}
+        max={max}
       />
     </Axis>
   );
