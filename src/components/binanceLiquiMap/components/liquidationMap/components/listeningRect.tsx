@@ -3,7 +3,6 @@ import * as d3 from "d3";
 
 // Throttle the listener
 // add dots. Each dot should reflect same color as current bar hovering
-// Add a mouse to hovering the bars
 
 const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
   const listeningRef = useRef(null);
@@ -53,6 +52,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
       const yPos = y(d.price) + y.bandwidth() / 2;
       const isPointerCursor =
         xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
+      const isShort = d.price > currentPrice;
 
       listeningEl.style("cursor", isPointerCursor);
       circle.attr("cx", xPos).attr("cy", yPos);
@@ -61,10 +61,31 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
       tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
 
       tooltip.attr("y", yPos + 15);
-      tooltipText.text(`
-        Price: ${d.price}
-        Cumulative ${d.price > currentPrice ? "Short" : "Long"} Liquidation Leverage ${d.accumulatedVol}
-        ${d.vol ? "Liquidation Leverage: " + d.vol : ""}
+      tooltipText.html(`
+        <div class="flex flex-col gap-1 h-full">
+            <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full"></div>
+                Price: ${d.price}
+            </div>
+            <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full border border-white"
+            style="background-color: ${isShort ? "#00bcc6" : "#ff0000ed"}"
+            ></div>
+                Cumulative ${isShort ? "Short" : "Long"}: ${d.accumulatedVol}
+            </div>
+            <div class="flex items-center gap-2">
+                ${
+                  d.vol > 0
+                    ? `
+                  <div class="w-2 h-2 rounded-full border border-white"
+                  style="background-color: ${colorScale(d.vol)}"></div>
+                        Liquidation Leverage: ${d.vol}
+                    </div>
+                    `
+                    : ""
+                }
+            </div>
+        </div>
         `);
     });
 
@@ -113,14 +134,10 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
         style={{ pointerEvents: "none" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
-          <div className="bg-black w-full h-full text-white pointer-events-none">
-            <p
-              ref={tooltipTextRef}
-              className="whitespace-pre-line ml-[40px] py-2 pointer-events-none select-none"
-            >
-              some text
-            </p>
-          </div>
+          <div
+            ref={tooltipTextRef}
+            className="bg-black w-full h-full text-white pointer-events-none"
+          />
         </Activity>
       </foreignObject>
     </g>
