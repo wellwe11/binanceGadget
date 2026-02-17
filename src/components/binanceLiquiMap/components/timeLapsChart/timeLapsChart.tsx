@@ -15,6 +15,7 @@ import InputRange from "./components/inputRange";
 import trackDrag from "./functions/trackDrag";
 import moveGraph from "./functions/moveGraph";
 import useSetHighSetLow from "./hooks/useSetHighSetLow";
+import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 
 export type Data = {
   coin: string;
@@ -307,9 +308,10 @@ const Controllers = ({
 
 // Parent wrapper.
 const TimeLapsChart = ({ data }: MainProps) => {
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [containersHeight, setContainersHeight] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [containerWidth, containersHeight] =
+    useTrackContainerSize(containerRef);
 
   // Shows/hides text when user hovers the component.
   const [displayText, setDisplayText] = useState<boolean>(false);
@@ -319,22 +321,6 @@ const TimeLapsChart = ({ data }: MainProps) => {
     start: 1,
     end: data.length - 1,
   });
-
-  useLayoutEffect(() => {
-    if (!containerRef.current) return;
-
-    const containersSize = containerRef.current.getBoundingClientRect();
-    const width = containersSize.width as number,
-      height = containersSize.height as number;
-
-    if (width !== containerWidth) {
-      setContainerWidth(width);
-    }
-
-    if (height !== containersHeight) {
-      setContainersHeight(height);
-    }
-  }, [containerRef, data]);
 
   return (
     <div

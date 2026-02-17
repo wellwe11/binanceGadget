@@ -6,11 +6,22 @@ import AreaChart from "./components/areaChart";
 import ListeningRect from "./components/listeningRect";
 
 import filterByType from "./functions/filterByType";
+import { useRef } from "react";
+import useTrackContainerSize from "../../hooks/useTrackContainerSize";
+
+// For next time:
+// Make resizing DYNAMIC
+// Abstract height/width function from timeLapsChart, and use it here as well.
+// Fix types
 
 const LiquidationMap = ({ data }) => {
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
     width = 700 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
+
+  const containerRef = useRef(null);
+  const [containerWidth, containersHeight] =
+    useTrackContainerSize(containerRef);
 
   // Filter data by type (i.e. long, short)
   const filteredData = filterByType(data);
@@ -74,30 +85,25 @@ const LiquidationMap = ({ data }) => {
     .domain(data.map((d) => d.price));
 
   return (
-    <Axis
-      height={height}
-      width={width}
-      margin={margin}
-      x={x}
-      y={y}
-      xBars={xBars}
-    >
-      <BarChart data={accumulatedShorts} x={xBars} y={y} max={max} />
-      <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
+    <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
+      <Axis>
+        <BarChart data={accumulatedShorts} x={xBars} y={y} max={max} />
+        <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
-      <BarChart data={accumulatedLongs} x={xBars} y={y} max={max} />
-      <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
+        <BarChart data={accumulatedLongs} x={xBars} y={y} max={max} />
+        <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
-      <ListeningRect
-        data={accumulatedShorts.toReversed().concat(accumulatedLongs)}
-        x={x}
-        xBars={xBars}
-        y={y}
-        currentPrice={currentPrice}
-        max={max}
-        width={width}
-      />
-    </Axis>
+        <ListeningRect
+          data={accumulatedShorts.toReversed().concat(accumulatedLongs)}
+          x={x}
+          xBars={xBars}
+          y={y}
+          currentPrice={currentPrice}
+          max={max}
+          width={width}
+        />
+      </Axis>
+    </div>
   );
 };
 

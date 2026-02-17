@@ -1,23 +1,12 @@
 import { useRef } from "react";
 
-const Axis = ({ children, height, width, margin, x, xBars, y }) => {
-  const svgRef = useRef(null);
-  const xAxisRef = useRef(null);
-  const xBarAxisRef = useRef(null);
-  const yAxisRef = useRef(null);
-
+const Axis = ({ children }) => {
   return (
-    <svg
-      ref={svgRef}
-      style={{
-        width: `${width}`,
-        height: `${height}`,
-      }}
-    >
+    <svg className="h-full w-full">
       {children}
-      <g ref={yAxisRef} transform="translate(40, 0)" />
-      <g ref={xAxisRef} transform={`translate(40, ${height})`} />
-      <g ref={xBarAxisRef} transform={`translate(40, ${height})`} />
+      <g transform="translate(40, 0)" />
+      <g transform={`translate(40, 100%)`} />
+      <g transform={`translate(40, 100%)`} />
     </svg>
   );
 };
