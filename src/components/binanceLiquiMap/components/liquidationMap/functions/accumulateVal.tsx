@@ -1,7 +1,11 @@
+import { List } from "../liquidationMap";
+
+type accumulatedType = List & { accumulatedVol: number };
+
 // Accumulate data vol += vol
-const accumulateVal = (d) => {
+const accumulateVal = (d: List[]) => {
   let totalVol = 0;
-  const calcTotal = [];
+  const calcTotal: accumulatedType[] = [];
 
   d.forEach((i) => {
     const vol = i.vol;

@@ -16,7 +16,16 @@ export type DataType = {
   longVol: number;
 };
 
-type LiquidationType = {
+type d3ScaleLinear = d3.ScaleLinear<number, number>;
+type d3Range = d3.scaleBand<string>;
+
+export interface XYType {
+  data: DataType[];
+  x: d3ScaleLinear;
+  y: d3Range;
+}
+
+export type List = {
   price: number;
   vol: number;
 };

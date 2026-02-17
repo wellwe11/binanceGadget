@@ -1,9 +1,4 @@
-import { DataType } from "../liquidationMap";
-
-type List = {
-  price: number;
-  vol: number;
-};
+import { DataType, List } from "../liquidationMap";
 
 const filterByType = (arr: DataType[]) => {
   const short: List[] = [];

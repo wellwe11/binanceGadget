@@ -1,6 +1,12 @@
 import * as d3 from "d3";
+import { XYType } from "../liquidationMap";
 
-const AreaChart = ({ data, x, y, color = "green" }) => {
+const AreaChart = ({
+  data,
+  x,
+  y,
+  color = "green",
+}: XYType & { color: string }) => {
   const line = d3
     .line()
     .y((d) => y(d.price) + y.bandwidth() / 2)
