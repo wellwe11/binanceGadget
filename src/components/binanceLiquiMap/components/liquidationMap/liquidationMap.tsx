@@ -30,6 +30,8 @@ export type List = {
   vol: number;
 };
 
+export type accumulatedType = List & { accumulatedVol: number };
+
 const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -51,8 +53,6 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
     [],
   );
 
-  console.log(filteredShorts, filteredLongs);
-
   // Area data
   const accumulatedShorts = accumulateVal(filteredShorts);
   const accumulatedLongs = accumulateVal(filteredLongs.toReversed());
@@ -63,13 +63,13 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
       accumulatedShorts[accumulatedShorts.length - 1],
       accumulatedLongs[accumulatedLongs.length - 1],
     ].flat(),
-    (d) => d.accumulatedVol,
+    (d: accumulatedType) => d.accumulatedVol,
   );
 
   // Define highest referal-point for PRICE (xBars)
   const max = d3.max(
     [accumulatedShorts, accumulatedLongs].flat(),
-    (e) => e.vol,
+    (e: accumulatedType) => e.vol,
   );
 
   const x = d3.scaleLinear().range([0, containerWidth]).domain([0, maxVol]);
