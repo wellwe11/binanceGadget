@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
-const useTrackContainerSize = (ref) => {
+const useTrackContainerSize = (ref: RefObject<HTMLDivElement | null>) => {
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containersHeight, setContainersHeight] = useState<number>(0);
 
