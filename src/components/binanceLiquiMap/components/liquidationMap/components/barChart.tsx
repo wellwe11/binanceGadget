@@ -1,6 +1,7 @@
 import colorScale from "../functions/colorScale";
+import { XYType } from "../Types";
 
-const BarChart = ({ data, x, y, max }) => {
+const BarChart = ({ data, x, y, max }: XYType & { max: number }) => {
   const scaleColors = colorScale(max);
 
   return (
