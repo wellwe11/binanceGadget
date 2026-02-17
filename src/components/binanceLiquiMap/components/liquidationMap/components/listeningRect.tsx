@@ -40,7 +40,6 @@ const ListeningRect = ({
     const tooltipText = d3.select(tooltipTextRef.current);
 
     let moveId = null as number | null;
-    console.log(moveId);
 
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
       if (moveId) return;

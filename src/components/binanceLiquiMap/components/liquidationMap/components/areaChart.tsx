@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { XYType } from "../Types";
+import { accumulatedType, XYType } from "../Types";
 
 const AreaChart = ({
   data,
@@ -9,15 +9,15 @@ const AreaChart = ({
 }: XYType & { color: string }) => {
   const line = d3
     .line()
-    .y((d) => y(d.price) + y.bandwidth() / 2)
-    .x((d) => x(d.accumulatedVol))
+    .y((d: accumulatedType) => y(d.price) + y.bandwidth() / 2)
+    .x((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
   const area = d3
     .area()
-    .y((d) => y(d.price) + y.bandwidth() / 2)
+    .y((d: accumulatedType) => y(d.price) + y.bandwidth() / 2)
     .x0(0)
-    .x1((d) => x(d.accumulatedVol))
+    .x1((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
   return (

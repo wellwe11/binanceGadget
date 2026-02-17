@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const colorScale = (max) => {
+const colorScale = (max: number) => {
   const low = max * 0.2;
   const normal = max * 0.4;
   const high = max * 0.7;
