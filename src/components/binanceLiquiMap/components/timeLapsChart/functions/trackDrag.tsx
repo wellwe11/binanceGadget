@@ -12,7 +12,7 @@ const trackDrag: TrackDragInterface = (setter, max, min) => {
 
   const handleMove = (moveEvent: MouseEvent) => {
     // Mouse-acceleration - current setting follows MY mouse fine.
-    accumulatedDelta += moveEvent.movementX * 0.1; // Adjust for increased/decreased acceleration of mouse-speed
+    accumulatedDelta += moveEvent.movementX; // Adjust for increased/decreased acceleration of mouse-speed
     if (animationFrameId) return;
 
     animationFrameId = requestAnimationFrame(() => {
