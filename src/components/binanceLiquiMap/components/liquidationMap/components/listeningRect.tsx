@@ -3,7 +3,6 @@ import * as d3 from "d3";
 import colorScale from "../functions/colorScale";
 
 const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
-  console.log(width);
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);

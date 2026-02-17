@@ -4,7 +4,7 @@ const Axis = ({ children }) => {
   // Average short
   // Highest long
   // Average long
-  return <svg className="h-full w-full bg-amber-200">{children}</svg>;
+  return <svg className="h-full w-full">{children}</svg>;
 };
 
 export default Axis;

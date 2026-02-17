@@ -117,8 +117,8 @@ const BinanceGadget = () => {
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-100 h-full">
-              <LiquidationMap data={binnedData} valMax={max} />
+            <div className="w-100 h-100">
+              <LiquidationMap data={binnedData} />
             </div>
           </Activity>
         </div>

@@ -1,24 +1,30 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useTrackContainerSize = (ref) => {
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containersHeight, setContainersHeight] = useState<number>(0);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!ref || !ref.current) return;
 
-    const containersSize = ref.current.getBoundingClientRect();
-    const width = containersSize.width as number,
-      height = containersSize.height as number;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
 
-    if (width !== containerWidth) {
-      setContainerWidth(width);
-    }
+      if (width !== containerWidth) {
+        setContainerWidth(width);
+      }
 
-    if (height !== containersHeight) {
-      setContainersHeight(height);
-    }
+      if (height !== containersHeight) {
+        setContainersHeight(height);
+      }
+    });
+
+    observer.observe(ref.current);
+
+    return () => observer.disconnect();
   }, [ref]);
+
+  console.log(containerWidth, containersHeight);
 
   return [containerWidth, containersHeight];
 };
