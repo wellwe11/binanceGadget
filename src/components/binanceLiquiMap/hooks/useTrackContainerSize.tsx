@@ -24,8 +24,6 @@ const useTrackContainerSize = (ref) => {
     return () => observer.disconnect();
   }, [ref]);
 
-  console.log(containerWidth, containersHeight);
-
   return [containerWidth, containersHeight];
 };
 

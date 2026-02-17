@@ -6,12 +6,12 @@ import AreaChart from "./components/areaChart";
 import ListeningRect from "./components/listeningRect";
 
 import filterByType from "./functions/filterByType";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
+import accumulateVal from "./functions/accumulateVal";
 
 // For next time:
-// Make resizing DYNAMIC
-// Abstract height/width function from timeLapsChart, and use it here as well.
+// Add lines to axis
 // Fix types
 
 const LiquidationMap = ({ data }) => {
@@ -20,37 +20,26 @@ const LiquidationMap = ({ data }) => {
     useTrackContainerSize(containerRef);
 
   // Filter data by type (i.e. long, short)
-  const filteredData = filterByType(data);
+  const filteredData = useMemo(() => filterByType(data), []);
   const currentPrice = 500; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Filter away shorts that are below currentPrice
-  const filteredShorts = Object.values(filteredData.short).filter(
-    (d) => d.price > currentPrice,
+  const filteredShorts = useMemo(
+    () =>
+      Object.values(filteredData.short).filter((d) => d.price > currentPrice),
+    [filteredData],
   );
 
   // Filter longs that are above current price
-  const filteredLongs = Object.values(filteredData.long).filter(
-    (d) => d.price < currentPrice,
+  const filteredLongs = useMemo(
+    () =>
+      Object.values(filteredData.long).filter((d) => d.price < currentPrice),
+    [],
   );
 
-  // Accumulate data vol += vol
-  const areaData = (d) => {
-    let totalVol = 0;
-    const calcTotal = [];
-
-    d.forEach((i) => {
-      const vol = i.vol;
-      totalVol += vol;
-
-      calcTotal.push({ ...i, accumulatedVol: totalVol });
-    });
-
-    return calcTotal;
-  };
-
   // Area data
-  const accumulatedShorts = areaData(filteredShorts);
-  const accumulatedLongs = areaData(filteredLongs.toReversed());
+  const accumulatedShorts = accumulateVal(filteredShorts);
+  const accumulatedLongs = accumulateVal(filteredLongs.toReversed());
 
   // Define highest referal-point for VOL (x)
   const maxVol = d3.max(
@@ -82,7 +71,12 @@ const LiquidationMap = ({ data }) => {
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
-      <Axis>
+      <Axis
+        shorts={filteredShorts}
+        longs={filteredLongs}
+        xBars={xBars}
+        height={containersHeight}
+      >
         <BarChart data={accumulatedShorts} x={xBars} y={y} max={max} />
         <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
