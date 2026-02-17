@@ -1,7 +1,7 @@
 import * as d3 from "d3";
-import { AxisType, DottedLine } from "../Types";
+import { AxisType, DottedLineType } from "../Types";
 
-const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLine) => {
+const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLineType) => {
   return (
     <line
       x1={x ? x(data) : data}

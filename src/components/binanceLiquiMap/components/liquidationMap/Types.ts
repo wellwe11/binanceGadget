@@ -14,11 +14,18 @@ export interface AxisType {
   height: number;
 }
 
-export interface DottedLine {
+export interface DottedLineType {
   data: number;
   height: number;
   x?: d3ScaleLinear;
   opacity?: string;
+}
+
+export interface ListeningRectType extends XYType {
+  xBars: d3ScaleLinear;
+  currentPrice: number;
+  max: number;
+  width: number;
 }
 
 export type DataType = {

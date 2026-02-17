@@ -1,8 +1,17 @@
 import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../functions/colorScale";
+import { ListeningRectType } from "../Types";
 
-const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
+const ListeningRect = ({
+  data,
+  xBars,
+  x,
+  y,
+  currentPrice,
+  max,
+  width,
+}: ListeningRectType) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
@@ -31,6 +40,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
     const tooltipText = d3.select(tooltipTextRef.current);
 
     let moveId = null;
+    console.log(moveId);
 
     listeningEl.on("mousemove", (event) => {
       if (moveId) return;
