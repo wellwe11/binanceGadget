@@ -102,20 +102,23 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="flex">
+      <div className="flex w-max">
         <div className="w-10" style={{ height: "inherit" }}>
           {/* Need to calculate max and add it to Gradient max={number} */}
           <Gradient />
         </div>
 
-        <div>
-          <HeatMap />
+        <div className="flex">
+          <div className="w-150 h-full">
+            <h1>PLACEHOLDER</h1>
+            <HeatMap />
+          </div>
           <LiquidationMap data={binnedData} valMax={max} />
         </div>
       </div>
 
       <div
-        className="h-30 w-full flex flex-col flex-1"
+        className="h-30 w-150 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
         <TimeLapsChart data={data} />

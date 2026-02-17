@@ -26,14 +26,14 @@ const AreaChart = ({ data, x, y, color = "green" }) => {
         strokeDasharray={"100%"}
         strokeDashoffset={"100%"}
         style={{
-          animation: "draw 4.5s forwards cubic-bezier(0.34, 1.3, 0.34, 1)",
+          animation: "draw 3.5s forwards cubic-bezier(0.34, 1.3, 0.34, 1)",
         }}
       />
       <style>
         {`
           @keyframes draw {
             from { stroke-dashoffset: 100%; }
-            to { stroke-dashoffset: 0%; }
+            to { stroke-dashoffset: 5%; }
           }
         `}
       </style>
