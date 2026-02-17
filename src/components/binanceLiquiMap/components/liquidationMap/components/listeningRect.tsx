@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import colorScale from "../functions/colorScale";
 
 const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
+  console.log(width);
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
@@ -43,8 +44,8 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
       if (!d) return;
 
       moveId = requestAnimationFrame(() => {
-        const xPos = x(d.accumulatedVol) + 40;
-        const xBarPos = xBars(d.vol) + 40;
+        const xPos = x(d.accumulatedVol);
+        const xBarPos = xBars(d.vol);
 
         let prevYPos = 0;
         const yPos = y(d.price) + y.bandwidth() / 2;
@@ -126,7 +127,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
       />
       <line
         ref={lineRef}
-        x1="40"
+        x1="0"
         x2="100%"
         stroke="gray"
         strokeWidth={y.bandwidth()}
@@ -150,7 +151,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-full text-white pointer-events-none ml-[40px] py-2"
+            className="bg-black w-full h-full text-white pointer-events-none py-2"
           />
         </Activity>
       </foreignObject>

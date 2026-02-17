@@ -15,10 +15,6 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 // Fix types
 
 const LiquidationMap = ({ data }) => {
-  const margin = { top: 70, right: 40, bottom: 60, left: 175 },
-    width = 700 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
-
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
@@ -71,16 +67,16 @@ const LiquidationMap = ({ data }) => {
     (e) => e.vol,
   );
 
-  const x = d3.scaleLinear().range([0, width]).domain([0, maxVol]);
+  const x = d3.scaleLinear().range([0, containerWidth]).domain([0, maxVol]);
 
   const xBars = d3
     .scaleLinear()
-    .range([0, width * 0.8])
+    .range([0, containerWidth * 0.8])
     .domain([0, max]);
 
   const y = d3
     .scaleBand()
-    .range([height, 0])
+    .range([containersHeight, 0])
     .padding(0.1)
     .domain(data.map((d) => d.price));
 
@@ -100,7 +96,7 @@ const LiquidationMap = ({ data }) => {
           y={y}
           currentPrice={currentPrice}
           max={max}
-          width={width}
+          width={containerWidth}
         />
       </Axis>
     </div>
