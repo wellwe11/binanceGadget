@@ -135,6 +135,7 @@ const ListeningRect = ({
       />
       <line
         ref={lineRef}
+        visibility={displayToolbar ? "visible" : "hidden"}
         x1="0"
         x2="100%"
         stroke="gray"
@@ -144,6 +145,7 @@ const ListeningRect = ({
       />
       <circle
         ref={circleRef}
+        visibility={displayToolbar ? "visible" : "hidden"}
         r={0}
         fill="gray"
         stroke="white"
