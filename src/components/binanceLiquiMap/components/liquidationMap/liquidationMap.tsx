@@ -10,11 +10,18 @@ import { useMemo, useRef } from "react";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import accumulateVal from "./functions/accumulateVal";
 
-// For next time:
-// Add lines to axis
-// Fix types
+export type DataType = {
+  price: number;
+  shortVol: number;
+  longVol: number;
+};
 
-const LiquidationMap = ({ data }) => {
+type LiquidationType = {
+  price: number;
+  vol: number;
+};
+
+const LiquidationMap = ({ data }: { data: DataType }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
@@ -25,17 +32,17 @@ const LiquidationMap = ({ data }) => {
 
   // Filter away shorts that are below currentPrice
   const filteredShorts = useMemo(
-    () =>
-      Object.values(filteredData.short).filter((d) => d.price > currentPrice),
+    () => filteredData.short.filter((d) => d.price > currentPrice),
     [filteredData],
   );
 
   // Filter longs that are above current price
   const filteredLongs = useMemo(
-    () =>
-      Object.values(filteredData.long).filter((d) => d.price < currentPrice),
+    () => filteredData.long.filter((d) => d.price < currentPrice),
     [],
   );
+
+  console.log(filteredShorts, filteredLongs);
 
   // Area data
   const accumulatedShorts = accumulateVal(filteredShorts);

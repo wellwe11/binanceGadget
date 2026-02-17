@@ -29,7 +29,7 @@ const Axis = ({ children, shorts, longs, xBars, height }) => {
       <DottedLine data={maxShorts} x={xBars} height={height} opacity="0.3" />
       <DottedLine data={averageShorts} x={xBars} height={height} />
       <DottedLine data={maxLongs} x={xBars} height={height} opacity="0.3" />
-      <DottedLine data={averageShorts} x={xBars} height={height} />
+      <DottedLine data={averageLongs} x={xBars} height={height} />
       <DottedLine data={height} height={height} opacity="0.5" />
     </svg>
   );
