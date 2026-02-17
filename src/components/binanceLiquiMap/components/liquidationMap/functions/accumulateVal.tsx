@@ -1,4 +1,4 @@
-import { List, accumulatedType } from "../liquidationMap";
+import { List, accumulatedType } from "../Types";
 
 // Accumulate data vol += vol
 const accumulateVal = (d: List[]) => {

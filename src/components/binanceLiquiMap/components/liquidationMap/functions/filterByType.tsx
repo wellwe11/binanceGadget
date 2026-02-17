@@ -1,4 +1,4 @@
-import { DataType, List } from "../liquidationMap";
+import { DataType, List } from "../Types";
 
 const filterByType = (arr: DataType[]) => {
   const short: List[] = [];

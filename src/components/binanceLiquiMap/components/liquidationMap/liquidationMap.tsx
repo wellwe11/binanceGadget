@@ -10,27 +10,7 @@ import { useMemo, useRef } from "react";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import accumulateVal from "./functions/accumulateVal";
 
-export type DataType = {
-  price: number;
-  shortVol: number;
-  longVol: number;
-};
-
-type d3ScaleLinear = d3.ScaleLinear<number, number>;
-type d3Range = d3.scaleBand<string>;
-
-export interface XYType {
-  data: accumulatedType[];
-  x: d3ScaleLinear;
-  y: d3Range;
-}
-
-export type List = {
-  price: number;
-  vol: number;
-};
-
-export type accumulatedType = List & { accumulatedVol: number };
+import { DataType, accumulatedType } from "./Types";
 
 const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const containerRef = useRef(null);

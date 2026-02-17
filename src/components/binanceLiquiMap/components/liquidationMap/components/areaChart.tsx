@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { XYType } from "../liquidationMap";
+import { XYType } from "../Types";
 
 const AreaChart = ({
   data,

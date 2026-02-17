@@ -209,6 +209,7 @@ const Nav = ({
   symbol: string[];
   pair: string[];
   time: Object[];
+  displayMap: boolean;
 }) => {
   const [pairOrSymbol, setPairOrSymbol] = useState<string[]>(pair);
   const [showCharts, setShowCharts] = useState<liquidationType[]>([
