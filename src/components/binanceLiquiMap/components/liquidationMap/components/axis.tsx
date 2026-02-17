@@ -1,12 +1,12 @@
 import { useRef } from "react";
 
-const Axis = ({ children }) => {
+const Axis = ({ children, margin }) => {
   return (
     <svg className="h-full w-full">
       {children}
-      <g transform="translate(40, 0)" />
-      <g transform={`translate(40, 100%)`} />
-      <g transform={`translate(40, 100%)`} />
+      <g />
+      <g />
+      <g />
     </svg>
   );
 };
