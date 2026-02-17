@@ -2,9 +2,6 @@ import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../functions/colorScale";
 
-// Throttle the listener
-// Clean code
-
 const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
