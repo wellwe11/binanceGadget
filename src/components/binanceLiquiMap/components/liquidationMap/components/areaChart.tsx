@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import { useEffect, useState } from "react";
 
 const AreaChart = ({ data, x, y, color = "green" }) => {
   const line = d3

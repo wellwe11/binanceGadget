@@ -93,6 +93,7 @@ const LiquidationMap = ({ data }) => {
         x={x}
         xBars={xBars}
         y={y}
+        currentPrice={currentPrice}
       />
     </Axis>
   );

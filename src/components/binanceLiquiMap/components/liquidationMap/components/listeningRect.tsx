@@ -2,11 +2,13 @@ import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 // To-do tomorrow:
-// Check if bar in long or short for toolbar text
 // Add a mouseout listener
+// Check if bar in long or short for toolbar text
 // Throttle the listener
+// add dots. Each dot should reflect same color as current bar hovering
+// Add a mouse to hovering the bars
 
-const ListeningRect = ({ data, xBars, x, y }) => {
+const ListeningRect = ({ data, xBars, x, y, currentPrice }) => {
   const rectRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
@@ -50,7 +52,7 @@ const ListeningRect = ({ data, xBars, x, y }) => {
       console.log(d);
       tooltipText.text(`
         Price: ${d.price}
-        Cumulative Short Liquidation Leverage ${d.accumulatedVol}
+        Cumulative ${d.price > currentPrice ? "Short" : "Long"} Liquidation Leverage ${d.accumulatedVol}
         ${d.vol ? "Liquidation Leverage: " + d.vol : ""}
         `);
     });
