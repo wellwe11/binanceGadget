@@ -39,10 +39,10 @@ const ListeningRect = ({
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
-    let moveId = null;
+    let moveId = null as number | null;
     console.log(moveId);
 
-    listeningEl.on("mousemove", (event) => {
+    listeningEl.on("mousemove", (event: React.MouseEvent) => {
       if (moveId) return;
 
       const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
@@ -65,7 +65,7 @@ const ListeningRect = ({
         circle.attr("cx", xPos).attr("cy", yPos);
         circle.attr("r", 5).style("display", "block");
 
-        if (yPos === prevYPos) {
+        if (yPos === prevYPos && moveId) {
           cancelAnimationFrame(moveId);
           return;
         }
