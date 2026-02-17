@@ -21,7 +21,7 @@ type LiquidationType = {
   vol: number;
 };
 
-const LiquidationMap = ({ data }: { data: DataType }) => {
+const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
