@@ -1,8 +1,9 @@
 import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import colorScale from "../functions/colorScale";
 
 // Throttle the listener
-// add dots. Each dot should reflect same color as current bar hovering
+// Clean code
 
 const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
   const listeningRef = useRef(null);
@@ -11,17 +12,11 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
   const tooltipRef = useRef(null);
   const tooltipTextRef = useRef(null);
   const [displayToolbar, setDisplayToolbar] = useState(false);
+
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
 
-  const low = max * 0.2;
-  const normal = max * 0.4;
-  const high = max * 0.7;
-
-  const colorScale = d3
-    .scaleLinear()
-    .domain([low, normal, high, max])
-    .range(["#5600bf", "#00bcc6", "#00960a", "#b7b700"]);
+  const scaleColors = colorScale(max);
 
   useEffect(() => {
     if (
@@ -38,61 +33,83 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
+    let moveId = null;
+
     listeningEl.on("mousemove", (event) => {
+      if (moveId) return;
+
       const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
 
       const eachBand = y.step();
       const index = Math.floor(yCoord / eachBand);
       const d = data[index];
-
       if (!d) return;
 
-      const xPos = x(d.accumulatedVol) + 40;
-      const xBarPos = xBars(d.vol) + 40;
-      const yPos = y(d.price) + y.bandwidth() / 2;
-      const isPointerCursor =
-        xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
-      const isShort = d.price > currentPrice;
+      moveId = requestAnimationFrame(() => {
+        const xPos = x(d.accumulatedVol) + 40;
+        const xBarPos = xBars(d.vol) + 40;
 
-      listeningEl.style("cursor", isPointerCursor);
-      circle.attr("cx", xPos).attr("cy", yPos);
-      circle.attr("r", 5).style("display", "block");
+        let prevYPos = 0;
+        const yPos = y(d.price) + y.bandwidth() / 2;
 
-      tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos);
+        const isPointerCursor =
+          xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
+        listeningEl.style("cursor", isPointerCursor);
+        circle.attr("cx", xPos).attr("cy", yPos);
+        circle.attr("r", 5).style("display", "block");
 
-      tooltip.attr("y", yPos + 15);
-      tooltipText.html(`
-        <div class="flex flex-col gap-1 h-full">
+        if (yPos === prevYPos) {
+          cancelAnimationFrame(moveId);
+          return;
+        }
+
+        prevYPos = yPos;
+        const isShort = d.price > currentPrice;
+
+        tooltipLineY
+          .style("display", "block")
+          .attr("y1", yPos)
+          .attr("y2", yPos);
+
+        tooltip.attr("y", yPos + 15);
+        tooltipText.html(`
+            <div class="flex flex-col gap-1 h-full">
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full"></div>
-                Price: ${d.price}
+            Price: ${d.price}
             </div>
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full border border-white"
             style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
             ></div>
-                Cumulative ${isShort ? "Short" : "Long"}: ${d.accumulatedVol}
+            Cumulative ${isShort ? "Short" : "Long"}: ${d.accumulatedVol}
             </div>
             <div class="flex items-center gap-2">
-                ${
-                  d.vol > 0
-                    ? `
-                  <div class="w-2 h-2 rounded-full border border-white"
-                  style="background-color: ${colorScale(d.vol)}"></div>
-                        Liquidation Leverage: ${d.vol}
-                    </div>
-                    `
-                    : ""
-                }
-            </div>
-        </div>
-        `);
+            ${
+              d.vol > 0
+                ? `
+                <div class="w-2 h-2 rounded-full border border-white"
+                style="background-color: ${scaleColors(d.vol)}"></div>
+                Liquidation Leverage: ${d.vol}
+                </div>
+                `
+                : ""
+            }
+                </div>
+                </div>
+                `);
+
+        moveId = null;
+      });
     });
 
     listeningEl.on("mouseleave", () => {
-      console.log("out");
-      circle.attr("r", 0).style("display", "none");
-      tooltipLineY.style("display", "none");
+      if (moveId) {
+        cancelAnimationFrame(moveId);
+
+        circle.attr("r", 0).style("display", "none");
+        tooltipLineY.style("display", "none");
+      }
     });
   }, [displayToolbar]);
 
@@ -131,7 +148,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
         ref={tooltipRef}
         width={width}
         height="100"
-        style={{ pointerEvents: "none", transition: "y 0.15s ease" }}
+        style={{ pointerEvents: "none" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div

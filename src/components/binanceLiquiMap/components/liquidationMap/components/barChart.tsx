@@ -1,14 +1,7 @@
-import * as d3 from "d3";
+import colorScale from "../functions/colorScale";
 
 const BarChart = ({ data, x, y, max }) => {
-  const low = max * 0.2;
-  const normal = max * 0.4;
-  const high = max * 0.7;
-
-  const colorScale = d3
-    .scaleLinear()
-    .domain([low, normal, high, max])
-    .range(["#5600bf", "#00bcc6", "#00960a", "#b7b700"]);
+  const scaleColors = colorScale(max);
 
   return (
     <g transform="translate(40, 0)">
@@ -20,7 +13,7 @@ const BarChart = ({ data, x, y, max }) => {
           x="0"
           height={y.bandwidth()}
           width={x(d.vol)}
-          fill={colorScale(d.vol)}
+          fill={scaleColors(d.vol)}
           style={{
             transformOrigin: "left",
 
