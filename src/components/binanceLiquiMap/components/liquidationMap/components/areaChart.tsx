@@ -4,14 +4,14 @@ const AreaChart = ({ data, x, y, color = "green" }) => {
   const line = d3
     .line()
     .y((d) => y(d.price) + y.bandwidth() / 2)
-    .x((d) => x(d.accumulatedVol) + 40)
+    .x((d) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
   const area = d3
     .area()
     .y((d) => y(d.price) + y.bandwidth() / 2)
-    .x0(40)
-    .x1((d) => x(d.accumulatedVol) + 40)
+    .x0(0)
+    .x1((d) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
   return (

@@ -4,7 +4,7 @@ const BarChart = ({ data, x, y, max }) => {
   const scaleColors = colorScale(max);
 
   return (
-    <g transform="translate(40, 0)">
+    <g>
       {data.map((d, i) => (
         <rect
           key={i}
