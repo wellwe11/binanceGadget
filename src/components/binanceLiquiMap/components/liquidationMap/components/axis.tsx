@@ -1,6 +1,7 @@
 import * as d3 from "d3";
+import { AxisType, DottedLine } from "../Types";
 
-const DottedLine = ({ data, x, height, opacity = "0.2" }) => {
+const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLine) => {
   return (
     <line
       x1={x ? x(data) : data}
@@ -15,7 +16,7 @@ const DottedLine = ({ data, x, height, opacity = "0.2" }) => {
   );
 };
 
-const Axis = ({ children, shorts, longs, xBars, height }) => {
+const Axis = ({ children, shorts, longs, xBars, height }: AxisType) => {
   const maxShorts = d3.max(shorts, (d) => d.vol);
   const averageShorts = Math.round(d3.mean(shorts, (d) => d.vol));
 
