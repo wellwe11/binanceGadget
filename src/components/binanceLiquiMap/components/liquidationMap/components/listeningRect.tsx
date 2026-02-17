@@ -2,8 +2,7 @@ import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 // To-do tomorrow:
-// Dot that tracks the line
-// A toolbar with ''Liquidation Leverage' & Cumulative long/short liquidation Leverage
+// Check if bar in long or short for toolbar text
 // Add a mouseout listener
 // Throttle the listener
 
@@ -54,10 +53,6 @@ const ListeningRect = ({ data, xBars, x, y }) => {
         Cumulative Short Liquidation Leverage ${d.accumulatedVol}
         ${d.vol ? "Liquidation Leverage: " + d.vol : ""}
         `);
-
-      // Price
-      // Liquidation Leverage
-      // Cumulative short/long liquidation Leverage
     });
   }, [displayToolbar]);
 
@@ -95,10 +90,10 @@ const ListeningRect = ({ data, xBars, x, y }) => {
         style={{ pointerEvents: "none" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
-          <div className="bg-black w-full h-full text-white">
+          <div className="bg-black w-full h-full text-white pointer-events-none">
             <p
               ref={tooltipTextRef}
-              className="whitespace-pre-line ml-[40px] py-2"
+              className="whitespace-pre-line ml-[40px] py-2 pointer-events-none select-none"
             >
               some text
             </p>

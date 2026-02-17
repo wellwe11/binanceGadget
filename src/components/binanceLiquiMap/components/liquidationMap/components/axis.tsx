@@ -10,8 +10,8 @@ const Axis = ({ children, height, width, margin, x, xBars, y }) => {
     <svg
       ref={svgRef}
       style={{
-        width: `${width + margin.left + margin.right}`,
-        height: `${height + margin.top + margin.bottom}`,
+        width: `${width}`,
+        height: `${height}`,
         border: "1px solid gray",
       }}
     >

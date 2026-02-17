@@ -9,8 +9,8 @@ import filterByType from "./functions/filterByType";
 
 const LiquidationMap = ({ data }) => {
   const margin = { top: 70, right: 40, bottom: 60, left: 175 },
-    width = 400 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+    width = 500 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
 
   // Filter data by type (i.e. long, short)
   const filteredData = filterByType(data);

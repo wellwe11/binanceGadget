@@ -185,10 +185,26 @@ const GraphTypeControllerMenu = ({
   );
 };
 
+const DisplayLiquidationButton = ({ setter }) => {
+  const handleChecked = (e) => {
+    const isChecked = e.target.checked;
+
+    setter(isChecked);
+  };
+  return (
+    <input
+      onChange={handleChecked}
+      type="checkbox"
+      className="w-5 h-5 bg-amber-300"
+    />
+  );
+};
+
 const Nav = ({
   symbol,
   pair,
   time,
+  displayMap,
 }: {
   symbol: string[];
   pair: string[];
@@ -235,6 +251,7 @@ const Nav = ({
         </div>
         <div className="py-2">
           <Slider />
+          <DisplayLiquidationButton setter={displayMap} />
         </div>
       </div>
 

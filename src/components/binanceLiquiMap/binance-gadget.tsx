@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, Activity } from "react";
 import Gradient from "./components/gradient";
 import HeatMap from "./components/Heatmap";
 import LiquidationMap from "./components/liquidationMap/liquidationMap";
@@ -9,6 +9,7 @@ import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import sortDataIntoBuckets from "./functions/sortDataIntoBuckets";
 
 const BinanceGadget = () => {
+  const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
   const placeholderCurrencies = useMemo(
     () => [
       "BTC",
@@ -88,6 +89,8 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
+  console.log(displayLiquidationMap);
+
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
@@ -99,6 +102,7 @@ const BinanceGadget = () => {
           symbol={placeholderCurrencies}
           pair={placeholderPairs}
           time={times}
+          displayMap={setDisplayLiquidationMap}
         />
       </div>
 
@@ -108,12 +112,15 @@ const BinanceGadget = () => {
           <Gradient />
         </div>
 
-        <div className="flex">
-          <div className="w-150 h-full">
+        <div className="flex w-250">
+          <div className="w-50 h-100">
             <h1>PLACEHOLDER</h1>
             <HeatMap />
           </div>
-          <LiquidationMap data={binnedData} valMax={max} />
+
+          <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
+            <LiquidationMap data={binnedData} valMax={max} />
+          </Activity>
         </div>
       </div>
 
