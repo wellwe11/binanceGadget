@@ -4,7 +4,7 @@ import * as d3 from "d3";
 // Throttle the listener
 // add dots. Each dot should reflect same color as current bar hovering
 
-const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
+const ListeningRect = ({ data, xBars, x, y, currentPrice, max, width }) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
@@ -69,7 +69,7 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
             </div>
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full border border-white"
-            style="background-color: ${isShort ? "#00bcc6" : "#ff0000ed"}"
+            style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
             ></div>
                 Cumulative ${isShort ? "Short" : "Long"}: ${d.accumulatedVol}
             </div>
@@ -129,14 +129,14 @@ const ListeningRect = ({ data, xBars, x, y, currentPrice, max }) => {
 
       <foreignObject
         ref={tooltipRef}
-        width="450"
-        height="150"
-        style={{ pointerEvents: "none" }}
+        width={width}
+        height="100"
+        style={{ pointerEvents: "none", transition: "y 0.15s ease" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-full text-white pointer-events-none"
+            className="bg-black w-full h-full text-white pointer-events-none ml-[40px] py-2"
           />
         </Activity>
       </foreignObject>
