@@ -1,6 +1,6 @@
 import { useMemo, useState, Activity } from "react";
 import Gradient from "./components/gradient";
-import HeatMap from "./components/Heatmap";
+import HeatMap from "./components/heatmap/heatmap";
 import LiquidationMap from "./components/liquidationMap/liquidationMap";
 import Nav from "./components/nav/nav";
 import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
