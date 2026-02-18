@@ -17,10 +17,14 @@ const Axis = ({ children, x, y, height, width }) => {
       d3
         .axisBottom(x)
         .tickValues(xAxisTicks)
-        .tickFormat(d3.timeFormat("%b %Y")),
+        .tickFormat(d3.timeFormat("%b %Y"))
+        .tickSize(0),
     );
 
-    yAxis.call(d3.axisRight(y));
+    yAxis.call(d3.axisRight(y).tickSize(0));
+
+    xAxis.select(".domain").remove();
+    yAxis.select(".domain").remove();
   }, [x, y]);
 
   return (

@@ -19,7 +19,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
 
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(() => filterByType(data), []);
-  const currentPrice = d3.median(data, (d) => d.price); // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+  const currentPrice = data[0].price; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Filter away shorts that are below currentPrice
   const filteredShorts = useMemo(

@@ -93,6 +93,11 @@ const BinanceGadget = () => {
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
 
+  console.log(binnedData, data);
+
+  // 504
+  // 912
+
   return (
     <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
       <div className="bg-gray-950">
