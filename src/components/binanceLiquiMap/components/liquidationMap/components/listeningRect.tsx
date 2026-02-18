@@ -79,7 +79,7 @@ const ListeningRect = ({
 
         tooltip.attr("y", yPos + 15);
         tooltipText.html(`
-            <div class="flex flex-col gap-1 h-full">
+            <div class="flex flex-col gap-1 h-full w-full">
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full"></div>
             Price: ${d.price}
@@ -161,7 +161,7 @@ const ListeningRect = ({
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-full text-white pointer-events-none py-2"
+            className="bg-black w-full h-full text-white pointer-events-none py-2 z-30"
           />
         </Activity>
       </foreignObject>

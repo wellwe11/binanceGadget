@@ -110,13 +110,13 @@ const BinanceGadget = () => {
           <Gradient />
         </div>
 
-        <div className="flex w-270">
-          <div className="ml-2 w-160 h-100">
+        <div className="flex w-300">
+          <div className="ml-2 w-200 h-100">
             <HeatMap data={data} />
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-50 h-100">
+            <div className="w-90 h-100">
               <LiquidationMap data={binnedData} />
             </div>
           </Activity>
@@ -124,7 +124,7 @@ const BinanceGadget = () => {
       </div>
 
       <div
-        className="h-30 w-150 flex flex-col flex-1"
+        className="h-30 w-200 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
         <TimeLapsChart data={data} />

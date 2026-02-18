@@ -27,8 +27,8 @@ const CandleChart = ({ data, x, y }) => {
       .append("line")
       .attr("y1", (d) => y(d.low))
       .attr("y2", (d) => y(d.high))
-      .attr("stroke", (d) => (d.low < d.high ? "#c90000" : "#22c55e"))
-      .attr("stroke-width", 0.4);
+      .attr("stroke", (d) => (d.open > d.close ? "#c90000" : "#22c55e"))
+      .attr("stroke-width", 1);
 
     candleGroups
       .append("line")

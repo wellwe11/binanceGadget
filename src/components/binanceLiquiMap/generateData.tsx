@@ -34,14 +34,14 @@ const generateHeatmapData = (names: string[], days = 100) => {
       // 2. Open is previous Close
       const open = lastPrices[name];
       const close = isUp
-        ? open + volatility / 2
-        : open - volatility / 2 < 0
-          ? 10000
-          : open - volatility / 2;
+        ? open + volatility
+        : open - volatility < 0
+          ? open + volatility / 2
+          : open - volatility;
 
       // 3. Ensure High/Low envelop Open/Close
-      const high = Math.max(open, close) + Math.random() * 10;
-      const low = Math.min(open, close) - Math.random() * 10;
+      const high = Math.max(open, close) + Math.random() * 30;
+      const low = Math.min(open, close) - Math.random() * 30;
 
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
