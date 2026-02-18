@@ -94,7 +94,7 @@ const BinanceGadget = () => {
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
 
   return (
-    <div className="flex flex-col pt-5 pl-1 w-max h-full bg-black">
+    <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
       <div className="bg-gray-950">
         <Nav
           symbol={placeholderCurrencies}
@@ -104,19 +104,19 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="flex w-max">
+      <div className="flex w-fit">
         <div className="w-10" style={{ height: "inherit" }}>
           {/* Need to calculate max and add it to Gradient max={number} */}
           <Gradient />
         </div>
 
-        <div className="flex w-250">
-          <div className="ml-2 w-170 h-100">
+        <div className="flex w-270">
+          <div className="ml-2 w-160 h-100">
             <HeatMap data={data} />
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-100 h-100">
+            <div className="w-50 h-100">
               <LiquidationMap data={binnedData} />
             </div>
           </Activity>

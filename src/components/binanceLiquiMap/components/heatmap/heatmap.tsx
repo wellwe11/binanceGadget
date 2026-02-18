@@ -27,7 +27,7 @@ const CandleChart = ({ data, x, y }) => {
       .append("line")
       .attr("y1", (d) => y(d.low))
       .attr("y2", (d) => y(d.high))
-      .attr("stroke", (d) => (d.low > d.high ? "#3f4444" : "#22c55e"))
+      .attr("stroke", (d) => (d.low < d.high ? "#c90000" : "#22c55e"))
       .attr("stroke-width", 0.4);
 
     candleGroups
@@ -35,7 +35,7 @@ const CandleChart = ({ data, x, y }) => {
       .attr("y1", (d) => y(d.open))
       .attr("y2", (d) => y(d.close))
       .attr("stroke-width", x.bandwidth() * 1)
-      .attr("stroke", (d) => (d.open > d.close ? "#3f4444" : "#22c55e"));
+      .attr("stroke", (d) => (d.open > d.close ? "#c90000" : "#22c55e"));
   }, [data, x, y]);
 
   return <g ref={gRef}></g>;
@@ -53,13 +53,14 @@ const HeatMap = ({ data }) => {
   const x = d3
     .scaleBand()
     .range([30, containerWidth - 40])
-    .domain(data.map((d) => new Date(d.date)));
+    .domain(data.map((d) => new Date(d.date)))
+    .padding(0.4);
 
   // y (right side) price
   const y = d3
     .scaleLinear()
     .range([containersHeight - 40, 1])
-    .domain([0, max * 2]);
+    .domain([min > 0 ? min - min : 0, max * 1.5]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>

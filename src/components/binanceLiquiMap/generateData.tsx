@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 200) => {
+const generateHeatmapData = (names: string[], days = 100) => {
   const data = [];
   const today = new Date();
 
@@ -22,7 +22,7 @@ const generateHeatmapData = (names: string[], days = 200) => {
   }
 
   const lastPrices = {};
-  names.forEach((name) => (lastPrices[name] = 2000));
+  names.forEach((name) => (lastPrices[name] = 500));
 
   for (let i = 0; i < amountOfData; i++) {
     const date = timeOffset(i);
@@ -33,7 +33,11 @@ const generateHeatmapData = (names: string[], days = 200) => {
 
       // 2. Open is previous Close
       const open = lastPrices[name];
-      const close = isUp ? open + volatility : open - volatility;
+      const close = isUp
+        ? open + volatility / 2
+        : open - volatility / 2 < 0
+          ? 10000
+          : open - volatility / 2;
 
       // 3. Ensure High/Low envelop Open/Close
       const high = Math.max(open, close) + Math.random() * 10;
@@ -42,7 +46,7 @@ const generateHeatmapData = (names: string[], days = 200) => {
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
       const boolean = Math.random() > 0.5;
-      const priceClarity = Math.random() > 0.8 ? 2000 : 500;
+      const priceClarity = Math.random() > 0.8 ? 3000 : 200;
 
       data.push({
         coin: name,

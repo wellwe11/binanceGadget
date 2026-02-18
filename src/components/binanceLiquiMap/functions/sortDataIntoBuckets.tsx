@@ -1,4 +1,4 @@
-const sortDataIntoBuckets = (data, binSize = 5) => {
+const sortDataIntoBuckets = (data, binSize = 1) => {
   const bins = {};
 
   data.forEach((item) => {

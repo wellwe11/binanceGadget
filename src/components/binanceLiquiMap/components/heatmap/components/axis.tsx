@@ -11,10 +11,12 @@ const Axis = ({ children, x, y, height, width }) => {
     const xAxis = d3.select(xRef.current);
     const yAxis = d3.select(yRef.current);
 
+    const xAxisTicks = x.domain().filter((d, i) => i % 10 === 0);
+
     xAxis.call(
       d3
         .axisBottom(x)
-        .ticks(d3.timeMonth.every(1))
+        .tickValues(xAxisTicks)
         .tickFormat(d3.timeFormat("%b %Y")),
     );
 
