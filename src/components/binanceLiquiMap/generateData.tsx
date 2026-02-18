@@ -46,7 +46,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
       const boolean = Math.random() > 0.5;
-      const priceClarity = Math.random() > 0.8 ? 3000 : 200;
+      const priceClarity = Math.random() > 0.8 ? 1000 : 200;
 
       data.push({
         coin: name,
@@ -58,7 +58,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
         value: close,
         openInterest: Math.floor(Math.random() * 100) + 1000,
         type: boolean ? "long" : "short",
-        volume: Math.floor(Math.random() * 20) + priceClarity,
+        volume: Math.floor(Math.random() * priceClarity),
       });
     });
   }

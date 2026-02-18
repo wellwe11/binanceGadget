@@ -6,6 +6,7 @@ import Axis from "./components/axis";
 const BarChart = () => {};
 
 const CandleChart = ({ data, x, y }) => {
+  console.log(data);
   const gRef = useRef(null);
 
   useEffect(() => {
