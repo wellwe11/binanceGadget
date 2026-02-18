@@ -19,6 +19,10 @@ const CandleChart = ({ data, x, y }) => {
       .data(data)
       .join("g")
       .attr("transform", (d) => `translate(${x(d.date)},0)`);
+
+    g.append("line")
+      .attr("y1", (d) => y(d.low))
+      .attr("y2", (d) => y(d.high));
   }, [data]);
 
   return <g ref={gRef}></g>;
