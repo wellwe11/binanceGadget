@@ -116,7 +116,7 @@ const BinanceGadget = () => {
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-90 h-100">
+            <div className="w-90 h-90">
               <LiquidationMap data={binnedData} />
             </div>
           </Activity>
@@ -124,7 +124,7 @@ const BinanceGadget = () => {
       </div>
 
       <div
-        className="h-30 w-200 flex flex-col flex-1"
+        className="ml-15 h-30 w-185 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
         <TimeLapsChart data={data} />

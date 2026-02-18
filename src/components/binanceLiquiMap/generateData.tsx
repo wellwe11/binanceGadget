@@ -41,7 +41,10 @@ const generateHeatmapData = (names: string[], days = 100) => {
 
       // 3. Ensure High/Low envelop Open/Close
       const high = Math.max(open, close) + Math.random() * 30;
-      const low = Math.min(open, close) - Math.random() * 30;
+      const low =
+        Math.min(open, close) - Math.random() * 30 > 0
+          ? Math.min(open, close) - Math.random() * 30
+          : 0;
 
       // 4. Update tracker for next iteration
       lastPrices[name] = close;

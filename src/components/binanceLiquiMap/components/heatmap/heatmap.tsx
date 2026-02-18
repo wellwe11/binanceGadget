@@ -3,58 +3,58 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import { useEffect, useRef } from "react";
 import Axis from "./components/axis";
 
+// Create barchart
+// Inside of barchart, i need to calculate if value is the same as price during that time
+// If so, make liquidation into 0
+
+// Add a listening rect
+// Inside of rect, I need a toolbox that shows
+// Hovering CandleChart: Open, High, Low, Close
+// Hovering barChart: Price, Liqudation Leverage
+
 const BarChart = () => {};
 
 const CandleChart = ({ data, x, y }) => {
-  console.log(data);
-  const gRef = useRef(null);
-
-  useEffect(() => {
-    if (!gRef.current || !data) return;
-
-    const g = d3.select(gRef.current);
-
-    const candleGroups = g
-      .selectAll("g.candle")
-      .data(data)
-      .join("g")
-      .attr("class", "candle")
-      .attr(
-        "transform",
-        (d) => `translate(${x(new Date(d.date).getTime())}, 0)`,
-      );
-
-    candleGroups
-      .append("line")
-      .attr("y1", (d) => y(d.low))
-      .attr("y2", (d) => y(d.high))
-      .attr("stroke", (d) => (d.open > d.close ? "#c90000" : "#22c55e"))
-      .attr("stroke-width", 1);
-
-    candleGroups
-      .append("line")
-      .attr("y1", (d) => y(d.open))
-      .attr("y2", (d) => y(d.close))
-      .attr("stroke-width", x.bandwidth() * 1)
-      .attr("stroke", (d) => (d.open > d.close ? "#c90000" : "#22c55e"));
-  }, [data, x, y]);
-
-  return <g ref={gRef}></g>;
+  return (
+    <g className="candle">
+      {data.map((d, i) => (
+        <g
+          key={i}
+          className="candleGroup"
+          transform={`translate(${x(new Date(d.date).getTime())}, 0)`}
+        >
+          <line
+            y1={y(d.low)}
+            y2={y(d.high)}
+            stroke={d.open > d.close ? "#ff3939" : "#65ff65"}
+            strokeWidth="1"
+          />
+          <line
+            y1={y(d.open)}
+            y2={y(d.close)}
+            stroke={d.open > d.close ? "#ff3939" : "#65ff65"}
+            strokeWidth={x.bandwidth()}
+          />
+        </g>
+      ))}
+    </g>
+  );
 };
 
 const HeatMap = ({ data }) => {
+  const reveredData = data.toReversed();
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  const max = d3.max(data, (d) => d.value);
-  const min = d3.min(data, (d) => d.value);
+  const max = d3.max(reveredData, (d) => d.value);
+  const min = d3.min(reveredData, (d) => d.value);
 
   // x = time
   const x = d3
     .scaleBand()
     .range([30, containerWidth - 40])
-    .domain(data.map((d) => new Date(d.date)))
+    .domain(reveredData.map((d) => new Date(d.date)))
     .padding(0.4);
 
   // y (right side) price
@@ -67,7 +67,7 @@ const HeatMap = ({ data }) => {
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
         <BarChart />
-        <CandleChart data={data} x={x} y={y} />
+        <CandleChart data={reveredData} x={x} y={y} />
       </Axis>
     </div>
   );
