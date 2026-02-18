@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y, data, height, width }) => {
+const Axis = ({ children, x, y, height, width }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
 
@@ -14,7 +14,7 @@ const Axis = ({ children, x, y, data, height, width }) => {
     xAxis.call(
       d3
         .axisBottom(x)
-        .ticks(d3.timeMonth.every(3))
+        .ticks(d3.timeMonth.every(1))
         .tickFormat(d3.timeFormat("%b %Y")),
     );
 

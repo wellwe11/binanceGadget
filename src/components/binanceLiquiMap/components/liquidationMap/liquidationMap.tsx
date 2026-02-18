@@ -37,6 +37,8 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const accumulatedShorts = accumulateVal(filteredShorts);
   const accumulatedLongs = accumulateVal(filteredLongs.toReversed());
 
+  console.log(filteredLongs);
+
   // Define highest referal-point for VOL (x)
   const maxVol = d3.max(
     [

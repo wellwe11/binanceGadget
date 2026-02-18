@@ -9,21 +9,35 @@ const CandleChart = ({ data, x, y }) => {
   const gRef = useRef(null);
 
   useEffect(() => {
-    if (!gRef.current) return;
+    if (!gRef.current || !data) return;
+    console.log(data);
 
     const g = d3.select(gRef.current);
 
-    g.attr("stroke-linecap", "round")
-      .attr("stroke", "black")
-      .selectAll("g")
+    const candleGroups = g
+      .selectAll("g.candle")
       .data(data)
       .join("g")
-      .attr("transform", (d) => `translate(${x(d.date)},0)`);
+      .attr("class", "candle")
+      .attr(
+        "transform",
+        (d) => `translate(${x(new Date(d.date).getTime())}, 0)`,
+      );
 
-    g.append("line")
+    candleGroups
+      .append("line")
       .attr("y1", (d) => y(d.low))
-      .attr("y2", (d) => y(d.high));
-  }, [data]);
+      .attr("y2", (d) => y(d.high))
+      .attr("stroke", (d) => (d.low > d.high ? "#3f4444" : "#22c55e"))
+      .attr("stroke-width", 0.4);
+
+    candleGroups
+      .append("line")
+      .attr("y1", (d) => y(d.open))
+      .attr("y2", (d) => y(d.close))
+      .attr("stroke-width", x.bandwidth() * 1)
+      .attr("stroke", (d) => (d.open > d.close ? "#3f4444" : "#22c55e"));
+  }, [data, x, y]);
 
   return <g ref={gRef}></g>;
 };
@@ -38,17 +52,15 @@ const HeatMap = ({ data }) => {
 
   // x = time
   const x = d3
-    .scaleTime()
+    .scaleBand()
     .range([30, containerWidth - 40])
-    .domain(d3.extent(data, (d) => new Date(d.date)));
+    .domain(data.map((d) => new Date(d.date)));
 
   // y (right side) price
   const y = d3
     .scaleLinear()
     .range([containersHeight - 40, 1])
-    .domain([min, max]);
-
-  console.log(data);
+    .domain([0, max * 2]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
