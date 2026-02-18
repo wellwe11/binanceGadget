@@ -111,9 +111,8 @@ const BinanceGadget = () => {
         </div>
 
         <div className="flex w-250">
-          <div className="w-50 h-100">
-            <h1>PLACEHOLDER</h1>
-            <HeatMap />
+          <div className="ml-2 w-170 h-100">
+            <HeatMap data={data} />
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>

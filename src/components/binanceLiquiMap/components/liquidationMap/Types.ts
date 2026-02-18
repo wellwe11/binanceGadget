@@ -12,6 +12,7 @@ export interface AxisType {
   longs: List[];
   xBars: d3ScaleLinear;
   height: number;
+  width: number;
 }
 
 export interface DottedLineType {

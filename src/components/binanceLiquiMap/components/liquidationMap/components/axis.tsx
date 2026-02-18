@@ -16,7 +16,7 @@ const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLineType) => {
   );
 };
 
-const Axis = ({ children, shorts, longs, xBars, height }: AxisType) => {
+const Axis = ({ children, shorts, longs, xBars, height, width }: AxisType) => {
   const maxShorts = d3.max(shorts, (d: List) => d.vol);
   const averageShorts = Math.round(d3.mean(shorts, (d: List) => d.vol));
 
@@ -24,7 +24,7 @@ const Axis = ({ children, shorts, longs, xBars, height }: AxisType) => {
   const averageLongs = Math.round(d3.mean(longs, (d: List) => d.vol));
 
   return (
-    <svg className="h-full w-full">
+    <svg height={height} width={width}>
       {children}
 
       <DottedLine data={maxShorts} x={xBars} height={height} opacity="0.3" />

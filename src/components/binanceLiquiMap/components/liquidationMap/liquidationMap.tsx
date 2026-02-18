@@ -72,6 +72,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         longs={filteredLongs}
         xBars={xBars}
         height={containersHeight}
+        width={containerWidth}
       >
         <BarChart data={accumulatedShorts} x={xBars} y={y} max={max} />
         <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
