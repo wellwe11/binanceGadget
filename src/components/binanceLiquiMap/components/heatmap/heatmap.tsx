@@ -10,7 +10,6 @@ const CandleChart = ({ data, x, y }) => {
 
   useEffect(() => {
     if (!gRef.current || !data) return;
-    console.log(data);
 
     const g = d3.select(gRef.current);
 

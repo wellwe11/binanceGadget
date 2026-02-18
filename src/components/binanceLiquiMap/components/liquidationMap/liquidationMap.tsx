@@ -19,7 +19,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
 
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(() => filterByType(data), []);
-  const currentPrice = 500; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+  const currentPrice = d3.median(data, (d) => d.price); // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Filter away shorts that are below currentPrice
   const filteredShorts = useMemo(
@@ -37,13 +37,11 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const accumulatedShorts = accumulateVal(filteredShorts);
   const accumulatedLongs = accumulateVal(filteredLongs.toReversed());
 
-  console.log(filteredLongs);
-
   // Define highest referal-point for VOL (x)
   const maxVol = d3.max(
     [
-      accumulatedShorts[accumulatedShorts.length - 1],
-      accumulatedLongs[accumulatedLongs.length - 1],
+      accumulatedShorts?.[accumulatedShorts.length - 1] || 0,
+      accumulatedLongs?.[accumulatedLongs.length - 1] || 0,
     ].flat(),
     (d: accumulatedType) => d.accumulatedVol,
   );

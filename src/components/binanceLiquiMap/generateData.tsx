@@ -22,7 +22,7 @@ const generateHeatmapData = (names: string[], days = 200) => {
   }
 
   const lastPrices = {};
-  names.forEach((name) => (lastPrices[name] = 500));
+  names.forEach((name) => (lastPrices[name] = 2000));
 
   for (let i = 0; i < amountOfData; i++) {
     const date = timeOffset(i);
@@ -41,8 +41,8 @@ const generateHeatmapData = (names: string[], days = 200) => {
 
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
-      const boolean = Math.random() > 5;
-      const priceClarity = Math.random() > 0.8 ? 2000 : 100;
+      const boolean = Math.random() > 0.5;
+      const priceClarity = Math.random() > 0.8 ? 2000 : 500;
 
       data.push({
         coin: name,
@@ -52,9 +52,9 @@ const generateHeatmapData = (names: string[], days = 200) => {
         high,
         low,
         value: close,
-        openInterest: Math.floor(Math.random() * 100000) + 50000,
+        openInterest: Math.floor(Math.random() * 100) + 1000,
         type: boolean ? "long" : "short",
-        volume: Math.floor(Math.random() * 500) + priceClarity,
+        volume: Math.floor(Math.random() * 20) + priceClarity,
       });
     });
   }
