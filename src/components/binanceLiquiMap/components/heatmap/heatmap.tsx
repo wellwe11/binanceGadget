@@ -1,11 +1,28 @@
 import * as d3 from "d3";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Axis from "./components/axis";
 
 const BarChart = () => {};
 
-const CandleChart = () => {};
+const CandleChart = ({ data, x, y }) => {
+  const gRef = useRef(null);
+
+  useEffect(() => {
+    if (!gRef.current) return;
+
+    const g = d3.select(gRef.current);
+
+    g.attr("stroke-linecap", "round")
+      .attr("stroke", "black")
+      .selectAll("g")
+      .data(data)
+      .join("g")
+      .attr("transform", (d) => `translate(${x(d.date)},0)`);
+  }, [data]);
+
+  return <g ref={gRef}></g>;
+};
 
 const HeatMap = ({ data }) => {
   const containerRef = useRef(null);
@@ -33,7 +50,7 @@ const HeatMap = ({ data }) => {
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
         <BarChart />
-        <CandleChart />
+        <CandleChart data={data} x={x} y={y} />
       </Axis>
     </div>
   );

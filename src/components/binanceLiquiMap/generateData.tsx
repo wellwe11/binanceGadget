@@ -26,11 +26,14 @@ const generateHeatmapData = (names: string[], days = 600) => {
 
     names.forEach((name) => {
       const priceClarity = Math.random() > 0.8 ? 2000 : 100;
+      const val = Math.floor(Math.random() * 500) + priceClarity;
 
       data.push({
         coin: name,
         date: date,
-        value: Math.floor(Math.random() * 500) + priceClarity,
+        value: val,
+        low: val * 0.7,
+        high: val * 1.3,
         openInterest: Math.floor(Math.random() * 100000) + 50000,
         type: Math.random() > 0.5 ? "long" : "short",
         volume: Math.floor(Math.random() * 500) + priceClarity,
