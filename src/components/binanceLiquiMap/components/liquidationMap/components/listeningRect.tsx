@@ -40,44 +40,41 @@ const ListeningRect = ({
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
-    let moveId = null as number | null;
-
     const bisect = d3.bisector((d) => d.price).center;
-    let lastIndex = -1;
 
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
-      if (moveId) return;
+      const [xCoord, yCoord] = d3.pointer(event);
 
-      const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
       const mousePrice = y.invert(yCoord);
       const index = bisect(data, mousePrice);
 
-      if (index === lastIndex) return;
-      lastIndex = index;
-
       const d = data[index];
-      if (!d) return;
 
-      moveId = requestAnimationFrame(() => {
+      const isShort = d.price > currentPrice;
+
+      tooltipLineY
+        .attr("y1", yCoord)
+        .attr("y2", yCoord)
+        .style("display", "block");
+
+      if (d) {
         const xPos = x(d.accumulatedVol);
         const xBarPos = xBars(d.vol);
-        const yPos = y(d.price);
+
+        circle
+          .attr("cx", xPos) // X snaps to vol
+          .attr("cy", yCoord) // Y follows mouse smoothly
+          .attr("r", 5)
+          .style("display", "block");
 
         const isPointerCursor =
           xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
         listeningEl.style("cursor", isPointerCursor);
-        circle.attr("cx", xPos).attr("cy", yPos);
-        circle.attr("r", 5).style("display", "block");
+      }
 
-        const isShort = d.price > currentPrice;
+      tooltip.attr("y", yCoord + 15);
 
-        tooltipLineY
-          .style("display", "block")
-          .attr("y1", yPos)
-          .attr("y2", yPos);
-
-        tooltip.attr("y", yPos + 15);
-        tooltipText.html(`
+      tooltipText.html(`
             <div class="flex flex-col gap-1 h-full w-full">
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full"></div>
@@ -103,20 +100,13 @@ const ListeningRect = ({
                 </div>
                 </div>
                 `);
-
-        moveId = null;
-      });
     });
 
     listeningEl.on("mouseleave", () => {
-      if (moveId) {
-        cancelAnimationFrame(moveId);
-        lastIndex = -1;
-        circle.attr("r", 0).style("display", "none");
-        tooltipLineY.style("display", "none");
-      }
+      circle.attr("r", 0).style("display", "none");
+      tooltipLineY.style("display", "none");
     });
-  }, [displayToolbar]);
+  }, [displayToolbar, data, y, x, width, height]);
 
   return (
     <g

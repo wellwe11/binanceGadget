@@ -11,14 +11,14 @@ const AreaChart = ({
     .line()
     .y((d: accumulatedType) => y(d.price))
     .x((d: accumulatedType) => x(d.accumulatedVol))
-    .curve(d3.curveBasis);
+    .curve(d3.curveCatmullRom);
 
   const area = d3
     .area()
     .y((d: accumulatedType) => y(d.price))
     .x0(0)
     .x1((d: accumulatedType) => x(d.accumulatedVol))
-    .curve(d3.curveBasis);
+    .curve(d3.curveCatmullRom);
 
   return (
     <g>
@@ -27,6 +27,7 @@ const AreaChart = ({
         fill={color}
         opacity="0.12"
         style={{
+          transformOrigin: "left",
           animation: `growArea 0.2s ease forwards`,
         }}
       />
