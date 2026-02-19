@@ -40,7 +40,6 @@ const ListeningRect = ({
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
-    console.log(data);
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
       const [xCoord, yCoord] = d3.pointer(event);
       const mousePrice = y.invert(yCoord);
@@ -53,6 +52,15 @@ const ListeningRect = ({
       let interpolatedVol = 0;
       let interpolatedPrice = 0;
 
+      // 1. Find nearest data point
+      const dNearest =
+        d1 && mousePrice - d0.price > d1.price - mousePrice ? d1 : d0;
+
+      // 2. Define a threshold (e.g., if mouse is > $10 away from a real price)
+      const priceThreshold = 1;
+      const isEmpty =
+        !dNearest || Math.abs(dNearest.price - mousePrice) > priceThreshold;
+
       if (d0 && d1) {
         const t = (mousePrice - d0.price) / (d1.price - d0.price);
 
@@ -61,11 +69,12 @@ const ListeningRect = ({
 
         interpolatedVol = d0.vol + t * (d1.vol - d0.vol);
         interpolatedPrice = d0.price + t * (d1.price - d0.price);
-      } else {
-        interpolatedAccumulatedVol = d?.accumulatedVol || 0;
-        interpolatedVol = d?.vol || 0;
-        interpolatedPrice = d?.price || 0;
       }
+
+      if (isEmpty) {
+        interpolatedVol = 0;
+      }
+
       const xPos = x(interpolatedAccumulatedVol);
       const yPos = yCoord;
 
