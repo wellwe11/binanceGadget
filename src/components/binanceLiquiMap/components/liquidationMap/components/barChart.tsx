@@ -10,10 +10,10 @@ const BarChart = ({ data, x, y, max }: XYType & { max: number }) => {
         <rect
           key={i}
           className="bar"
-          y={y(d.price)}
           x="0"
-          height={y.bandwidth()}
+          y={y(d.price)}
           width={x(d.vol)}
+          height={2}
           fill={scaleColors(d.vol)}
           style={{
             transformOrigin: "left",

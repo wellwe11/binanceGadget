@@ -42,23 +42,26 @@ const ListeningRect = ({
 
     let moveId = null as number | null;
 
+    const bisect = d3.bisector((d) => d.price).center;
+    let lastIndex = -1;
+
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
       if (moveId) return;
 
       const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
+      const mousePrice = y.invert(yCoord);
+      const index = bisect(data, mousePrice);
 
-      const eachBand = y.step();
+      if (index === lastIndex) return;
+      lastIndex = index;
 
-      const index = Math.floor(yCoord / eachBand);
       const d = data[index];
       if (!d) return;
 
       moveId = requestAnimationFrame(() => {
         const xPos = x(d.accumulatedVol);
         const xBarPos = xBars(d.vol);
-
-        let prevYPos = 0;
-        const yPos = y(d.price) + y.bandwidth() / 2;
+        const yPos = y(d.price);
 
         const isPointerCursor =
           xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
@@ -66,12 +69,6 @@ const ListeningRect = ({
         circle.attr("cx", xPos).attr("cy", yPos);
         circle.attr("r", 5).style("display", "block");
 
-        if (yPos === prevYPos && moveId) {
-          cancelAnimationFrame(moveId);
-          return;
-        }
-
-        prevYPos = yPos;
         const isShort = d.price > currentPrice;
 
         tooltipLineY
@@ -114,7 +111,7 @@ const ListeningRect = ({
     listeningEl.on("mouseleave", () => {
       if (moveId) {
         cancelAnimationFrame(moveId);
-
+        lastIndex = -1;
         circle.attr("r", 0).style("display", "none");
         tooltipLineY.style("display", "none");
       }
@@ -136,14 +133,16 @@ const ListeningRect = ({
         strokeOpacity="0"
         pointerEvents="all"
         style={{ zIndex: "1" }}
+        width={width}
+        height={height}
       />
       <line
         ref={lineRef}
         visibility={displayToolbar ? "visible" : "hidden"}
         x1="0"
-        x2="100%"
+        x2={width}
         stroke="gray"
-        strokeWidth={y.bandwidth()}
+        strokeWidth={y.price}
         strokeOpacity="0.5"
         pointerEvents="none"
       />

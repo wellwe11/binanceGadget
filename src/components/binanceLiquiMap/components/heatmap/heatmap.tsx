@@ -16,8 +16,8 @@ const BarChart = ({ data, x, y, width, height }) => {
 
   const volScale = d3
     .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.volume)])
-    .range([0, width]);
+    .range([0, width])
+    .domain([0, d3.max(data, (d) => d.volume)]);
 
   const color = d3
     .scaleSequential(d3.interpolateBlues)
@@ -40,6 +40,7 @@ const BarChart = ({ data, x, y, width, height }) => {
 
   return <g height={height} width={width} ref={gRef}></g>;
 };
+
 const CandleChart = ({ data, x, y }) => {
   // On hover, check: Open, High, Low, Close
   return (
@@ -85,11 +86,13 @@ const HeatMap = ({ data }) => {
     .domain(reveredData.map((d) => new Date(d.date)))
     .padding(0.4);
 
+  const pricePadding = (max - min) * 0.1;
+
   // y (right side) price
   const y = d3
     .scaleLinear()
     .range([containersHeight - 40, 1])
-    .domain([min > 0 ? min - min : 0, max * 1.5]);
+    .domain([min - pricePadding, max + pricePadding]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>

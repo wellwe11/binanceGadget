@@ -9,18 +9,16 @@ const AreaChart = ({
 }: XYType & { color: string }) => {
   const line = d3
     .line()
-    .y((d: accumulatedType) => y(d.price) + y.bandwidth() / 2)
+    .y((d: accumulatedType) => y(d.price))
     .x((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
   const area = d3
     .area()
-    .y((d: accumulatedType) => y(d.price) + y.bandwidth() / 2)
+    .y((d: accumulatedType) => y(d.price))
     .x0(0)
     .x1((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
-
-  console.log(data);
 
   return (
     <g>

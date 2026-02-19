@@ -93,6 +93,8 @@ const BinanceGadget = () => {
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
 
+  console.log(data);
+
   return (
     <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
       <div className="bg-gray-950">
@@ -116,7 +118,7 @@ const BinanceGadget = () => {
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-90 h-100">
+            <div className="w-90 h-90">
               <LiquidationMap data={data} />
             </div>
           </Activity>
