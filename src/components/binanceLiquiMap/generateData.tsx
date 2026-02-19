@@ -29,7 +29,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
 
     names.forEach((name) => {
       const isUp = Math.random() > 0.5;
-      const volatility = Math.random() * 200;
+      const volatility = Math.random() * 50;
 
       // 2. Open is previous Close
       const open = lastPrices[name];
@@ -49,7 +49,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
       const boolean = Math.random() > 0.5;
-      const priceClarity = Math.random() > 0.8 ? 2000 : 200;
+      const priceClarity = Math.random() > 0.5 ? 2000 : 200;
 
       data.push({
         coin: name,

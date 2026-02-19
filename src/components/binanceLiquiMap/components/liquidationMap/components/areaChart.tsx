@@ -20,6 +20,8 @@ const AreaChart = ({
     .x1((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveBasis);
 
+  console.log(data);
+
   return (
     <g>
       <path

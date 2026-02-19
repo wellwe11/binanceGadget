@@ -11,6 +11,7 @@ const ListeningRect = ({
   currentPrice,
   max,
   width,
+  height,
 }: ListeningRectType) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
@@ -47,6 +48,7 @@ const ListeningRect = ({
       const [xCoord, yCoord] = d3.pointer(event, event.currentTarget);
 
       const eachBand = y.step();
+
       const index = Math.floor(yCoord / eachBand);
       const d = data[index];
       if (!d) return;
@@ -82,13 +84,13 @@ const ListeningRect = ({
             <div class="flex flex-col gap-1 h-full w-full">
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full"></div>
-            Price: ${d.price}
+            Price: ${Math.round(d.price)}
             </div>
             <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full border border-white"
             style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
             ></div>
-            Cumulative ${isShort ? "Short" : "Long"}: ${d.accumulatedVol}
+            Cumulative ${isShort ? "Short" : "Long"}: ${Math.round(d.accumulatedVol)}
             </div>
             <div class="flex items-center gap-2">
             ${
@@ -125,6 +127,8 @@ const ListeningRect = ({
       onMouseLeave={handleHideToolbar}
       ref={listeningRef}
       pointerEvents="auto"
+      width={width}
+      height={height}
     >
       <rect
         className="w-full h-full"

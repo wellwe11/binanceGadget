@@ -5,10 +5,13 @@ const filterByType = (arr: DataType[]) => {
   const long: List[] = [];
 
   const addToBucket = (item: DataType) => {
-    const price = item.price;
+    const price = item.value;
 
-    short.push({ price: price, vol: item.shortVol });
-    long.push({ price: price, vol: item.longVol });
+    if (item.type === "short") {
+      short.push({ price: price, vol: item.volume });
+    } else {
+      long.push({ price: price, vol: item.volume });
+    }
   };
 
   arr.forEach(addToBucket);
