@@ -40,66 +40,78 @@ const ListeningRect = ({
     const tooltip = d3.select(tooltipRef.current);
     const tooltipText = d3.select(tooltipTextRef.current);
 
-    const bisect = d3.bisector((d) => d.price).center;
-
+    console.log(data);
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
       const [xCoord, yCoord] = d3.pointer(event);
-
       const mousePrice = y.invert(yCoord);
-      const index = bisect(data, mousePrice);
 
-      const d = data[index];
+      const bisectPrice = d3.bisector((d) => d.price).left;
+      const i = bisectPrice(data, mousePrice, 1, data.length - 1);
+      const d0 = data[i - 1];
+      const d1 = data[i];
+      let interpolatedAccumulatedVol = 0;
+      let interpolatedVol = 0;
+      let interpolatedPrice = 0;
 
-      const isShort = d.price > currentPrice;
+      if (d0 && d1) {
+        const t = (mousePrice - d0.price) / (d1.price - d0.price);
 
-      tooltipLineY
-        .attr("y1", yCoord)
-        .attr("y2", yCoord)
+        interpolatedAccumulatedVol =
+          d0.accumulatedVol + t * (d1.accumulatedVol - d0.accumulatedVol);
+
+        interpolatedVol = d0.vol + t * (d1.vol - d0.vol);
+        interpolatedPrice = d0.price + t * (d1.price - d0.price);
+      } else {
+        interpolatedAccumulatedVol = d?.accumulatedVol || 0;
+        interpolatedVol = d?.vol || 0;
+        interpolatedPrice = d?.price || 0;
+      }
+      const xPos = x(interpolatedAccumulatedVol);
+      const yPos = yCoord;
+
+      const xBarPos = xBars(interpolatedVol);
+
+      circle
+        .attr("cx", xPos) // X snaps to vol
+        .attr("cy", yCoord) // Y follows mouse smoothly
+        .attr("r", 5)
         .style("display", "block");
 
-      if (d) {
-        const xPos = x(d.accumulatedVol);
-        const xBarPos = xBars(d.vol);
+      tooltipLineY.attr("y1", yPos).attr("y2", yPos).style("display", "block");
 
-        circle
-          .attr("cx", xPos) // X snaps to vol
-          .attr("cy", yCoord) // Y follows mouse smoothly
-          .attr("r", 5)
-          .style("display", "block");
+      const isPointerCursor =
+        xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
+      listeningEl.style("cursor", isPointerCursor);
+      const isShort = interpolatedPrice > currentPrice;
 
-        const isPointerCursor =
-          xCoord < xPos ? "pointer" : xCoord < xBarPos ? "pointer" : "";
-        listeningEl.style("cursor", isPointerCursor);
-      }
-
-      tooltip.attr("y", yCoord + 15);
+      tooltip.attr("y", yPos + 15);
 
       tooltipText.html(`
-            <div class="flex flex-col gap-1 h-full w-full">
-            <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full"></div>
-            Price: ${Math.round(d.price)}
-            </div>
-            <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full border border-white"
-            style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
-            ></div>
-            Cumulative ${isShort ? "Short" : "Long"}: ${Math.round(d.accumulatedVol)}
-            </div>
-            <div class="flex items-center gap-2">
-            ${
-              d.vol > 0
-                ? `
-                <div class="w-2 h-2 rounded-full border border-white"
-                style="background-color: ${scaleColors(d.vol)}"></div>
-                Liquidation Leverage: ${d.vol}
-                </div>
-                `
-                : ""
-            }
-                </div>
-                </div>
-                `);
+              <div class="flex flex-col gap-1 h-full w-full">
+              <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full"></div>
+              Price: ${Math.round(interpolatedPrice)}
+              </div>
+              <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full border border-white"
+              style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
+              ></div>
+              Cumulative ${isShort ? "Short" : "Long"}: ${Math.round(interpolatedAccumulatedVol)}
+              </div>
+              <div class="flex items-center gap-2">
+              ${
+                interpolatedVol > 0
+                  ? `
+                  <div class="w-2 h-2 rounded-full border border-white"
+                  style="background-color: ${scaleColors(interpolatedVol)}"></div>
+                  Liquidation Leverage: ${Math.round(interpolatedVol)}
+                  </div>
+                  `
+                  : ""
+              }
+                  </div>
+                  </div>
+                  `);
     });
 
     listeningEl.on("mouseleave", () => {
