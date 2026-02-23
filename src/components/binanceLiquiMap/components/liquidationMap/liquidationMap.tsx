@@ -47,7 +47,19 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
 
   // Area data
   const accumulatedShorts = useMemo(() => {
-    if (!filteredShorts || filteredShorts.length < 1) return [];
+    if (!filteredShorts || filteredShorts.length < 1)
+      return [
+        {
+          price: currentPrice,
+          vol: 0,
+          accumulatedVol: 0,
+        },
+        {
+          price: maxPrice + pricePadding,
+          vol: 0,
+          accumulatedVol: 0,
+        },
+      ];
     const accumulated = accumulateVal(filteredShorts);
 
     return [
@@ -61,7 +73,19 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   }, [filteredShorts]);
 
   const accumulatedLongs = useMemo(() => {
-    if (!filteredLongs || filteredLongs.length < 1) return [];
+    if (!filteredLongs || filteredLongs.length < 1)
+      return [
+        {
+          price: maxPrice + pricePadding,
+          vol: 0,
+          accumulatedVol: 0,
+        },
+        {
+          price: minPrice - pricePadding,
+          vol: 0,
+          accumulatedVol: 0,
+        },
+      ];
     const accumulated = accumulateVal(filteredLongs);
 
     return [
@@ -73,6 +97,8 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
       },
     ];
   }, [filteredLongs]);
+
+  console.log(accumulatedShorts, accumulatedLongs);
 
   // Direct data so it works with two graphs that are opposite direction of each other
   const sortedData = [
