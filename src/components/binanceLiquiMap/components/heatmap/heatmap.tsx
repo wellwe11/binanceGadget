@@ -70,14 +70,15 @@ const CandleChart = ({ data, x, y }) => {
 };
 
 const HeatMap = ({ data }) => {
+  // Need to filter data, so it only displays longs below current price, shorts above current price
   const reveredData = data.toReversed();
 
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  const max = d3.max(reveredData, (d) => d.value);
-  const min = d3.min(reveredData, (d) => d.value);
+  const max = d3.max(data, (d) => d.value);
+  const min = d3.min(data, (d) => d.value);
 
   // x = time
   const x = d3
@@ -86,13 +87,10 @@ const HeatMap = ({ data }) => {
     .domain(reveredData.map((d) => new Date(d.date)))
     .padding(0.4);
 
-  const pricePadding = (max - min) * 0.1;
+  const pricePadding = (max - min) * 0.5;
 
   // y (right side) price
-  const y = d3
-    .scaleLinear()
-    .range([containersHeight - 40, 1])
-    .domain([min - pricePadding, max + pricePadding]);
+  const y = d3.scaleLinear().range([containersHeight, 0]).domain([min, max]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>

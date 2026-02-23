@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 const Axis = ({ children, x, y, height, width }) => {
+  // Change height and width to using [minPixels, maxPixels] = y.range()
   const xRef = useRef(null);
   const yRef = useRef(null);
 
@@ -24,7 +25,7 @@ const Axis = ({ children, x, y, height, width }) => {
     yAxis.call(d3.axisRight(y).tickSize(0));
 
     xAxis.select(".domain").remove();
-    yAxis.select(".domain").remove();
+    // yAxis.select(".domain").remove();
   }, [x, y]);
 
   return (

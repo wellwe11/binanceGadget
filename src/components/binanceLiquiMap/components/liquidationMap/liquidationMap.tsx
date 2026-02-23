@@ -56,8 +56,8 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const vol = d3.max(sortedData, (d) => d.vol);
 
   // Define referal-point for PRICE (xBars)
-  const minPrice = d3.min(sortedData, (d) => d.price);
-  const maxPrice = d3.max(sortedData, (d) => d.price);
+  const minPrice = d3.min(data, (d) => d.value);
+  const maxPrice = d3.max(data, (d) => d.value);
 
   const x = d3.scaleLinear().range([0, containerWidth]).domain([0, maxVol]);
 
@@ -66,11 +66,12 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
     .range([0, containerWidth * 0.8])
     .domain([0, vol]);
 
-  const pricePadding = (maxPrice - minPrice) * 0.1;
+  const pricePadding = (maxPrice - minPrice) * 0.5;
+
   const y = d3
     .scaleLinear()
     .range([containersHeight, 0])
-    .domain([minPrice - pricePadding, maxPrice + pricePadding]);
+    .domain([minPrice, maxPrice]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
@@ -78,8 +79,8 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         shorts={filteredShorts}
         longs={filteredLongs}
         xBars={xBars}
-        height={containersHeight}
-        width={containerWidth}
+        x={x}
+        y={y}
       >
         <BarChart data={accumulatedShorts} x={xBars} y={y} max={vol} />
         <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
@@ -94,8 +95,6 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
           y={y}
           currentPrice={currentPrice}
           max={vol}
-          width={containerWidth}
-          height={containersHeight}
         />
       </Axis>
     </div>

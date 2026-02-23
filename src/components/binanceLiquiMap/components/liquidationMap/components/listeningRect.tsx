@@ -10,8 +10,6 @@ const ListeningRect = ({
   y,
   currentPrice,
   max,
-  width,
-  height,
 }: ListeningRectType) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
@@ -24,6 +22,10 @@ const ListeningRect = ({
   const handleHideToolbar = () => setDisplayToolbar(false);
 
   const scaleColors = colorScale(max);
+  const [maxYPixels, minYPixels] = y.range();
+  const [minXPixels, maxXPixels] = x.range();
+
+  const activeHeight = maxYPixels - minYPixels;
 
   useEffect(() => {
     if (
@@ -42,6 +44,7 @@ const ListeningRect = ({
 
     listeningEl.on("mousemove", (event: React.MouseEvent) => {
       const [xCoord, yCoord] = d3.pointer(event);
+
       const mousePrice = y.invert(yCoord);
 
       const bisectPrice = d3.bisector((d) => d.price).left;
@@ -52,11 +55,9 @@ const ListeningRect = ({
       let interpolatedVol = 0;
       let interpolatedPrice = 0;
 
-      // 1. Find nearest data point
       const dNearest =
         d1 && mousePrice - d0.price > d1.price - mousePrice ? d1 : d0;
 
-      // 2. Define a threshold (e.g., if mouse is > $10 away from a real price)
       const priceThreshold = 1;
       const isEmpty =
         !dNearest || Math.abs(dNearest.price - mousePrice) > priceThreshold;
@@ -81,8 +82,8 @@ const ListeningRect = ({
       const xBarPos = xBars(interpolatedVol);
 
       circle
-        .attr("cx", xPos) // X snaps to vol
-        .attr("cy", yCoord) // Y follows mouse smoothly
+        .attr("cx", xPos)
+        .attr("cy", yCoord)
         .attr("r", 5)
         .style("display", "block");
 
@@ -127,7 +128,7 @@ const ListeningRect = ({
       circle.attr("r", 0).style("display", "none");
       tooltipLineY.style("display", "none");
     });
-  }, [displayToolbar, data, y, x, width, height]);
+  }, [displayToolbar, data, y, x, maxXPixels, maxYPixels]);
 
   return (
     <g
@@ -135,23 +136,23 @@ const ListeningRect = ({
       onMouseLeave={handleHideToolbar}
       ref={listeningRef}
       pointerEvents="auto"
-      width={width}
-      height={height}
+      y={minYPixels}
+      width={maxXPixels}
+      height={activeHeight}
     >
       <rect
-        className="w-full h-full"
         fillOpacity="0"
         strokeOpacity="0"
         pointerEvents="all"
         style={{ zIndex: "1" }}
-        width={width}
-        height={height}
+        width={maxXPixels}
+        height={maxYPixels}
       />
       <line
         ref={lineRef}
         visibility={displayToolbar ? "visible" : "hidden"}
         x1="0"
-        x2={width}
+        x2={maxXPixels}
         stroke="gray"
         strokeWidth={y.price}
         strokeOpacity="0.5"
@@ -168,7 +169,7 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={width}
+        width={maxXPixels}
         height="100"
         style={{ pointerEvents: "none" }}
       >
