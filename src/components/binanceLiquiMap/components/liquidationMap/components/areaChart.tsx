@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { accumulatedType, XYType } from "../Types";
+import { useMemo } from "react";
 
 const AreaChart = ({
   data,
@@ -19,6 +20,8 @@ const AreaChart = ({
     .x0(0)
     .x1((d: accumulatedType) => x(d.accumulatedVol))
     .curve(d3.curveCatmullRom);
+
+  console.log(data);
 
   return (
     <g>

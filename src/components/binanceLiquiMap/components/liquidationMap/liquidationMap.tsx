@@ -41,6 +41,15 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const accumulatedShorts = accumulateVal(filteredShorts);
   const accumulatedLongs = accumulateVal(filteredLongs);
 
+  // Short first -  high to low
+  // Long second - low to high
+
+  // [
+  //     { price: minPrice, accumulatedVol: data[0].accumulatedVol },
+  //     ...data,
+  //     { price: maxPrice, accumulatedVol: data[data.length - 1].accumulatedVol },
+  //   ];
+
   const sortedData = [
     ...accumulatedShorts.toReversed().concat(...accumulatedLongs),
   ];
@@ -66,12 +75,14 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
     .range([0, containerWidth * 0.8])
     .domain([0, vol]);
 
-  const pricePadding = (maxPrice - minPrice) * 0.5;
+  const pricePadding = (maxPrice - minPrice) * 0.3;
 
   const y = d3
     .scaleLinear()
     .range([containersHeight, 0])
-    .domain([minPrice, maxPrice]);
+    .domain([minPrice - pricePadding, maxPrice + pricePadding]);
+
+  if (!accumulatedLongs || !accumulatedShorts) return;
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
@@ -83,13 +94,53 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         y={y}
       >
         <BarChart data={accumulatedShorts} x={xBars} y={y} max={vol} />
-        <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
+        <AreaChart
+          data={[
+            ...accumulatedShorts,
+            {
+              price: maxPrice + pricePadding,
+              vol: 0,
+              accumulatedVol:
+                accumulatedShorts[accumulatedShorts.length - 1].accumulatedVol,
+            },
+          ]}
+          x={x}
+          y={y}
+          color="#00f2ff"
+        />
 
         <BarChart data={accumulatedLongs} x={xBars} y={y} max={vol} />
-        <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
+        <AreaChart
+          data={[
+            ...accumulatedLongs,
+            {
+              price: minPrice - pricePadding,
+              vol: 0,
+              accumulatedVol:
+                accumulatedLongs[accumulatedLongs.length - 1].accumulatedVol,
+            },
+          ]}
+          x={x}
+          y={y}
+          color="#ff0000"
+        />
 
         <ListeningRect
-          data={sortedData.toReversed()}
+          data={[
+            {
+              price: minPrice - pricePadding,
+              vol: 0,
+              accumulatedVol:
+                accumulatedLongs[accumulatedLongs.length - 1].accumulatedVol,
+            },
+            ...sortedData.toReversed(),
+            {
+              price: maxPrice + pricePadding,
+              vol: 0,
+              accumulatedVol:
+                accumulatedShorts[accumulatedShorts.length - 1].accumulatedVol,
+            },
+          ]}
           x={x}
           xBars={xBars}
           y={y}

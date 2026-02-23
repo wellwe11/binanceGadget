@@ -87,10 +87,13 @@ const HeatMap = ({ data }) => {
     .domain(reveredData.map((d) => new Date(d.date)))
     .padding(0.4);
 
-  const pricePadding = (max - min) * 0.5;
+  const pricePadding = (max - min) * 0.3;
 
   // y (right side) price
-  const y = d3.scaleLinear().range([containersHeight, 0]).domain([min, max]);
+  const y = d3
+    .scaleLinear()
+    .range([containersHeight, 0])
+    .domain([min - pricePadding, max + pricePadding]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
