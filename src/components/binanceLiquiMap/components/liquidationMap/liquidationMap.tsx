@@ -117,10 +117,10 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         x={x}
         y={y}
       >
-        <BarChart data={accumulatedShorts} x={xBars} y={y} max={vol} />
+        <BarChart data={accumulatedShorts} x={xBars} y={y} />
         <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
-        <BarChart data={accumulatedLongs} x={xBars} y={y} max={vol} />
+        <BarChart data={accumulatedLongs} x={xBars} y={y} />
         <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
         <ListeningRect
