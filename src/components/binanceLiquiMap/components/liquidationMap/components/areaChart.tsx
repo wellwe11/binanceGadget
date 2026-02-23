@@ -12,14 +12,14 @@ const AreaChart = ({
     .line()
     .y((d: accumulatedType) => y(d.price))
     .x((d: accumulatedType) => x(d.accumulatedVol))
-    .curve(d3.curveCatmullRom);
+    .curve(d3.curveLinear);
 
   const area = d3
     .area()
     .y((d: accumulatedType) => y(d.price))
     .x0(0)
     .x1((d: accumulatedType) => x(d.accumulatedVol))
-    .curve(d3.curveCatmullRom);
+    .curve(d3.curveLinear);
 
   console.log(data);
 

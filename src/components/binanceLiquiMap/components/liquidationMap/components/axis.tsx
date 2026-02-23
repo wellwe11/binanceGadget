@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import { AxisType, DottedLineType, List } from "../Types";
-import { useEffect, useRef } from "react";
 
 const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLineType) => {
   return (
