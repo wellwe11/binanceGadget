@@ -37,19 +37,42 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
     [],
   ).sort((a, b) => b.price - a.price);
 
+  // Define referal-point for PRICE (xBars)
+  const minPrice = d3.min(data, (d) => d.value);
+  const maxPrice = d3.max(data, (d) => d.value);
+
+  const pricePadding = (maxPrice - minPrice) * 0.3;
+
   // Area data
-  const accumulatedShorts = accumulateVal(filteredShorts);
-  const accumulatedLongs = accumulateVal(filteredLongs);
+  const accumulatedShorts = useMemo(() => {
+    if (!filteredShorts) return [];
+    const accumulated = accumulateVal(filteredShorts);
 
-  // Short first -  high to low
-  // Long second - low to high
+    return [
+      ...accumulated,
+      {
+        price: maxPrice + pricePadding,
+        vol: 0,
+        accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
+      },
+    ];
+  }, [filteredShorts]);
 
-  // [
-  //     { price: minPrice, accumulatedVol: data[0].accumulatedVol },
-  //     ...data,
-  //     { price: maxPrice, accumulatedVol: data[data.length - 1].accumulatedVol },
-  //   ];
+  const accumulatedLongs = useMemo(() => {
+    if (!filteredLongs) return [];
+    const accumulated = accumulateVal(filteredLongs);
 
+    return [
+      ...accumulated,
+      {
+        price: minPrice - pricePadding,
+        vol: 0,
+        accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
+      },
+    ];
+  }, [filteredLongs]);
+
+  // Direct data so it works with two graphs that are opposite direction of each other
   const sortedData = [
     ...accumulatedShorts.toReversed().concat(...accumulatedLongs),
   ];
@@ -64,18 +87,12 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   );
   const vol = d3.max(sortedData, (d) => d.vol);
 
-  // Define referal-point for PRICE (xBars)
-  const minPrice = d3.min(data, (d) => d.value);
-  const maxPrice = d3.max(data, (d) => d.value);
-
   const x = d3.scaleLinear().range([0, containerWidth]).domain([0, maxVol]);
 
   const xBars = d3
     .scaleLinear()
     .range([0, containerWidth * 0.8])
     .domain([0, vol]);
-
-  const pricePadding = (maxPrice - minPrice) * 0.3;
 
   const y = d3
     .scaleLinear()
@@ -94,53 +111,13 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         y={y}
       >
         <BarChart data={accumulatedShorts} x={xBars} y={y} max={vol} />
-        <AreaChart
-          data={[
-            ...accumulatedShorts,
-            {
-              price: maxPrice + pricePadding,
-              vol: 0,
-              accumulatedVol:
-                accumulatedShorts[accumulatedShorts.length - 1].accumulatedVol,
-            },
-          ]}
-          x={x}
-          y={y}
-          color="#00f2ff"
-        />
+        <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
         <BarChart data={accumulatedLongs} x={xBars} y={y} max={vol} />
-        <AreaChart
-          data={[
-            ...accumulatedLongs,
-            {
-              price: minPrice - pricePadding,
-              vol: 0,
-              accumulatedVol:
-                accumulatedLongs[accumulatedLongs.length - 1].accumulatedVol,
-            },
-          ]}
-          x={x}
-          y={y}
-          color="#ff0000"
-        />
+        <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
         <ListeningRect
-          data={[
-            {
-              price: minPrice - pricePadding,
-              vol: 0,
-              accumulatedVol:
-                accumulatedLongs[accumulatedLongs.length - 1].accumulatedVol,
-            },
-            ...sortedData.toReversed(),
-            {
-              price: maxPrice + pricePadding,
-              vol: 0,
-              accumulatedVol:
-                accumulatedShorts[accumulatedShorts.length - 1].accumulatedVol,
-            },
-          ]}
+          data={sortedData.toReversed()}
           x={x}
           xBars={xBars}
           y={y}
