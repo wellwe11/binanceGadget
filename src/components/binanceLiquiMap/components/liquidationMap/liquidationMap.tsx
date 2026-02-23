@@ -20,6 +20,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(() => filterByType(data), []);
 
+  // Starting-point for graphs
   const currentPrice = data[0].value; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Filter away shorts that are below currentPrice
@@ -41,11 +42,12 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const minPrice = d3.min(data, (d) => d.value);
   const maxPrice = d3.max(data, (d) => d.value);
 
+  // Adds 'padding' to start and end of graph to avoid elements escaping visibility
   const pricePadding = (maxPrice - minPrice) * 0.3;
 
   // Area data
   const accumulatedShorts = useMemo(() => {
-    if (!filteredShorts) return [];
+    if (!filteredShorts || filteredShorts.length < 1) return [];
     const accumulated = accumulateVal(filteredShorts);
 
     return [
@@ -59,7 +61,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   }, [filteredShorts]);
 
   const accumulatedLongs = useMemo(() => {
-    if (!filteredLongs) return [];
+    if (!filteredLongs || filteredLongs.length < 1) return [];
     const accumulated = accumulateVal(filteredLongs);
 
     return [
@@ -77,17 +79,22 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
     ...accumulatedShorts.toReversed().concat(...accumulatedLongs),
   ];
 
-  // Define highest referal-point for VOL (x)
-  const maxVol = d3.max(
+  // Define highest referal-point for graph (x)
+  const maxAccumulatedVol = d3.max(
     [
       accumulatedShorts?.[accumulatedShorts.length - 1] || 0,
       accumulatedLongs?.[accumulatedLongs.length - 1] || 0,
     ].flat(),
     (d: accumulatedType) => d.accumulatedVol,
   );
+
+  // Highest volume-point (for xBars)
   const vol = d3.max(sortedData, (d) => d.vol);
 
-  const x = d3.scaleLinear().range([0, containerWidth]).domain([0, maxVol]);
+  const x = d3
+    .scaleLinear()
+    .range([0, containerWidth])
+    .domain([0, maxAccumulatedVol]);
 
   const xBars = d3
     .scaleLinear()

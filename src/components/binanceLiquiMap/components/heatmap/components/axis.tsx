@@ -25,7 +25,7 @@ const Axis = ({ children, x, y, height, width }) => {
     yAxis.call(d3.axisRight(y).tickSize(0));
 
     xAxis.select(".domain").remove();
-    // yAxis.select(".domain").remove();
+    yAxis.select(".domain").remove();
   }, [x, y]);
 
   return (
