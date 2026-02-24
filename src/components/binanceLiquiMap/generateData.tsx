@@ -41,7 +41,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
       lastPrices[name] = close;
 
       // 1. ADD NEW CONTRACTS
-      const newOrdersCount = Math.floor(Math.random() * 5);
+      const newOrdersCount = Math.floor(Math.random() * 2);
       for (let j = 0; j < newOrdersCount; j++) {
         const isShort = Math.random() > 0.5;
         // Shorts above price, Longs below price

@@ -8,7 +8,7 @@ const Heatmap = ({ data, x, y, width, height }) => {
     .scaleSequential(d3.interpolateBlues)
     .domain([0, d3.max(data, (d) => d.volume) || 1]);
 
-  const cellWidth = width / 100;
+  const cellWidth = width;
   const cellHeight = 1;
 
   return (
@@ -80,7 +80,7 @@ const HeatMap = ({ data }) => {
   // y (right side) price
   const y = d3
     .scaleLinear()
-    .range([containersHeight - 50, 0])
+    .range([containersHeight, 0])
     .domain([min - pricePadding, max + pricePadding]);
 
   const heatmapData = useMemo(() => {

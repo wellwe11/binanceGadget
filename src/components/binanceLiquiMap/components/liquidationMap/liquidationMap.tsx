@@ -12,23 +12,24 @@ import accumulateVal from "./functions/accumulateVal";
 
 import { DataType, accumulatedType } from "./Types";
 
-const LiquidationMap = ({ data }: { data: DataType[] }) => {
+const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
   // Starting-point for graphs
-  const currentPrice = data.currentPrice; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+  const currentPrice = liquidationMapData.currentPrice; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(
-    () => filterByType(data.prices, currentPrice),
-    [data],
+    () => filterByType(liquidationMapData.prices, currentPrice),
+    [liquidationMapData],
   );
 
+  console.log(data);
   // Define referal-point for PRICE (xBars)
-  const minPrice = d3.min(data.prices, (d) => d.price);
-  const maxPrice = d3.max(data.prices, (d) => d.price);
+  const minPrice = d3.min(data, (d) => d.value);
+  const maxPrice = d3.max(data, (d) => d.value);
 
   // Adds 'padding' to start and end of graph to avoid elements escaping visibility
   const pricePadding = (maxPrice - minPrice) * 0.3;
