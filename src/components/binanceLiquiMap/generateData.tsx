@@ -4,6 +4,8 @@ const generateHeatmapData = (names: string[], days = 100) => {
   const data = [];
   const today = new Date();
 
+  let lowestPrice = 0;
+  let highestPrice = 0;
   let amountOfData;
   let timeOffset;
 
@@ -48,8 +50,36 @@ const generateHeatmapData = (names: string[], days = 100) => {
 
       // 4. Update tracker for next iteration
       lastPrices[name] = close;
-      const boolean = Math.random() > 0.5;
       const priceClarity = Math.random() > 0.5 ? 2000 : 200;
+
+      if (high > highestPrice) {
+        highestPrice = high;
+      } else if (low < lowestPrice) {
+        lowestPrice = low;
+      }
+
+      const liqudationsThisDate = [];
+
+      for (let i = 0; i < 25; i++) {
+        let n;
+        if (isUp) {
+          n = Math.random() + 1;
+        } else {
+          n = Math.random();
+        }
+
+        const pricePoint = Math.round(close * n);
+        const type = pricePoint > close ? "short" : "long";
+        if (pricePoint > lowestPrice && pricePoint < highestPrice) {
+          liqudationsThisDate.push({ price: pricePoint, volume: 15, type });
+        } else {
+          if (isUp) {
+            liqudationsThisDate.push({ price: highestPrice, volume: 15, type });
+          } else {
+            liqudationsThisDate.push({ price: lowestPrice, volume: 15, type });
+          }
+        }
+      }
 
       data.push({
         coin: name,
@@ -60,8 +90,8 @@ const generateHeatmapData = (names: string[], days = 100) => {
         low,
         value: close,
         openInterest: Math.floor(Math.random() * 100) + 1000,
-        type: boolean ? "long" : "short",
         volume: Math.floor(Math.random() * priceClarity),
+        liquidations: liqudationsThisDate,
       });
     });
   }

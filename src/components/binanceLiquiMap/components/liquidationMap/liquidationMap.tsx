@@ -47,6 +47,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
 
   // Area data
   const accumulatedShorts = useMemo(() => {
+    // Return a starting point & ending point with 0 accumulation
     if (!filteredShorts || filteredShorts.length < 1)
       return [
         {
@@ -73,6 +74,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   }, [filteredShorts]);
 
   const accumulatedLongs = useMemo(() => {
+    // Return a starting point & ending point with 0 accumulation
     if (!filteredLongs || filteredLongs.length < 1)
       return [
         {
@@ -97,8 +99,6 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
       },
     ];
   }, [filteredLongs]);
-
-  console.log(accumulatedShorts, accumulatedLongs);
 
   // Direct data so it works with two graphs that are opposite direction of each other
   const sortedData = [

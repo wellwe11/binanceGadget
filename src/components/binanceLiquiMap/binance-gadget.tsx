@@ -89,6 +89,42 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
+  // Filter data so that objects with same date as current porice,
+  // are forced to have a volume of 0
+  // This is because, those objects have technically been liquidated
+  // Also, FILTER data, so longs above price are removed, as well as shorts below price
+  // This is already done in LiquidationMap, but should be applied globally.
+
+  console.log(data);
+
+  const filteredData = useMemo(() => {
+    // return data.map((obj) => )
+    // Remove longs from above current
+  }, [data]);
+
+  /**
+   * {
+   * date: Date{}
+   * coin: "BTC"
+   * high: 520
+   * low: 420
+   * open: 515
+   * close: 500
+   * liquidations: [
+   * { price: 50, vol: 200 },
+   * { price: 72, vol: 5 },
+   * { price: 83, vol: 122 },
+   * // ...
+   * ]
+   * }
+   *
+   *
+   * I need to remove type
+   * Create two new arrays. Short, Long.
+   * Filter through all the liqudations-arrays. Add to Short/Long (Relevant to parent-objects date).
+   * Sort each array. Pass to LiqudationMap
+   */
+
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);

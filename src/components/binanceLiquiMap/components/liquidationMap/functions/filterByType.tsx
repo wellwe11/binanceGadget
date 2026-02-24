@@ -16,8 +16,6 @@ const filterByType = (arr: DataType[]) => {
 
   arr.forEach(addToBucket);
 
-  console.log(arr);
-
   return { short, long };
 };
 
