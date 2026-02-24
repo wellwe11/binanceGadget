@@ -1,48 +1,36 @@
 import * as d3 from "d3";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
-import { useEffect, useRef } from "react";
+import { useMemo, useRef } from "react";
 import Axis from "./components/axis";
 
-// Create barchart
-// Inside of barchart, i need to calculate if value is the same as price during that time
-// If so, make liquidation into 0
-
-// Add a listening rect
-// Inside of rect, I need a toolbox that shows
-// Hovering CandleChart: Open, High, Low, Close
-// Hovering barChart: Price, Liqudation Leverage
-const BarChart = ({ data, x, y, width, height }) => {
-  const gRef = useRef(null);
-
-  const volScale = d3
-    .scaleLinear()
-    .range([0, width])
-    .domain([0, d3.max(data, (d) => d.volume)]);
-
-  const color = d3
+const Heatmap = ({ data, x, y, width, height }) => {
+  const colorScale = d3
     .scaleSequential(d3.interpolateBlues)
     .domain([0, d3.max(data, (d) => d.volume) || 1]);
 
-  useEffect(() => {
-    if (!gRef.current) return;
-    const g = d3.select(gRef.current);
+  const cellWidth = width / 100;
+  const cellHeight = 1;
 
-    g.selectAll("rect")
-      .data(data)
-      .join("rect")
-      .attr("x", (d) => width - volScale(d.volume) - 40)
-      .attr("y", (d) => y(d.value))
-      .attr("width", (d) => volScale(d.volume))
-      .attr("height", 2)
-      .attr("fill", (d) => color(d.volume))
-      .attr("opacity", 0.6);
-  }, [data, y, width, volScale]);
-
-  return <g height={height} width={width} ref={gRef}></g>;
+  return (
+    <g>
+      {data.map((obj, index) => (
+        <rect
+          key={index}
+          x={x(obj.date)}
+          y={y(obj.price)}
+          width={cellWidth}
+          height={cellHeight}
+          fill={colorScale(obj.volume)}
+          opacity="0.8"
+          cursor="pointer"
+          onMouseEnter={() => console.log(obj.price + " " + obj.volume)}
+        />
+      ))}
+    </g>
+  );
 };
 
 const CandleChart = ({ data, x, y }) => {
-  // On hover, check: Open, High, Low, Close
   return (
     <g className="candle">
       {data.map((d, i) => (
@@ -92,17 +80,26 @@ const HeatMap = ({ data }) => {
   // y (right side) price
   const y = d3
     .scaleLinear()
-    .range([containersHeight, 0])
+    .range([containersHeight - 50, 0])
     .domain([min - pricePadding, max + pricePadding]);
+
+  const heatmapData = useMemo(() => {
+    return data.flatMap((candle) =>
+      candle.liquidations.map((liq) => ({
+        date: new Date(candle.date),
+        price: liq.price,
+        volume: liq.volume,
+      })),
+    );
+  }, [data]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-        <BarChart
-          data={data}
+        <Heatmap
+          data={heatmapData}
           x={x}
           y={y}
-          max={max}
           width={containerWidth}
           height={containersHeight}
         />

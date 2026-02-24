@@ -3,6 +3,7 @@ import * as d3 from "d3";
 const generateHeatmapData = (names: string[], days = 100) => {
   const data = [];
   const today = new Date();
+  let contractPool = [];
 
   let lowestPrice = 0;
   let highestPrice = 0;
@@ -26,79 +27,58 @@ const generateHeatmapData = (names: string[], days = 100) => {
   const lastPrices = {};
   names.forEach((name) => (lastPrices[name] = 500));
 
-  for (let i = 0; i < amountOfData; i++) {
+  // Loop forward in time so contracts accumulate properly
+  for (let i = amountOfData; i >= 0; i--) {
     const date = timeOffset(i);
 
     names.forEach((name) => {
+      const open = lastPrices[name];
       const isUp = Math.random() > 0.5;
       const volatility = Math.random() * 50;
-
-      // 2. Open is previous Close
-      const open = lastPrices[name];
-      const close = isUp
-        ? open + volatility
-        : open - volatility < 0
-          ? (open + volatility) / 2
-          : open - volatility;
-
-      // 3. Ensure High/Low envelop Open/Close
-      const high = Math.max(open, close) + Math.random() * 30;
-      const low =
-        Math.min(open, close) - Math.random() * 30 > 0
-          ? Math.min(open, close) - Math.random() * 30
-          : 0;
-
-      // 4. Update tracker for next iteration
+      const close = isUp ? open + volatility : Math.max(0, open - volatility);
+      const high = Math.max(open, close) + Math.random() * 10;
+      const low = Math.max(0, Math.min(open, close) - Math.random() * 10);
       lastPrices[name] = close;
-      const priceClarity = Math.random() > 0.5 ? 2000 : 200;
 
-      if (high > highestPrice) {
-        highestPrice = high;
-      } else if (low < lowestPrice) {
-        lowestPrice = low;
+      // 1. ADD NEW CONTRACTS
+      const newOrdersCount = Math.floor(Math.random() * 5);
+      for (let j = 0; j < newOrdersCount; j++) {
+        const isShort = Math.random() > 0.5;
+        // Shorts above price, Longs below price
+        const price = isShort
+          ? close + Math.random() * 200
+          : Math.max(0, close - Math.random() * 200);
+
+        contractPool.push({
+          price: Math.round(price),
+          volume: Math.floor(Math.random() * 500),
+          type: isShort ? "short" : "long",
+        });
       }
 
-      const liqudationsThisDate = [];
+      // 2. LIQUIDATE (Remove contracts if price touched them)
+      contractPool = contractPool.filter((c) => {
+        if (c.type === "long" && low <= c.price) return false; // Wiped out
+        if (c.type === "short" && high >= c.price) return false; // Wiped out
+        return true;
+      });
 
-      for (let i = 0; i < 5; i++) {
-        let n;
-        if (isUp) {
-          n = Math.random() + 1;
-        } else {
-          n = Math.random();
-        }
-
-        const pricePoint = Math.round(close * n);
-        const shouldHaveVolume = Math.random() > 0.5;
-        const volume = shouldHaveVolume
-          ? Math.floor(Math.random() * priceClarity)
-          : 0;
-
-        if (pricePoint > lowestPrice && pricePoint < highestPrice) {
-          liqudationsThisDate.push({ price: pricePoint, volume });
-        } else {
-          if (isUp) {
-            liqudationsThisDate.push({ price: highestPrice, volume });
-          } else {
-            liqudationsThisDate.push({ price: lowestPrice, volume });
-          }
-        }
-      }
+      // 3. AGGREGATE (Optional: combine volumes at same price for cleaner chart)
+      const currentLiquidations = contractPool.map((c) => ({ ...c }));
 
       data.push({
         coin: name,
-        date: date,
+        date,
         open,
         close,
         high,
         low,
         value: close,
-        openInterest: Math.floor(Math.random() * 100) + 1000,
-        liquidations: liqudationsThisDate,
+        liquidations: currentLiquidations,
       });
     });
   }
-  return data;
+  return data.toReversed();
 };
 
 export default generateHeatmapData;
