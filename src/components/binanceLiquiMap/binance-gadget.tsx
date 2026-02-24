@@ -1,4 +1,7 @@
 import { useMemo, useState, Activity } from "react";
+
+import * as d3 from "d3";
+
 import Gradient from "./components/gradient";
 import HeatMap from "./components/heatmap/heatmap";
 import LiquidationMap from "./components/liquidationMap/liquidationMap";
@@ -89,18 +92,38 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
+  const liquidationMapData = useMemo(() => {
+    const flattedData = data.flatMap((d) => d.liquidations);
+    const topPrice = Math.round(d3.max(data, (d) => d.value)) || 0;
+
+    const bucketSize = topPrice / 100;
+    const map = {};
+
+    for (let i = 1; i <= 100; i++) {
+      const bucketPrice = Math.round(i * bucketSize);
+      map[bucketPrice] = { price: bucketPrice, volume: 0 };
+    }
+
+    flattedData.forEach((d) => {
+      const closestBucket = Math.round(d.price / bucketSize) * bucketSize;
+      const roundedBucket = Math.round(closestBucket);
+
+      if (map[roundedBucket]) {
+        map[roundedBucket].volume += d.volume;
+      }
+    });
+
+    return {
+      currentPrice: data[data.length - 1].value,
+      prices: Object.values(map),
+    };
+  }, [data]);
+
   // Filter data so that objects with same date as current porice,
   // are forced to have a volume of 0
   // This is because, those objects have technically been liquidated
   // Also, FILTER data, so longs above price are removed, as well as shorts below price
   // This is already done in LiquidationMap, but should be applied globally.
-
-  console.log(data);
-
-  const filteredData = useMemo(() => {
-    // return data.map((obj) => )
-    // Remove longs from above current
-  }, [data]);
 
   /**
    * {
@@ -121,8 +144,17 @@ const BinanceGadget = () => {
    *
    * I need to remove type
    * Create two new arrays. Short, Long.
-   * Filter through all the liqudations-arrays. Add to Short/Long (Relevant to parent-objects date).
-   * Sort each array. Pass to LiqudationMap
+   * Filter through all the liqudations-arrays. Add to Short/Long (Relevant to parent-objects price).
+   * Each object should look like:
+   * {
+   * Date: "",
+   * Price: "",
+   * Liqudations: [
+   *
+   * ]
+   * }
+   * Sort each array. Pass to LiqudationMap and HeatMap > BarChart.
+   * Remake Barchart to be cells, rather than bars.
    */
 
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
@@ -153,7 +185,7 @@ const BinanceGadget = () => {
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
             <div className="w-90 h-100">
-              <LiquidationMap data={data} />
+              <LiquidationMap data={liquidationMapData} />
             </div>
           </Activity>
         </div>

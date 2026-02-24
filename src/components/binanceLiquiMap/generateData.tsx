@@ -60,7 +60,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
 
       const liqudationsThisDate = [];
 
-      for (let i = 0; i < 25; i++) {
+      for (let i = 0; i < 5; i++) {
         let n;
         if (isUp) {
           n = Math.random() + 1;
@@ -69,14 +69,18 @@ const generateHeatmapData = (names: string[], days = 100) => {
         }
 
         const pricePoint = Math.round(close * n);
-        const type = pricePoint > close ? "short" : "long";
+        const shouldHaveVolume = Math.random() > 0.5;
+        const volume = shouldHaveVolume
+          ? Math.floor(Math.random() * priceClarity)
+          : 0;
+
         if (pricePoint > lowestPrice && pricePoint < highestPrice) {
-          liqudationsThisDate.push({ price: pricePoint, volume: 15, type });
+          liqudationsThisDate.push({ price: pricePoint, volume });
         } else {
           if (isUp) {
-            liqudationsThisDate.push({ price: highestPrice, volume: 15, type });
+            liqudationsThisDate.push({ price: highestPrice, volume });
           } else {
-            liqudationsThisDate.push({ price: lowestPrice, volume: 15, type });
+            liqudationsThisDate.push({ price: lowestPrice, volume });
           }
         }
       }
@@ -90,7 +94,6 @@ const generateHeatmapData = (names: string[], days = 100) => {
         low,
         value: close,
         openInterest: Math.floor(Math.random() * 100) + 1000,
-        volume: Math.floor(Math.random() * priceClarity),
         liquidations: liqudationsThisDate,
       });
     });

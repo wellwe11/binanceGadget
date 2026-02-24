@@ -1,13 +1,13 @@
 import { DataType, List } from "../Types";
 
-const filterByType = (arr: DataType[]) => {
+const filterByType = (arr: DataType[], currentPrice) => {
   const short: List[] = [];
   const long: List[] = [];
 
   const addToBucket = (item: DataType) => {
-    const price = item.value;
+    const price = item.price;
 
-    if (item.type === "short") {
+    if (price > currentPrice) {
       short.push({ price: price, vol: item.volume });
     } else {
       long.push({ price: price, vol: item.volume });

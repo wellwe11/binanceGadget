@@ -17,30 +17,18 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  // Filter data by type (i.e. long, short)
-  const filteredData = useMemo(() => filterByType(data), []);
-
   // Starting-point for graphs
-  const currentPrice = data[0].value; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
+  const currentPrice = data.currentPrice; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
 
-  // Filter away shorts that are below currentPrice
-  const filteredShorts = useMemo(
-    () =>
-      filteredData.short
-        .sort((a, b) => a.price - b.price)
-        .filter((d) => d.price > currentPrice),
-    [filteredData],
+  // Filter data by type (i.e. long, short)
+  const filteredData = useMemo(
+    () => filterByType(data.prices, currentPrice),
+    [data],
   );
 
-  // Filter longs that are above current price
-  const filteredLongs = useMemo(
-    () => filteredData.long.filter((d) => d.price < currentPrice),
-    [],
-  ).sort((a, b) => b.price - a.price);
-
   // Define referal-point for PRICE (xBars)
-  const minPrice = d3.min(data, (d) => d.value);
-  const maxPrice = d3.max(data, (d) => d.value);
+  const minPrice = d3.min(data.prices, (d) => d.price);
+  const maxPrice = d3.max(data.prices, (d) => d.price);
 
   // Adds 'padding' to start and end of graph to avoid elements escaping visibility
   const pricePadding = (maxPrice - minPrice) * 0.3;
@@ -48,7 +36,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   // Area data
   const accumulatedShorts = useMemo(() => {
     // Return a starting point & ending point with 0 accumulation
-    if (!filteredShorts || filteredShorts.length < 1)
+    if (!filteredData.short || filteredData.short.length < 1)
       return [
         {
           price: currentPrice,
@@ -61,7 +49,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
           accumulatedVol: 0,
         },
       ];
-    const accumulated = accumulateVal(filteredShorts);
+    const accumulated = accumulateVal(filteredData.short);
 
     return [
       ...accumulated,
@@ -71,11 +59,11 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
     ];
-  }, [filteredShorts]);
+  }, [filteredData.short]);
 
   const accumulatedLongs = useMemo(() => {
     // Return a starting point & ending point with 0 accumulation
-    if (!filteredLongs || filteredLongs.length < 1)
+    if (!filteredData.long || filteredData.long.length < 1)
       return [
         {
           price: maxPrice + pricePadding,
@@ -88,7 +76,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
           accumulatedVol: 0,
         },
       ];
-    const accumulated = accumulateVal(filteredLongs);
+    const accumulated = accumulateVal(filteredData.long.toReversed());
 
     return [
       ...accumulated,
@@ -98,7 +86,7 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
     ];
-  }, [filteredLongs]);
+  }, [filteredData.long]);
 
   // Direct data so it works with two graphs that are opposite direction of each other
   const sortedData = [
@@ -137,8 +125,8 @@ const LiquidationMap = ({ data }: { data: DataType[] }) => {
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis
-        shorts={filteredShorts}
-        longs={filteredLongs}
+        shorts={filteredData.short}
+        longs={filteredData.long}
         xBars={xBars}
         x={x}
         y={y}
