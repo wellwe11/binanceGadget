@@ -26,7 +26,6 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
     [liquidationMapData],
   );
 
-  console.log(data);
   // Define referal-point for PRICE (xBars)
   const minPrice = d3.min(data, (d) => d.value);
   const maxPrice = d3.max(data, (d) => d.value);

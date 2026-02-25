@@ -8,8 +8,8 @@ const Heatmap = ({ data, x, y, width, height }) => {
     .scaleSequential(d3.interpolateBlues)
     .domain([0, d3.max(data, (d) => d.volume) || 1]);
 
-  const cellWidth = width;
-  const cellHeight = 1;
+  const cellWidth = 10;
+  const cellHeight = 3;
 
   return (
     <g>
@@ -18,12 +18,12 @@ const Heatmap = ({ data, x, y, width, height }) => {
           key={index}
           x={x(obj.date)}
           y={y(obj.price)}
-          width={cellWidth}
+          width={x.bandwidth()}
           height={cellHeight}
           fill={colorScale(obj.volume)}
-          opacity="0.8"
+          opacity="0.5"
           cursor="pointer"
-          onMouseEnter={() => console.log(obj.price + " " + obj.volume)}
+          onMouseEnter={() => console.log(obj)}
         />
       ))}
     </g>
@@ -49,7 +49,7 @@ const CandleChart = ({ data, x, y }) => {
             y1={y(d.open)}
             y2={y(d.close)}
             stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
-            strokeWidth={x.bandwidth()}
+            strokeWidth={x.bandwidth() * 0.5}
           />
         </g>
       ))}
@@ -58,9 +58,6 @@ const CandleChart = ({ data, x, y }) => {
 };
 
 const HeatMap = ({ data }) => {
-  // Need to filter data, so it only displays longs below current price, shorts above current price
-  const reveredData = data.toReversed();
-
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
@@ -72,8 +69,7 @@ const HeatMap = ({ data }) => {
   const x = d3
     .scaleBand()
     .range([30, containerWidth - 40])
-    .domain(reveredData.map((d) => new Date(d.date)))
-    .padding(0.4);
+    .domain(data.map((d) => new Date(d.date)));
 
   const pricePadding = (max - min) * 0.3;
 
@@ -83,15 +79,26 @@ const HeatMap = ({ data }) => {
     .range([containersHeight, 0])
     .domain([min - pricePadding, max + pricePadding]);
 
+  // Filter out all liqudations that arent visible on the graph (below min and above max)
   const heatmapData = useMemo(() => {
-    return data.flatMap((candle) =>
-      candle.liquidations.map((liq) => ({
+    return data.flatMap((candle) => {
+      const validLiqs = candle.liquidations.filter((obj) => {
+        if (!obj) return false;
+
+        const isWithinBounds = obj.price >= min && obj.price <= max;
+        const isLiquidatedToday =
+          obj.price >= candle.low && obj.price <= candle.high;
+
+        return isWithinBounds && !isLiquidatedToday;
+      });
+
+      return validLiqs.map((obj) => ({
         date: new Date(candle.date),
-        price: liq.price,
-        volume: liq.volume,
-      })),
-    );
-  }, [data]);
+        price: obj.price,
+        volume: obj.volume,
+      }));
+    });
+  }, [data, min, max]);
 
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
@@ -103,7 +110,7 @@ const HeatMap = ({ data }) => {
           width={containerWidth}
           height={containersHeight}
         />
-        <CandleChart data={reveredData} x={x} y={y} />
+        <CandleChart data={data} x={x} y={y} />
       </Axis>
     </div>
   );

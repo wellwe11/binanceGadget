@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 100) => {
+const generateHeatmapData = (names: string[], days = 50) => {
   const data = [];
   const today = new Date();
-  let contractPool = [];
+  let contractPool = []; // The "memory" of active contracts
 
   let lowestPrice = 0;
   let highestPrice = 0;
@@ -41,7 +41,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
       lastPrices[name] = close;
 
       // 1. ADD NEW CONTRACTS
-      const newOrdersCount = Math.floor(Math.random() * 2);
+      const newOrdersCount = Math.floor(Math.random() * 5);
       for (let j = 0; j < newOrdersCount; j++) {
         const isShort = Math.random() > 0.5;
         // Shorts above price, Longs below price
@@ -55,13 +55,6 @@ const generateHeatmapData = (names: string[], days = 100) => {
           type: isShort ? "short" : "long",
         });
       }
-
-      // 2. LIQUIDATE (Remove contracts if price touched them)
-      contractPool = contractPool.filter((c) => {
-        if (c.type === "long" && low <= c.price) return false; // Wiped out
-        if (c.type === "short" && high >= c.price) return false; // Wiped out
-        return true;
-      });
 
       // 3. AGGREGATE (Optional: combine volumes at same price for cleaner chart)
       const currentLiquidations = contractPool.map((c) => ({ ...c }));
@@ -78,7 +71,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
       });
     });
   }
-  return data.toReversed();
+  return data;
 };
 
 export default generateHeatmapData;
