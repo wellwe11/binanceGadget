@@ -1,13 +1,12 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 35) => {
+const generateHeatmapData = (names: string[], days = 100) => {
   const data = [];
   const today = new Date();
   let contractPool = [];
 
   let amountOfData;
   let timeOffset;
-
   if (days <= 1) {
     amountOfData = 25;
     timeOffset = (i: number) => d3.timeHour.offset(today, -i);
@@ -37,25 +36,32 @@ const generateHeatmapData = (names: string[], days = 35) => {
       const high = Math.max(open, close) + Math.random() * 10;
       const low = Math.max(0, Math.min(open, close) - Math.random() * 10);
       lastPrices[name] = close;
+      const newOrdersCount = Math.floor(Math.random() * 2);
 
-      // 1. ADD NEW CONTRACTS
-      const newOrdersCount = Math.floor(Math.random() * 5);
+      // 2. DEFINE PRICE STEPS
+      // Rounding to 5 or 10 ensures multiple orders hit the exact same price
+      const priceStep = 10;
+
       for (let j = 0; j < newOrdersCount; j++) {
         const isShort = Math.random() > 0.5;
-        // Shorts above price, Longs below price
-        const price = isShort
-          ? close + Math.random() * 200
-          : Math.max(0, close - Math.random() * 200);
+        const priceOffset = Math.random() * 300;
+
+        const rawPrice = isShort ? close + priceOffset : close - priceOffset;
+        // ROUND the price to the step to force stacking
+        const snappedPrice = Math.round(rawPrice / priceStep) * priceStep;
 
         contractPool.push({
-          price: Math.round(price),
-          volume: Math.floor(Math.random() * 500),
+          price: snappedPrice,
+          volume: Math.floor(Math.random() * 500), // Higher volume range
           type: isShort ? "short" : "long",
         });
       }
 
-      // 3. AGGREGATE (Optional: combine volumes at same price for cleaner chart)
-      const currentLiquidations = contractPool.map((c) => ({ ...c }));
+      // 3. CLEAN UP (Optional)
+      // Keep the pool from growing infinitely if it gets too slow
+      if (contractPool.length > 1000) {
+        contractPool = contractPool.slice(-1000);
+      }
 
       data.push({
         coin: name,
@@ -65,7 +71,7 @@ const generateHeatmapData = (names: string[], days = 35) => {
         high,
         low,
         value: close,
-        liquidations: currentLiquidations,
+        liquidations: [...contractPool], // Shallow copy of the pool
       });
     });
   }

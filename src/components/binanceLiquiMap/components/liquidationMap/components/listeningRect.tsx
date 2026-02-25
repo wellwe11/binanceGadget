@@ -1,6 +1,6 @@
 import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import colorScale from "../functions/colorScale";
+import colorScale from "../../../functions/colorScale";
 import { ListeningRectType } from "../Types";
 
 const ListeningRect = ({

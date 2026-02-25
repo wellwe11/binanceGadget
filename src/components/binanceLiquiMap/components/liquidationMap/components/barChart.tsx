@@ -1,4 +1,4 @@
-import colorScale from "../functions/colorScale";
+import colorScale from "../../../functions/colorScale";
 import { XYType } from "../Types";
 
 const BarChart = ({ data, x, y }: XYType) => {
