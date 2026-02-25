@@ -53,7 +53,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
         contractPool.push({
           price: snappedPrice,
           volume: Math.floor(Math.random() * 500), // Higher volume range
-          type: isShort ? "short" : "long",
+          type: snappedPrice > close ? "short" : "long",
         });
       }
 
@@ -69,7 +69,7 @@ const generateHeatmapData = (names: string[], days = 100) => {
         open,
         close,
         high,
-        low,
+        low: low > 0 ? low : 0,
         value: close,
         liquidations: [...contractPool], // Shallow copy of the pool
       });

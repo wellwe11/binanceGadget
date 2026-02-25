@@ -120,6 +120,10 @@ const BinanceGadget = () => {
   }, [data]);
 
   // Need to handle data-filtering in this component, so that LiquidationMap AND Heatmap both use the exact same data
+  // Filter away longs from above price, and shorts from below price
+  // Filter away objects that clash with current price
+  // Filter away objects that extend beyond x/y
+
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);

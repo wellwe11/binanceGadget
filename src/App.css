@@ -2,12 +2,21 @@
 @import "./components/binanceLiquiMap/components/nav/nav.css";
 
 .asd {
-  background-color: #5600bf;
-  background-color: #00bcc6;
+  background-color: #46009b;
   background-color: #00960a;
-  background-color: #b7b700;
+  background-color: #e7e700;
   background-color: #00f2ff;
   background-color: #ff3939;
   background-color: #65ff65;
-  background-color: blue;
+  background-color: #0022a9;
+
+  background-color: #00bcc660;
+  background-color: #00bcc6;
+  background-color: #00d5ff;
+  background-color: #7fff65;
+
+  background-color: #ffff00;
+
+  /* FOR GRAPH DO NOT REMOVE */
+  background-color: "#46009b45";
 }

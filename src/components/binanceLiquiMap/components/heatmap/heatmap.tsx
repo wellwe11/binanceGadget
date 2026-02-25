@@ -27,8 +27,11 @@ const ListeningRect = ({
   pricePadding,
 }) => {
   const [activeCell, setActiveCell] = useState(null);
+  const cellH = height / 100;
+
   const xDomain = useMemo(() => x.domain(), [width, data]);
   const yDomain = useMemo(() => y.domain(), [min, max, pricePadding]);
+
   const handleHover = useCallback(
     (event) => {
       const [mouseX, mouseY] = d3.pointer(event);
@@ -51,6 +54,10 @@ const ListeningRect = ({
           Math.abs(c.price - snappedPrice) < priceStep / 2,
       );
 
+      if (cell.price < cell.high && cell.price > cell.low) {
+        return setActiveCell(null);
+      }
+
       setActiveCell({
         date,
         price: snappedPrice,
@@ -58,11 +65,13 @@ const ListeningRect = ({
         isVisible: cell?.isVisible,
       });
     },
-    [data, xDomain, yDomain, x, y],
+    [data, xDomain, yDomain],
   );
 
+  console.log(activeCell);
+
   return (
-    <g>
+    <g stroke="orange" cursor="pointer">
       <rect
         width={width}
         height={height}
@@ -70,16 +79,29 @@ const ListeningRect = ({
         onMouseMove={(e) => handleHover(e)}
       />
       {activeCell && (
-        <rect
-          x={x(activeCell.date)}
-          y={y(activeCell.price)}
-          width={x.bandwidth()}
-          height={5}
-          fill="none"
-          stroke="white"
-          strokeWidth="1.5"
-          style={{ pointerEvents: "none" }}
-        />
+        <>
+          <rect
+            x={x(activeCell.date)}
+            y={y(activeCell.price)}
+            width={x.bandwidth()}
+            height={cellH}
+            fill="none"
+            stroke="white"
+            strokeWidth="0.5"
+            style={{ pointerEvents: "none" }}
+          />
+          <foreignObject
+            x={x(activeCell.date)}
+            y={y(activeCell.price)}
+            transform="translate(20, 20)"
+            width="200"
+            height="150"
+          >
+            <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
+              <p>{activeCell.price}</p>
+            </div>
+          </foreignObject>
+        </>
       )}
     </g>
   );
@@ -94,15 +116,8 @@ const Heatmap = ({ data, x, y, width, height }) => {
 
   const colorScale = d3
     .scaleLinear()
-    .domain([0, maxVol * 0.2, maxVol * 0.3, maxVol * 0.4, maxVol * 0.6, maxVol])
-    .range([
-      "rgba(0,0,0,0)",
-      "#0095ff",
-      "#00960a",
-      "#65ff65",
-      "#65ff65",
-      "#e7e700",
-    ]);
+    .domain([0, maxVol * 0.1, maxVol * 0.2, maxVol * 0.6, maxVol])
+    .range(["rgba(0,0,0,0)", "#00bcc695", "#00bcc699", "#ffff00", "#ffff00"]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -150,9 +165,14 @@ const CandleChart = ({ data, x, y }) => {
     <g className="candle">
       {data.map((d, i) => (
         <g
+          cursor="pointer"
           key={i}
-          className="candleGroup"
+          className="group transition-transform duration-150 ease-in-out hover:scale-x-150"
           transform={`translate(${x(d.date)}, 0)`}
+          style={{
+            transformOrigin: `${x(d.date)}px center`,
+            transformBox: "fill-box",
+          }}
         >
           <line
             y1={y(d.low)}
@@ -190,7 +210,7 @@ const HeatMap = ({ data }) => {
   // y (right side) price
   const y = d3
     .scaleLinear()
-    .range([containersHeight - 20, 0])
+    .range([containersHeight - 50, 0])
     .domain([min - pricePadding, max + pricePadding]);
 
   const heatmapData = useMemo(() => {
@@ -220,8 +240,10 @@ const HeatMap = ({ data }) => {
         grid.push({
           date,
           price: bucketPrice,
-          volume: isLiquidated ? 0 : totalVolume, // Now contains the sum
+          volume: isLiquidated ? 0 : totalVolume,
           isVisible: !isLiquidated,
+          high: candle.high,
+          low: candle.low,
         });
       }
     });
@@ -237,14 +259,7 @@ const HeatMap = ({ data }) => {
         position: "relative",
       }}
     >
-      <div
-        style={{
-          backgroundColor: "#46009b65",
-          height: "90%",
-          position: "absolute",
-          width: "95%",
-        }}
-      >
+      <div>
         <Heatmap
           data={heatmapData}
           x={x}
@@ -253,19 +268,27 @@ const HeatMap = ({ data }) => {
           width={containerWidth}
         />
 
-        <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-          <ListeningRect
-            data={heatmapData}
-            y={y}
-            x={x}
-            width={containerWidth}
-            height={containersHeight}
-            min={min}
-            max={max}
-            pricePadding={pricePadding}
-          />
-          <CandleChart data={data} x={x} y={y} />
-        </Axis>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            position: "absolute",
+          }}
+        >
+          <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
+            <ListeningRect
+              data={heatmapData}
+              y={y}
+              x={x}
+              width={containerWidth}
+              height={containersHeight}
+              min={min}
+              max={max}
+              pricePadding={pricePadding}
+            />
+            <CandleChart data={data} x={x} y={y} />
+          </Axis>
+        </div>
       </div>
     </div>
   );
