@@ -3,36 +3,33 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import { useMemo, useRef } from "react";
 import Axis from "./components/axis";
 
-const ListeningRect = ({ data }) => {
-  // A listeningRect that displays a square of cell-width and cell-height
-  // Shows a white border wherever mouse is
-  // Should be below Candlechart, and above Heatmap
-};
-
 const ToolBox = () => {
   // Create a tool-box
   // If hovering over Heatmap: displays Price and Liquidation Leverage
   // If hovering over CandleChart: Open, High, Low, Close
 };
 
-const Heatmap = ({ data, x, y }) => {
+const Heatmap = ({ data, x, y, height }) => {
   const colorScale = d3
     .scaleSequential(d3.interpolateBlues)
     .domain([0, d3.max(data, (d) => d.volume) || 1]);
 
+  const cellHeight = height / 100;
+
   return (
     <g>
-      {data.map((obj, index) => (
+      {data.map((cell, index) => (
         <rect
           key={index}
-          x={x(obj.date)}
-          y={y(obj.price)}
+          x={x(cell.date)}
+          y={y(cell.price)}
           width={x.bandwidth()}
-          height="2.5"
-          fill={colorScale(obj.volume)}
+          height={cellHeight}
+          fill={cell.volume > 0 ? colorScale(cell.volume) : "transparent"}
           opacity="0.5"
           cursor="pointer"
-          onMouseEnter={() => console.log(obj)}
+          onMouseEnter={() => console.log(cell)}
+          className="hover:stroke-white hover:stroke-1"
         />
       ))}
     </g>
@@ -88,42 +85,46 @@ const HeatMap = ({ data }) => {
     .range([containersHeight - 20, 0])
     .domain([min - pricePadding, max + pricePadding]);
 
-  // Removes liquidations that clash with price (CnadleChart)
-  // Filter out all liqudations that arent visible on the graph (below min and above max)
   const heatmapData = useMemo(() => {
-    return data.flatMap((candle) => {
-      const validLiqs = candle.liquidations.filter((obj) => {
-        if (!obj) return false;
+    const [yMin, yMax] = y.domain();
+    const numBuckets = 100; // Resolution of your Y-axis
+    const priceStep = (yMax - yMin) / numBuckets;
+    const grid = [];
 
-        // Removes objects that are not visible in graph
-        const isWithinBounds =
-          obj.price >= min - pricePadding && obj.price <= max + pricePadding;
+    // Iterate through every date in your scale
+    x.domain().forEach((date) => {
+      const candle = data.find(
+        (d) => new Date(d.date).getTime() === date.getTime(),
+      );
 
-        // Price that clashes with candles price
-        const isLiquidatedToday =
-          obj.price >= candle.low && obj.price <= candle.high;
+      for (let i = 0; i < numBuckets; i++) {
+        const bucketPrice = yMin + i * priceStep;
 
-        // Removes longs above price and shorts below price
-        const isWrongSide =
-          (obj.type === "short" && obj.price > candle.value) ||
-          (obj.type === "long" && obj.price < candle.value);
+        // Look for data in the liquidations array for this candle
+        const match = candle?.liquidations.find(
+          (l) => Math.abs(l.price - bucketPrice) < priceStep / 2,
+        );
 
-        return isWithinBounds && !isLiquidatedToday && isWrongSide;
-      });
+        // Check if this cell should be "hidden" by the candle body
+        const isLiquidated =
+          candle && bucketPrice >= candle.low && bucketPrice <= candle.high;
 
-      return validLiqs.map((obj) => ({
-        date: new Date(candle.date),
-        price: obj.price,
-        volume: obj.volume,
-        type: obj.type,
-      }));
+        grid.push({
+          date: date,
+          price: bucketPrice,
+          volume: isLiquidated ? 0 : match?.volume || 0,
+          isVisible: !isLiquidated,
+        });
+      }
     });
-  }, [data, min, max]);
 
+    return grid;
+  }, [data, x, min, max]);
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-        <Heatmap data={heatmapData} x={x} y={y} />
+        <Heatmap data={heatmapData} x={x} y={y} height={containersHeight} />
+
         <CandleChart data={data} x={x} y={y} />
       </Axis>
     </div>
