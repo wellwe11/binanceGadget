@@ -119,44 +119,7 @@ const BinanceGadget = () => {
     };
   }, [data]);
 
-  // Filter data so that objects with same date as current porice,
-  // are forced to have a volume of 0
-  // This is because, those objects have technically been liquidated
-  // Also, FILTER data, so longs above price are removed, as well as shorts below price
-  // This is already done in LiquidationMap, but should be applied globally.
-
-  /**
-   * {
-   * date: Date{}
-   * coin: "BTC"
-   * high: 520
-   * low: 420
-   * open: 515
-   * close: 500
-   * liquidations: [
-   * { price: 50, vol: 200 },
-   * { price: 72, vol: 5 },
-   * { price: 83, vol: 122 },
-   * // ...
-   * ]
-   * }
-   *
-   *
-   * I need to remove type
-   * Create two new arrays. Short, Long.
-   * Filter through all the liqudations-arrays. Add to Short/Long (Relevant to parent-objects price).
-   * Each object should look like:
-   * {
-   * Date: "",
-   * Price: "",
-   * Liqudations: [
-   *
-   * ]
-   * }
-   * Sort each array. Pass to LiqudationMap and HeatMap > BarChart.
-   * Remake Barchart to be cells, rather than bars.
-   */
-
+  // Need to handle data-filtering in this component, so that LiquidationMap AND Heatmap both use the exact same data
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
@@ -198,7 +161,7 @@ const BinanceGadget = () => {
         className="ml-15 h-30 w-185 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
-        <TimeLapsChart data={data} />
+        <TimeLapsChart data={data.toReversed()} />
       </div>
     </div>
   );

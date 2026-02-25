@@ -3,13 +3,22 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import { useMemo, useRef } from "react";
 import Axis from "./components/axis";
 
-const Heatmap = ({ data, x, y, width, height }) => {
+const ListeningRect = ({ data }) => {
+  // A listeningRect that displays a square of cell-width and cell-height
+  // Shows a white border wherever mouse is
+  // Should be below Candlechart, and above Heatmap
+};
+
+const ToolBox = () => {
+  // Create a tool-box
+  // If hovering over Heatmap: displays Price and Liquidation Leverage
+  // If hovering over CandleChart: Open, High, Low, Close
+};
+
+const Heatmap = ({ data, x, y }) => {
   const colorScale = d3
     .scaleSequential(d3.interpolateBlues)
     .domain([0, d3.max(data, (d) => d.volume) || 1]);
-
-  const cellWidth = 10;
-  const cellHeight = 3;
 
   return (
     <g>
@@ -19,7 +28,7 @@ const Heatmap = ({ data, x, y, width, height }) => {
           x={x(obj.date)}
           y={y(obj.price)}
           width={x.bandwidth()}
-          height={cellHeight}
+          height="2.5"
           fill={colorScale(obj.volume)}
           opacity="0.5"
           cursor="pointer"
@@ -76,26 +85,37 @@ const HeatMap = ({ data }) => {
   // y (right side) price
   const y = d3
     .scaleLinear()
-    .range([containersHeight, 0])
+    .range([containersHeight - 20, 0])
     .domain([min - pricePadding, max + pricePadding]);
 
+  // Removes liquidations that clash with price (CnadleChart)
   // Filter out all liqudations that arent visible on the graph (below min and above max)
   const heatmapData = useMemo(() => {
     return data.flatMap((candle) => {
       const validLiqs = candle.liquidations.filter((obj) => {
         if (!obj) return false;
 
-        const isWithinBounds = obj.price >= min && obj.price <= max;
+        // Removes objects that are not visible in graph
+        const isWithinBounds =
+          obj.price >= min - pricePadding && obj.price <= max + pricePadding;
+
+        // Price that clashes with candles price
         const isLiquidatedToday =
           obj.price >= candle.low && obj.price <= candle.high;
 
-        return isWithinBounds && !isLiquidatedToday;
+        // Removes longs above price and shorts below price
+        const isWrongSide =
+          (obj.type === "short" && obj.price > candle.value) ||
+          (obj.type === "long" && obj.price < candle.value);
+
+        return isWithinBounds && !isLiquidatedToday && isWrongSide;
       });
 
       return validLiqs.map((obj) => ({
         date: new Date(candle.date),
         price: obj.price,
         volume: obj.volume,
+        type: obj.type,
       }));
     });
   }, [data, min, max]);
@@ -103,13 +123,7 @@ const HeatMap = ({ data }) => {
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-        <Heatmap
-          data={heatmapData}
-          x={x}
-          y={y}
-          width={containerWidth}
-          height={containersHeight}
-        />
+        <Heatmap data={heatmapData} x={x} y={y} />
         <CandleChart data={data} x={x} y={y} />
       </Axis>
     </div>

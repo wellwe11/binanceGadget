@@ -1,12 +1,10 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 50) => {
+const generateHeatmapData = (names: string[], days = 35) => {
   const data = [];
   const today = new Date();
-  let contractPool = []; // The "memory" of active contracts
+  let contractPool = [];
 
-  let lowestPrice = 0;
-  let highestPrice = 0;
   let amountOfData;
   let timeOffset;
 
