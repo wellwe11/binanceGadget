@@ -3,21 +3,14 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import Axis from "./components/axis";
 
-const ListeningRect = ({
-  y,
-  x,
-  width,
-  height,
-  handleHover,
-  activeCell,
-  mousePos,
-}) => {
+const ListeningRect = ({ y, x, width, height, handleHover, activeCell }) => {
   const cellH = height / 100;
 
   return (
@@ -42,21 +35,57 @@ const ListeningRect = ({
           className="pointer-events-none"
         />
       )}
-      {activeCell && (
-        <foreignObject
-          x={mousePos.x + 15}
-          y={mousePos.y + 15}
-          transform="translate(20, 20)"
-          width="200"
-          height="150"
-          className="pointer-events-none"
-        >
-          <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
-            <p>{`${activeCell.high}, ${activeCell.low}`}</p>
-          </div>
-        </foreignObject>
-      )}
     </g>
+  );
+};
+
+const Tooltip = ({ mousePos, activeCell, width, height }) => {
+  const toolTipRef = useRef(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
+
+  useLayoutEffect(() => {
+    if (!toolTipRef.current) return;
+
+    const { width, height } = toolTipRef.current.getBoundingClientRect();
+
+    setSize({ width, height });
+  }, []);
+
+  useEffect(() => {
+    const toolTipEl = d3.select(toolTipRef.current);
+
+    const marginHeight = size.height + mousePos.y;
+    const marginWidth = size.width + mousePos.x;
+
+    setAdjustPos({
+      up: marginHeight >= height ? true : false,
+      left: marginWidth >= width ? true : false,
+    });
+
+    toolTipEl
+      .transition()
+      .duration(200)
+      .ease(d3.easeCubicOut)
+      .attr("x", mousePos.x)
+      .attr("y", mousePos.y);
+  }, [mousePos]);
+
+  return (
+    <foreignObject
+      ref={toolTipRef}
+      width="200"
+      height="150"
+      className="pointer-events-none"
+      style={{
+        transform: `translate(${adjustPos.left ? `-${size.width + 20}px` : "20px"}, ${adjustPos.up ? `-${size.height + 20}px` : "0"})`,
+        transition: "transform 0.1s ease",
+      }}
+    >
+      <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
+        <p>{`${activeCell.high}, ${activeCell.low}`}</p>
+      </div>
+    </foreignObject>
   );
 };
 
@@ -106,6 +135,7 @@ const CandleAndHoverComponent = ({
 }) => {
   const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
   const yDomain = useMemo(
     () => y.domain(),
@@ -156,9 +186,16 @@ const CandleAndHoverComponent = ({
         height={containersHeight}
         handleHover={handleHover}
         activeCell={activeCell}
-        mousePos={mousePos}
       />
       <CandleChart data={candleData} x={x} y={y} handleHover={handleHover} />
+      {activeCell && (
+        <Tooltip
+          mousePos={mousePos}
+          activeCell={activeCell}
+          width={containerWidth}
+          height={containersHeight}
+        />
+      )}
     </>
   );
 };
@@ -284,6 +321,7 @@ const HeatMap = ({ data }) => {
 
     return grid;
   }, [data, x.domain(), y.domain()]);
+
   return (
     <div
       ref={containerRef}
