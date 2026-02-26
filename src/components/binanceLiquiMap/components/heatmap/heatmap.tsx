@@ -44,6 +44,8 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
 
+  if (!activeCell || activeCell.high === undefined) return null;
+
   useLayoutEffect(() => {
     if (!toolTipRef.current) return;
 
@@ -79,7 +81,7 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
       className="pointer-events-none"
       style={{
         transform: `translate(${adjustPos.left ? `-${size.width + 20}px` : "20px"}, ${adjustPos.up ? `-${size.height + 20}px` : "0"})`,
-        transition: "transform 0.1s ease",
+        transition: "transform 0.3s ease",
       }}
     >
       <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
@@ -136,6 +138,16 @@ const CandleAndHoverComponent = ({
   const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  const lookUpMap = useMemo(() => {
+    const map = new Map();
+
+    heatmapData.forEach((c) => {
+      map.set(`${c.date}-${c.price.toFixed(4)}`, c);
+    });
+
+    return map;
+  }, [heatmapData]);
+
   const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
   const yDomain = useMemo(
     () => y.domain(),
@@ -160,22 +172,20 @@ const CandleAndHoverComponent = ({
       const snappedPrice =
         Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
 
-      const cell = heatmapData.find(
-        (c) =>
-          c.date.getTime() === date.getTime() &&
-          Math.abs(c.price - snappedPrice) < priceStep / 2,
-      );
+      const cell = lookUpMap.get(`${date}-${snappedPrice.toFixed(4)}`);
 
-      setActiveCell({
-        date,
-        price: snappedPrice,
-        volume: cell?.volume || 0,
-        isVisible: cell?.isVisible,
-        high: cell.high,
-        low: cell.low,
-      });
+      if (cell && cell.price !== activeCell?.price) {
+        setActiveCell({
+          date,
+          price: snappedPrice,
+          volume: cell?.volume || 0,
+          isVisible: cell?.isVisible,
+          high: cell.high,
+          low: cell.low,
+        });
+      }
     },
-    [candleData, heatmapData, xDomain, yDomain],
+    [activeCell, lookUpMap, xDomain, yDomain],
   );
   return (
     <>
