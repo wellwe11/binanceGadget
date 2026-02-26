@@ -49,11 +49,15 @@ const generateHeatmapData = (names: string[], days = 100) => {
         const rawPrice = isShort ? close + priceOffset : close - priceOffset;
         // ROUND the price to the step to force stacking
         const snappedPrice = Math.round(rawPrice / priceStep) * priceStep;
+        const leverage = isShort
+          ? close / (rawPrice - close)
+          : close / (close - rawPrice);
 
         contractPool.push({
           price: snappedPrice,
-          volume: Math.floor(Math.random() * 500), // Higher volume range
+          volume: Math.floor(Math.random() * (leverage > 50 ? 1000 : 200)),
           type: snappedPrice > close ? "short" : "long",
+          leverage: Math.round(leverage),
         });
       }
 

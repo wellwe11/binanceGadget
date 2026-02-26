@@ -11,6 +11,19 @@ import React, {
 } from "react";
 import Axis from "./components/axis";
 
+// Tooltip text
+// Always show:
+// 25 feb 2026, 09:00
+
+// Hovering a cell:
+// Price: 12397, Liquidation Leverage: 1238192
+
+// Hovering a candle:
+// Open
+// High
+// Low
+// Close
+
 const ListeningRect = ({
   y,
   x,
@@ -49,7 +62,7 @@ const ListeningRect = ({
   );
 };
 
-const Tooltip = ({ mousePos, activeCell, width, height }) => {
+const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
   const toolTipRef = useRef(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
@@ -83,9 +96,59 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
       .ease(d3.easeCubicOut)
       .attr("x", mousePos.x)
       .attr("y", mousePos.y);
+
+    // Tooltip text
+    // Always show:
+    // 25 feb 2026, 09:00
+
+    // Hovering a cell:
+    // Price: 12397, Liquidation Leverage: 1238192
+
+    // Hovering a candle:
+    // Open
+    // High
+    // Low
+    // Close
   }, [mousePos]);
 
   if (!activeCell) return null;
+
+  const CandleText = () => (
+    <div className="flex flex-col">
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>Open {Math.round(activeCell.open)}</p>
+      </div>
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>High {Math.round(activeCell.high)}</p>
+      </div>
+
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>Low {Math.round(activeCell.low)}</p>
+      </div>
+
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>Close {Math.round(activeCell.close)}</p>
+      </div>
+    </div>
+  );
+
+  const CellText = () => (
+    <div>
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>Price {Math.round(activeCell.price)}</p>
+      </div>
+
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <p>{Math.round(activeCell.volume)}</p>
+      </div>
+    </div>
+  );
 
   return (
     <foreignObject
@@ -98,8 +161,10 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
         pointerEvents: "none",
       }}
     >
-      <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
-        <p>{`${activeCell.high}, ${activeCell.low}`}</p>
+      <div className="flex flex-col bg-black w-full h-full text-white pointer-events-none py-2 z-30">
+        <p>{String(activeCell.date)}</p>
+
+        {hideHighlight ? <CandleText /> : <CellText />}
       </div>
     </foreignObject>
   );
@@ -198,14 +263,7 @@ const CandleAndHoverComponent = ({
       const cell = lookUpMap.get(`${date}-${snappedPrice.toFixed(4)}`);
 
       if (cell && cell.price !== activeCell?.price) {
-        setActiveCell({
-          date,
-          price: snappedPrice,
-          volume: cell?.volume || 0,
-          isVisible: cell?.isVisible,
-          high: cell.high,
-          low: cell.low,
-        });
+        setActiveCell(cell);
       }
     },
     [activeCell, lookUpMap, xDomain, yDomain],
@@ -234,6 +292,7 @@ const CandleAndHoverComponent = ({
           activeCell={activeCell}
           width={containerWidth}
           height={containersHeight}
+          hideHighlight={hideHighlight}
         />
       </Activity>
     </g>
@@ -338,7 +397,6 @@ const HeatMap = ({ data }) => {
       for (let i = 0; i < numBuckets; i++) {
         const bucketPrice = yMin + i * priceStep;
 
-        // SUM all volumes in this price bucket
         const totalVolume =
           candle?.liquidations.reduce((sum, l) => {
             const isMatch = Math.abs(l.price - bucketPrice) < priceStep / 2;
@@ -352,9 +410,10 @@ const HeatMap = ({ data }) => {
           date,
           price: bucketPrice,
           volume: isLiquidated ? 0 : totalVolume,
-          isVisible: !isLiquidated,
           high: candle.high,
           low: candle.low,
+          open: candle.open,
+          close: candle.close,
         });
       }
     });
