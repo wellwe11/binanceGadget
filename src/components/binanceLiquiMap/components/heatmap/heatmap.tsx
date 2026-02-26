@@ -10,60 +10,15 @@ import React, {
 import Axis from "./components/axis";
 
 const ListeningRect = ({
-  candleData,
-  data,
   y,
   x,
   width,
   height,
-  min,
-  max,
-  pricePadding,
+  handleHover,
+  activeCell,
+  mousePos,
 }) => {
-  const [activeCell, setActiveCell] = useState(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
   const cellH = height / 100;
-
-  const xDomain = useMemo(() => x.domain(), [width, data]);
-  const yDomain = useMemo(() => y.domain(), [min, max, pricePadding, height]);
-
-  // Abstract this to a hook, so I can share it across ListenigRect and CandleChart
-  const handleHover = useCallback(
-    (event) => {
-      const [mouseX, mouseY] = d3.pointer(event);
-      setMousePos({ x: mouseX, y: mouseY });
-
-      const eachBand = x.step();
-      const index = Math.floor((mouseX - x.range()[0]) / eachBand);
-      const date = x.domain()[index];
-
-      if (!date) return;
-
-      const rawPrice = y.invert(mouseY);
-      const [yMin, yMax] = y.domain();
-      const priceStep = (yMax - yMin) / 100;
-
-      const snappedPrice =
-        Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
-
-      const cell = data.find(
-        (c) =>
-          c.date.getTime() === date.getTime() &&
-          Math.abs(c.price - snappedPrice) < priceStep / 2,
-      );
-
-      setActiveCell({
-        date,
-        price: snappedPrice,
-        volume: cell?.volume || 0,
-        isVisible: cell?.isVisible,
-        high: cell.high,
-        low: cell.low,
-      });
-    },
-    [data, xDomain, yDomain],
-  );
 
   return (
     <g cursor="pointer">
@@ -74,7 +29,6 @@ const ListeningRect = ({
         onMouseMove={handleHover}
         className="pointer-events-auto"
       />
-      <CandleChart data={candleData} x={x} y={y} handleHover={handleHover} />
 
       {activeCell && (
         <rect
@@ -103,6 +57,109 @@ const ListeningRect = ({
         </foreignObject>
       )}
     </g>
+  );
+};
+
+const CandleChart = ({ data, x, y, handleHover }) => {
+  return (
+    <g className="candle" onMouseMove={handleHover}>
+      {data.map((d, i) => (
+        <g
+          cursor="pointer"
+          key={i}
+          className="group transition-transform duration-150 ease-in-out hover:scale-x-150"
+          transform={`translate(${x(d.date)}, 0)`}
+          style={{
+            transformOrigin: `${x(d.date)}px center`,
+            transformBox: "fill-box",
+          }}
+        >
+          <line
+            y1={y(d.low)}
+            y2={y(d.high)}
+            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
+            strokeWidth="1"
+          />
+          <line
+            y1={y(d.open)}
+            y2={y(d.close)}
+            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
+            strokeWidth={x.bandwidth() * 0.5}
+          />
+        </g>
+      ))}
+    </g>
+  );
+};
+
+// Shared parent to allow easier use of mouse-events
+const CandleAndHoverComponent = ({
+  candleData,
+  heatmapData,
+  x,
+  y,
+  containerWidth,
+  containersHeight,
+  min,
+  max,
+  pricePadding,
+}) => {
+  const [activeCell, setActiveCell] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
+  const yDomain = useMemo(
+    () => y.domain(),
+    [min, max, pricePadding, containersHeight],
+  );
+
+  const handleHover = useCallback(
+    (event) => {
+      const [mouseX, mouseY] = d3.pointer(event);
+      setMousePos({ x: mouseX, y: mouseY });
+
+      const eachBand = x.step();
+      const index = Math.floor((mouseX - x.range()[0]) / eachBand);
+      const date = x.domain()[index];
+
+      if (!date) return;
+
+      const rawPrice = y.invert(mouseY);
+      const [yMin, yMax] = y.domain();
+      const priceStep = (yMax - yMin) / 100;
+
+      const snappedPrice =
+        Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
+
+      const cell = heatmapData.find(
+        (c) =>
+          c.date.getTime() === date.getTime() &&
+          Math.abs(c.price - snappedPrice) < priceStep / 2,
+      );
+
+      setActiveCell({
+        date,
+        price: snappedPrice,
+        volume: cell?.volume || 0,
+        isVisible: cell?.isVisible,
+        high: cell.high,
+        low: cell.low,
+      });
+    },
+    [candleData, heatmapData, xDomain, yDomain],
+  );
+  return (
+    <>
+      <ListeningRect
+        y={y}
+        x={x}
+        width={containerWidth}
+        height={containersHeight}
+        handleHover={handleHover}
+        activeCell={activeCell}
+        mousePos={mousePos}
+      />
+      <CandleChart data={candleData} x={x} y={y} handleHover={handleHover} />
+    </>
   );
 };
 
@@ -168,41 +225,6 @@ const BarMap = React.memo(({ data, x, y, width, height }) => {
     />
   );
 });
-
-const CandleChart = ({ data, x, y, handleHover }) => {
-  return (
-    <g className="candle" onMouseMove={handleHover}>
-      {data.map((d, i) => (
-        <g
-          cursor="pointer"
-          key={i}
-          className="group transition-transform duration-150 ease-in-out hover:scale-x-150"
-          transform={`translate(${x(d.date)}, 0)`}
-          style={{
-            transformOrigin: `${x(d.date)}px center`,
-            transformBox: "fill-box",
-          }}
-        >
-          <line
-            y1={y(d.low)}
-            y2={y(d.high)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
-            strokeWidth="1"
-          />
-          <line
-            y1={y(d.open)}
-            y2={y(d.close)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
-            strokeWidth={x.bandwidth() * 0.5}
-          />
-        </g>
-      ))}
-    </g>
-  );
-};
-
-// Shared parent to allow easier use of mouse-events
-const CandleAndHoverComponent = () => {};
 
 const HeatMap = ({ data }) => {
   const containerRef = useRef(null);
@@ -281,13 +303,13 @@ const HeatMap = ({ data }) => {
             width={containerWidth}
           />
         </foreignObject>
-        <ListeningRect
-          data={heatmapData}
+        <CandleAndHoverComponent
           candleData={data}
-          y={y}
+          heatmapData={heatmapData}
           x={x}
-          width={containerWidth}
-          height={containersHeight}
+          y={y}
+          containerWidth={containerWidth}
+          containersHeight={containersHeight}
           min={min}
           max={max}
           pricePadding={pricePadding}
