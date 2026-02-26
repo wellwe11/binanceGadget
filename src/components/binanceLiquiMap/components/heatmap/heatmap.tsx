@@ -62,10 +62,31 @@ const ListeningRect = ({
   );
 };
 
-const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
+const Tooltip = ({
+  mousePos,
+  activeCell,
+  width,
+  height,
+  hideHighlight,
+  max,
+}) => {
   const toolTipRef = useRef(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
+  const scaleColors = useMemo(
+    () =>
+      d3
+        .scaleLinear()
+        .domain([0, max * 0.1, max * 0.2, max * 0.6, max])
+        .range([
+          "rgba(0,0,0,0)",
+          "#00bcc695",
+          "#00bcc699",
+          "#ffff00",
+          "#ffff00",
+        ]),
+    [max],
+  );
 
   useLayoutEffect(() => {
     if (!toolTipRef.current) return;
@@ -96,19 +117,6 @@ const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
       .ease(d3.easeCubicOut)
       .attr("x", mousePos.x)
       .attr("y", mousePos.y);
-
-    // Tooltip text
-    // Always show:
-    // 25 feb 2026, 09:00
-
-    // Hovering a cell:
-    // Price: 12397, Liquidation Leverage: 1238192
-
-    // Hovering a candle:
-    // Open
-    // High
-    // Low
-    // Close
   }, [mousePos]);
 
   if (!activeCell) return null;
@@ -116,21 +124,41 @@ const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
   const CandleText = () => (
     <div className="flex flex-col">
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <div
+          className="w-2 h-2 rounded-full border border-white"
+          style={{
+            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
+          }}
+        />
         <p>Open {Math.round(activeCell.open)}</p>
       </div>
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <div
+          className="w-2 h-2 rounded-full border border-white"
+          style={{
+            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
+          }}
+        />
         <p>High {Math.round(activeCell.high)}</p>
       </div>
 
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <div
+          className="w-2 h-2 rounded-full border border-white"
+          style={{
+            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
+          }}
+        />
         <p>Low {Math.round(activeCell.low)}</p>
       </div>
 
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <div
+          className="w-2 h-2 rounded-full border border-white"
+          style={{
+            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
+          }}
+        />
         <p>Close {Math.round(activeCell.close)}</p>
       </div>
     </div>
@@ -139,13 +167,23 @@ const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
   const CellText = () => (
     <div>
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
+        <div
+          className="w-2 h-2 rounded-full border border-white"
+          style={{
+            backgroundColor: `${scaleColors(activeCell.volume)}`,
+          }}
+        />
         <p>Price {Math.round(activeCell.price)}</p>
       </div>
 
       <div className="flex items-center">
-        <div className="w-2 h-2 rounded-full border border-white bg-amber-50" />
-        <p>{Math.round(activeCell.volume)}</p>
+        <div
+          className="w-2 h-2 rounded-full border border-white "
+          style={{
+            backgroundColor: `${scaleColors(activeCell.volume)}`,
+          }}
+        />
+        <p>Volume {Math.round(activeCell.volume)}</p>
       </div>
     </div>
   );
@@ -154,7 +192,7 @@ const Tooltip = ({ mousePos, activeCell, width, height, hideHighlight }) => {
     <foreignObject
       ref={toolTipRef}
       width="200"
-      height="150"
+      height="200"
       style={{
         transform: `translate(${adjustPos.left ? `-${size.width + 20}px` : "20px"}, ${adjustPos.up ? `-${size.height + 20}px` : "0"})`,
         transition: activeCell ? "transform 0.3s ease" : "",
@@ -222,16 +260,19 @@ const CandleAndHoverComponent = ({
   const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hideHighlight, setHideHighlight] = useState(false);
+  const maxVol = d3.max(heatmapData, (d) => d.volume);
 
-  const lookUpMap = useMemo(() => {
+  const lookUpMap = (arr) => {
     const map = new Map();
 
-    heatmapData.forEach((c) => {
-      map.set(`${c.date}-${c.price.toFixed(4)}`, c);
+    arr.forEach((c) => {
+      map.set(`${c.date}-${c.price?.toFixed(4) || c.value?.toFixed(4)}`, c);
     });
 
     return map;
-  }, [heatmapData]);
+  };
+
+  const lookUpHeatMap = useMemo(() => lookUpMap(heatmapData), [heatmapData]);
 
   const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
   const yDomain = useMemo(
@@ -248,8 +289,12 @@ const CandleAndHoverComponent = ({
       });
 
       const eachBand = x.step();
-      const index = Math.floor((mouseX - x.range()[0]) / eachBand);
-      const date = x.domain()[index];
+      const rangeStart = x.range()[0];
+
+      const index = Math.round((mouseX - rangeStart) / eachBand);
+      const clampedIndex = Math.max(0, Math.min(index, x.domain().length - 1));
+
+      const date = x.domain()[clampedIndex];
 
       if (!date) return;
 
@@ -260,13 +305,19 @@ const CandleAndHoverComponent = ({
       const snappedPrice =
         Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
 
-      const cell = lookUpMap.get(`${date}-${snappedPrice.toFixed(4)}`);
+      if (hideHighlight) {
+        const cell = candleData[clampedIndex];
 
-      if (cell && cell.price !== activeCell?.price) {
         setActiveCell(cell);
+      } else {
+        const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
+
+        if (!hideHighlight && cell && cell.price !== activeCell?.price) {
+          setActiveCell(cell);
+        }
       }
     },
-    [activeCell, lookUpMap, xDomain, yDomain],
+    [lookUpHeatMap, xDomain, yDomain],
   );
   return (
     <g onMouseLeave={() => setActiveCell(null)}>
@@ -293,6 +344,7 @@ const CandleAndHoverComponent = ({
           width={containerWidth}
           height={containersHeight}
           hideHighlight={hideHighlight}
+          max={maxVol}
         />
       </Activity>
     </g>
