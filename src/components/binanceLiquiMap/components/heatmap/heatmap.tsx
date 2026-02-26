@@ -10,7 +10,15 @@ import React, {
 } from "react";
 import Axis from "./components/axis";
 
-const ListeningRect = ({ y, x, width, height, handleHover, activeCell }) => {
+const ListeningRect = ({
+  y,
+  x,
+  width,
+  height,
+  handleHover,
+  activeCell,
+  hideHighlight,
+}) => {
   const cellH = height / 100;
 
   return (
@@ -33,6 +41,7 @@ const ListeningRect = ({ y, x, width, height, handleHover, activeCell }) => {
           stroke="white"
           strokeWidth="0.5"
           className="pointer-events-none"
+          style={{ opacity: hideHighlight ? "0" : "1" }}
         />
       )}
     </g>
@@ -44,7 +53,12 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
 
-  if (!activeCell || activeCell.high === undefined) return null;
+  if (
+    !activeCell ||
+    activeCell.high === undefined ||
+    activeCell.low === undefined
+  )
+    return null;
 
   useLayoutEffect(() => {
     if (!toolTipRef.current) return;
@@ -91,9 +105,14 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
   );
 };
 
-const CandleChart = ({ data, x, y, handleHover }) => {
+const CandleChart = ({ data, x, y, handleHover, setHideHighlight }) => {
   return (
-    <g className="candle" onMouseMove={handleHover}>
+    <g
+      className="candle"
+      onMouseMove={handleHover}
+      onMouseEnter={() => setHideHighlight(true)}
+      onMouseLeave={() => setHideHighlight(false)}
+    >
       {data.map((d, i) => (
         <g
           cursor="pointer"
@@ -137,6 +156,7 @@ const CandleAndHoverComponent = ({
 }) => {
   const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [hideHighlight, setHideHighlight] = useState(false);
 
   const lookUpMap = useMemo(() => {
     const map = new Map();
@@ -157,7 +177,10 @@ const CandleAndHoverComponent = ({
   const handleHover = useCallback(
     (event) => {
       const [mouseX, mouseY] = d3.pointer(event);
-      setMousePos({ x: mouseX, y: mouseY });
+      setMousePos((prev) => {
+        if (prev.x === mouseX && prev.y === mouseY) return prev;
+        return { x: mouseX, y: mouseY };
+      });
 
       const eachBand = x.step();
       const index = Math.floor((mouseX - x.range()[0]) / eachBand);
@@ -196,8 +219,15 @@ const CandleAndHoverComponent = ({
         height={containersHeight}
         handleHover={handleHover}
         activeCell={activeCell}
+        hideHighlight={hideHighlight}
       />
-      <CandleChart data={candleData} x={x} y={y} handleHover={handleHover} />
+      <CandleChart
+        data={candleData}
+        x={x}
+        y={y}
+        handleHover={handleHover}
+        setHideHighlight={setHideHighlight}
+      />
       {activeCell && (
         <Tooltip
           mousePos={mousePos}
