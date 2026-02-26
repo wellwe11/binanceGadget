@@ -9,14 +9,8 @@ import React, {
 } from "react";
 import Axis from "./components/axis";
 
-const ToolBox = ({ hoveringObj }) => {
-  // Create a tool-box
-  // If hovering over Heatmap: displays Price and Liquidation Leverage
-  // If hovering over CandleChart: Open, High, Low, Close
-  console.log(hoveringObj);
-};
-
 const ListeningRect = ({
+  candleData,
   data,
   y,
   x,
@@ -27,14 +21,18 @@ const ListeningRect = ({
   pricePadding,
 }) => {
   const [activeCell, setActiveCell] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   const cellH = height / 100;
 
   const xDomain = useMemo(() => x.domain(), [width, data]);
-  const yDomain = useMemo(() => y.domain(), [min, max, pricePadding]);
+  const yDomain = useMemo(() => y.domain(), [min, max, pricePadding, height]);
 
   const handleHover = useCallback(
     (event) => {
       const [mouseX, mouseY] = d3.pointer(event);
+      setMousePos({ x: mouseX, y: mouseY });
+
       const eachBand = x.step();
       const index = Math.floor((mouseX - x.range()[0]) / eachBand);
       const date = x.domain()[index];
@@ -54,70 +52,80 @@ const ListeningRect = ({
           Math.abs(c.price - snappedPrice) < priceStep / 2,
       );
 
-      if (cell.price < cell.high && cell.price > cell.low) {
-        return setActiveCell(null);
-      }
-
       setActiveCell({
         date,
         price: snappedPrice,
         volume: cell?.volume || 0,
         isVisible: cell?.isVisible,
+        high: cell.high,
+        low: cell.low,
       });
     },
     [data, xDomain, yDomain],
   );
 
-  console.log(activeCell);
-
   return (
-    <g stroke="orange" cursor="pointer">
+    <g cursor="pointer">
       <rect
         width={width}
         height={height}
         fill="transparent"
-        onMouseMove={(e) => handleHover(e)}
+        onMouseMove={handleHover}
+        className="pointer-events-auto"
       />
+      <CandleChart data={candleData} x={x} y={y} handleHover={handleHover} />
+
       {activeCell && (
-        <>
-          <rect
-            x={x(activeCell.date)}
-            y={y(activeCell.price)}
-            width={x.bandwidth()}
-            height={cellH}
-            fill="none"
-            stroke="white"
-            strokeWidth="0.5"
-            style={{ pointerEvents: "none" }}
-          />
-          <foreignObject
-            x={x(activeCell.date)}
-            y={y(activeCell.price)}
-            transform="translate(20, 20)"
-            width="200"
-            height="150"
-          >
-            <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
-              <p>{activeCell.price}</p>
-            </div>
-          </foreignObject>
-        </>
+        <rect
+          x={x(activeCell.date)}
+          y={y(activeCell.price)}
+          width={x.bandwidth()}
+          height={cellH}
+          fill="none"
+          stroke="white"
+          strokeWidth="0.5"
+          className="pointer-events-none"
+        />
+      )}
+      {activeCell && (
+        <foreignObject
+          x={mousePos.x + 15}
+          y={mousePos.y + 15}
+          transform="translate(20, 20)"
+          width="200"
+          height="150"
+          className="pointer-events-none"
+        >
+          <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
+            <p>{`${activeCell.high}, ${activeCell.low}`}</p>
+          </div>
+        </foreignObject>
       )}
     </g>
   );
 };
 
-const Heatmap = ({ data, x, y, width, height }) => {
+const Heatmap = React.memo(({ data, x, y, width, height }) => {
   const canvasRef = useRef(null);
 
   const maxVol = useMemo(() => {
     return d3.max(data, (liq) => liq.volume) || 1;
   }, [data]);
 
-  const colorScale = d3
-    .scaleLinear()
-    .domain([0, maxVol * 0.1, maxVol * 0.2, maxVol * 0.6, maxVol])
-    .range(["rgba(0,0,0,0)", "#00bcc695", "#00bcc699", "#ffff00", "#ffff00"]);
+  const colorScale = useMemo(
+    () =>
+      d3
+        .scaleLinear()
+        .domain([0, maxVol * 0.1, maxVol * 0.2, maxVol * 0.6, maxVol])
+        .range([
+          "rgba(0,0,0,0)",
+          "#00bcc695",
+          "#00bcc699",
+          "#ffff00",
+          "#ffff00",
+        ]),
+    [maxVol],
+  );
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -158,11 +166,11 @@ const Heatmap = ({ data, x, y, width, height }) => {
       style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
     />
   );
-};
+});
 
-const CandleChart = ({ data, x, y }) => {
+const CandleChart = ({ data, x, y, handleHover }) => {
   return (
-    <g className="candle">
+    <g className="candle" onMouseMove={handleHover}>
       {data.map((d, i) => (
         <g
           cursor="pointer"
@@ -278,6 +286,7 @@ const HeatMap = ({ data }) => {
           <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
             <ListeningRect
               data={heatmapData}
+              candleData={data}
               y={y}
               x={x}
               width={containerWidth}
@@ -286,7 +295,6 @@ const HeatMap = ({ data }) => {
               max={max}
               pricePadding={pricePadding}
             />
-            <CandleChart data={data} x={x} y={y} />
           </Axis>
         </div>
       </div>
