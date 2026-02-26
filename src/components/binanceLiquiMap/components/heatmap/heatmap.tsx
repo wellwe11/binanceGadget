@@ -28,6 +28,7 @@ const ListeningRect = ({
   const xDomain = useMemo(() => x.domain(), [width, data]);
   const yDomain = useMemo(() => y.domain(), [min, max, pricePadding, height]);
 
+  // Abstract this to a hook, so I can share it across ListenigRect and CandleChart
   const handleHover = useCallback(
     (event) => {
       const [mouseX, mouseY] = d3.pointer(event);
@@ -105,7 +106,7 @@ const ListeningRect = ({
   );
 };
 
-const Heatmap = React.memo(({ data, x, y, width, height }) => {
+const BarMap = React.memo(({ data, x, y, width, height }) => {
   const canvasRef = useRef(null);
 
   const maxVol = useMemo(() => {
@@ -200,6 +201,9 @@ const CandleChart = ({ data, x, y, handleHover }) => {
   );
 };
 
+// Shared parent to allow easier use of mouse-events
+const CandleAndHoverComponent = () => {};
+
 const HeatMap = ({ data }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -267,37 +271,28 @@ const HeatMap = ({ data }) => {
         position: "relative",
       }}
     >
-      <div>
-        <Heatmap
+      <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
+        <foreignObject style={{ width: "100%", height: "100%" }}>
+          <BarMap
+            data={heatmapData}
+            x={x}
+            y={y}
+            height={containersHeight}
+            width={containerWidth}
+          />
+        </foreignObject>
+        <ListeningRect
           data={heatmapData}
-          x={x}
+          candleData={data}
           y={y}
-          height={containersHeight}
+          x={x}
           width={containerWidth}
+          height={containersHeight}
+          min={min}
+          max={max}
+          pricePadding={pricePadding}
         />
-
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            position: "absolute",
-          }}
-        >
-          <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-            <ListeningRect
-              data={heatmapData}
-              candleData={data}
-              y={y}
-              x={x}
-              width={containerWidth}
-              height={containersHeight}
-              min={min}
-              max={max}
-              pricePadding={pricePadding}
-            />
-          </Axis>
-        </div>
-      </div>
+      </Axis>
     </div>
   );
 };
