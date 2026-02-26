@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import React, {
+  Activity,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -53,15 +54,11 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
 
-  if (
-    !activeCell ||
-    activeCell.high === undefined ||
-    activeCell.low === undefined
-  )
-    return null;
-
   useLayoutEffect(() => {
     if (!toolTipRef.current) return;
+    const toolTipEl = d3.select(toolTipRef.current);
+
+    toolTipEl.attr("x", mousePos.x).attr("y", mousePos.y);
 
     const { width, height } = toolTipRef.current.getBoundingClientRect();
 
@@ -69,6 +66,7 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
   }, []);
 
   useEffect(() => {
+    if (!toolTipRef.current) return;
     const toolTipEl = d3.select(toolTipRef.current);
 
     const marginHeight = size.height + mousePos.y;
@@ -87,15 +85,17 @@ const Tooltip = ({ mousePos, activeCell, width, height }) => {
       .attr("y", mousePos.y);
   }, [mousePos]);
 
+  if (!activeCell) return null;
+
   return (
     <foreignObject
       ref={toolTipRef}
       width="200"
       height="150"
-      className="pointer-events-none"
       style={{
         transform: `translate(${adjustPos.left ? `-${size.width + 20}px` : "20px"}, ${adjustPos.up ? `-${size.height + 20}px` : "0"})`,
-        transition: "transform 0.3s ease",
+        transition: activeCell ? "transform 0.3s ease" : "",
+        pointerEvents: "none",
       }}
     >
       <div className="bg-black w-full h-full text-white pointer-events-none py-2 z-30">
@@ -211,7 +211,7 @@ const CandleAndHoverComponent = ({
     [activeCell, lookUpMap, xDomain, yDomain],
   );
   return (
-    <>
+    <g onMouseLeave={() => setActiveCell(null)}>
       <ListeningRect
         y={y}
         x={x}
@@ -228,15 +228,15 @@ const CandleAndHoverComponent = ({
         handleHover={handleHover}
         setHideHighlight={setHideHighlight}
       />
-      {activeCell && (
+      <Activity mode={activeCell ? "visible" : "hidden"}>
         <Tooltip
           mousePos={mousePos}
           activeCell={activeCell}
           width={containerWidth}
           height={containersHeight}
         />
-      )}
-    </>
+      </Activity>
+    </g>
   );
 };
 
