@@ -23,6 +23,7 @@ import lookUpMap from "./functions/lookUpMap";
 // Things to fix
 // Background-color
 // Zoom
+// White highlight-square to be on top of mouse (currently in the middle)
 // Error: <rect> attribute height: A negative value is not valid. ("-40")
 
 // Shared parent to allow easier use of mouse-events
@@ -97,7 +98,7 @@ const CandleAndHoverComponent = ({
 
           const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
 
-          if (cell.date.getTime() !== activeCellRef.current?.date.getTime()) {
+          if (cell?.date.getTime() !== activeCellRef.current?.date.getTime()) {
             activeCellRef.current = cell;
             setActiveCell(cell);
           }
@@ -206,6 +207,12 @@ const HeatMap = ({ data }) => {
       }}
     >
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
+        <rect
+          fill="#46009b45"
+          height={containersHeight - 50}
+          width={containerWidth - 40}
+        />
+
         <BarChart
           data={heatmapData}
           x={x}
