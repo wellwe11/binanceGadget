@@ -11,6 +11,7 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
+import lookUpMap from "./functions/lookUpMap";
 
 // Shared parent to allow easier use of mouse-events
 const CandleAndHoverComponent = ({
@@ -29,17 +30,10 @@ const CandleAndHoverComponent = ({
   const [hideHighlight, setHideHighlight] = useState(false);
   const maxVol = d3.max(heatmapData, (d) => d.volume);
 
-  const lookUpMap = (arr) => {
-    const map = new Map();
-
-    arr.forEach((c) => {
-      map.set(`${c.date}-${c.price?.toFixed(4) || c.value?.toFixed(4)}`, c);
-    });
-
-    return map;
-  };
-
-  const lookUpHeatMap = useMemo(() => lookUpMap(heatmapData), [heatmapData]);
+  const lookUpHeatMap = useMemo(
+    () => lookUpMap(heatmapData, "date", "price"),
+    [heatmapData],
+  );
 
   const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
   const yDomain = useMemo(

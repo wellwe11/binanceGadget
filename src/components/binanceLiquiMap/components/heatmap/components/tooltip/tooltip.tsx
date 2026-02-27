@@ -45,13 +45,13 @@ const Tooltip = ({
 }) => {
   const toolTipRef = useRef(null);
 
+  // Adjusts position of tooltip so that it does not extend outside of it's container
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
 
   const formatter = d3.timeFormat("%d %b %Y, %H:%M");
 
+  // Updates size of tooltip depending on how much content it has
   const [tooltipWidth, tooltipHeight] = useSize(toolTipRef);
-
-  console.log(tooltipWidth, tooltipHeight);
 
   useEffect(() => {
     if (!toolTipRef.current) return;
