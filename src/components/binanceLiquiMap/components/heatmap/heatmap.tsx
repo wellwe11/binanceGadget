@@ -1,5 +1,3 @@
-import * as d3 from "d3";
-import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import React, {
   Activity,
   useCallback,
@@ -8,22 +6,13 @@ import React, {
   useRef,
   useState,
 } from "react";
+import * as d3 from "d3";
+
+import useTrackContainerSize from "../../hooks/useTrackContainerSize";
+
 import Axis from "./components/axis";
 import Tooltip from "./components/tooltip/tooltip";
 import scaleColors from "./functions/customScaleColors";
-
-// Tooltip text
-// Always show:
-// 25 feb 2026, 09:00
-
-// Hovering a cell:
-// Price: 12397, Liquidation Leverage: 1238192
-
-// Hovering a candle:
-// Open
-// High
-// Low
-// Close
 
 const ListeningRect = ({
   y,
