@@ -4,8 +4,10 @@ import TextWithCircle from "./components/textWithCircle";
 import firstLetterCapital from "../../../liquidationMap/functions/firstLetterCapital";
 import scaleColors from "../../functions/customScaleColors";
 
+import useSize from "./hooks/useSize";
+
 const CandleText = ({ activeCell }) => {
-  const candleCircleColor = `${activeCell.open < activeCell.close ? "red" : "green"}`;
+  const candleCircleColor = `${activeCell.open < activeCell.close ? "#ff3939" : "#65ff65"}`;
   const candleTextKeys = ["open", "high", "low", "close"];
   return (
     <div className="flex flex-col">
@@ -42,29 +44,24 @@ const Tooltip = ({
   max,
 }) => {
   const toolTipRef = useRef(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
+
   const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
 
   const formatter = d3.timeFormat("%d %b %Y, %H:%M");
 
-  useLayoutEffect(() => {
+  const [tooltipWidth, tooltipHeight] = useSize(toolTipRef);
+
+  console.log(tooltipWidth, tooltipHeight);
+
+  useEffect(() => {
     if (!toolTipRef.current) return;
+
     const toolTipEl = d3.select(toolTipRef.current);
 
     toolTipEl.attr("x", mousePos.x).attr("y", mousePos.y);
 
-    const { width, height } =
-      toolTipRef.current.firstElementChild.getBoundingClientRect();
-
-    setSize({ width, height });
-  }, [mousePos]);
-
-  useEffect(() => {
-    if (!toolTipRef.current) return;
-    const toolTipEl = d3.select(toolTipRef.current);
-
-    const marginHeight = size.height + mousePos.y;
-    const marginWidth = size.width + mousePos.x;
+    const marginWidth = tooltipWidth + mousePos.x;
+    const marginHeight = tooltipHeight + mousePos.y;
 
     setAdjustPos({
       up: marginHeight >= height ? true : false,
@@ -77,17 +74,17 @@ const Tooltip = ({
       .ease(d3.easeCubicOut)
       .attr("x", mousePos.x)
       .attr("y", mousePos.y);
-  }, [mousePos]);
+  }, [mousePos, tooltipWidth, tooltipHeight]);
 
   if (!activeCell) return null;
 
   return (
     <foreignObject
       ref={toolTipRef}
-      width={size.width}
-      height={size.height}
+      width={tooltipWidth}
+      height={tooltipHeight}
       style={{
-        transform: `translate(${adjustPos.left ? `-${size.width}px` : "20px"}, ${adjustPos.up ? `-${size.height}px` : "0"})`,
+        transform: `translate(${adjustPos.left ? `-${tooltipWidth}px` : "20px"}, ${adjustPos.up ? `-${tooltipHeight}px` : "0"})`,
         transition: activeCell ? "transform 0.3s ease, height 0.2s ease" : "",
         pointerEvents: "none",
       }}

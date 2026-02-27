@@ -7,8 +7,8 @@ const colorScale = (max: number) => {
 
   return d3
     .scaleLinear()
-    .domain([low, normal, high, max])
-    .range(["#5600bf", "#00bcc6", "#00960a", "#b7b700"]);
+    .domain([0, low, normal, high, max])
+    .range(["#000000, #5600bf", "#00bcc6", "#00960a", "#b7b700"]);
 };
 
 export default colorScale;
