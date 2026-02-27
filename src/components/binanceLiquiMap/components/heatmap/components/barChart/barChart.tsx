@@ -30,14 +30,15 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     ctx.clearRect(0, 0, width * dpr, height * dpr);
     ctx.scale(dpr, dpr);
 
-    const cellW = x.bandwidth();
+    const cellW = x.bandwidth() + 0.1;
     const cellH = height / 100;
 
     data.forEach((cell) => {
       if (cell.volume === 0) return;
 
       ctx.fillStyle = colorScale(cell.volume);
-      ctx.globalAlpha = 0.7;
+
+      ctx.globalAlpha = cell.volume < maxVol * 0.4 ? 0.6 : 1.0;
 
       ctx.fillRect(x(cell.date), y(cell.price), cellW, cellH);
     });

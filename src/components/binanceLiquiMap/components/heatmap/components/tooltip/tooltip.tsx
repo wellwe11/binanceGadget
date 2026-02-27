@@ -88,7 +88,7 @@ const Tooltip = ({
       height={size.height}
       style={{
         transform: `translate(${adjustPos.left ? `-${size.width}px` : "20px"}, ${adjustPos.up ? `-${size.height}px` : "0"})`,
-        transition: activeCell ? "transform 0.3s ease" : "",
+        transition: activeCell ? "transform 0.3s ease, height 0.2s ease" : "",
         pointerEvents: "none",
       }}
     >

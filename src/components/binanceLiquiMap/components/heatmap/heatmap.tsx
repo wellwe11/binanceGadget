@@ -1,11 +1,4 @@
-import React, {
-  Activity,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Activity, useCallback, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
 
@@ -16,7 +9,6 @@ import Axis from "./components/axis";
 import Tooltip from "./components/tooltip/tooltip";
 
 import CandleChart from "./components/candleChart/candleChart";
-import scaleColors from "./functions/customScaleColors";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
 
@@ -139,7 +131,8 @@ const HeatMap = ({ data }) => {
   const x = d3
     .scaleBand()
     .range([30, containerWidth - 40])
-    .domain(data.map((d) => new Date(d.date)));
+    .domain(data.map((d) => new Date(d.date)))
+    .padding(0);
 
   // y (right side) price
   const y = d3
@@ -153,39 +146,34 @@ const HeatMap = ({ data }) => {
     const priceStep = (yMax - yMin) / numBuckets;
     const grid = [];
 
-    x.domain().forEach((date) => {
-      const candle = data.find(
-        (d) => new Date(d.date).getTime() === date.getTime(),
-      );
-
+    data.forEach((obj) => {
       for (let i = 0; i < numBuckets; i++) {
         const bucketPrice = yMin + i * priceStep;
 
         const totalVolume =
-          candle?.liquidations.reduce((sum, l) => {
-            const isMatch = Math.abs(l.price - bucketPrice) < priceStep / 2;
+          obj?.liquidations.reduce((sum, l) => {
+            const isMatch =
+              l.price >= bucketPrice && l.price < bucketPrice + priceStep;
             return isMatch ? sum + l.volume : sum;
           }, 0) || 0;
 
         const isLiquidated =
-          candle && bucketPrice >= candle.low && bucketPrice <= candle.high;
+          obj && bucketPrice >= obj.low && bucketPrice <= obj.high;
 
         grid.push({
-          date,
+          date: obj.date,
           price: bucketPrice,
           volume: isLiquidated ? 0 : totalVolume,
-          high: candle.high,
-          low: candle.low,
-          open: candle.open,
-          close: candle.close,
+          high: obj.high,
+          low: obj.low,
+          open: obj.open,
+          close: obj.close,
         });
       }
     });
 
     return grid;
   }, [data, x.domain(), y.domain()]);
-
-  if (!data) return;
 
   return (
     <div
