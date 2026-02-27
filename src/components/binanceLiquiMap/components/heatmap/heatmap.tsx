@@ -6,88 +6,19 @@ import React, {
   useRef,
   useState,
 } from "react";
+
 import * as d3 from "d3";
 
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 
 import Axis from "./components/axis";
+
 import Tooltip from "./components/tooltip/tooltip";
+
+import CandleChart from "./components/candleChart/candleChart";
 import scaleColors from "./functions/customScaleColors";
-
-const ListeningRect = ({
-  y,
-  x,
-  width,
-  height,
-  handleHover,
-  activeCell,
-  hideHighlight,
-}) => {
-  const cellH = height / 100;
-
-  return (
-    <g cursor="pointer">
-      <rect
-        width={width}
-        height={height}
-        fill="transparent"
-        onMouseMove={handleHover}
-        className="pointer-events-auto"
-      />
-
-      {activeCell && (
-        <rect
-          x={x(activeCell.date)}
-          y={y(activeCell.price)}
-          width={x.bandwidth()}
-          height={cellH}
-          fill="none"
-          stroke="white"
-          strokeWidth="0.5"
-          className="pointer-events-none"
-          style={{ opacity: hideHighlight ? "0" : "1" }}
-        />
-      )}
-    </g>
-  );
-};
-
-const CandleChart = ({ data, x, y, handleHover, setHideHighlight }) => {
-  return (
-    <g
-      className="candle"
-      onMouseMove={handleHover}
-      onMouseEnter={() => setHideHighlight(true)}
-      onMouseLeave={() => setHideHighlight(false)}
-    >
-      {data.map((d, i) => (
-        <g
-          cursor="pointer"
-          key={i}
-          className="group transition-transform duration-150 ease-in-out hover:scale-x-150"
-          transform={`translate(${x(d.date)}, 0)`}
-          style={{
-            transformOrigin: `${x(d.date)}px center`,
-            transformBox: "fill-box",
-          }}
-        >
-          <line
-            y1={y(d.low)}
-            y2={y(d.high)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
-            strokeWidth="1"
-          />
-          <line
-            y1={y(d.open)}
-            y2={y(d.close)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
-            strokeWidth={x.bandwidth() * 0.5}
-          />
-        </g>
-      ))}
-    </g>
-  );
-};
+import ListeningRect from "./components/listeningRect/listeningRect";
+import BarChart from "./components/barChart/barChart";
 
 // Shared parent to allow easier use of mouse-events
 const CandleAndHoverComponent = ({
@@ -195,56 +126,6 @@ const CandleAndHoverComponent = ({
   );
 };
 
-const BarMap = React.memo(({ data, x, y, width, height }) => {
-  const canvasRef = useRef(null);
-
-  const maxVol = useMemo(() => {
-    return d3.max(data, (liq) => liq.volume) || 1;
-  }, [data]);
-
-  const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-
-    if (!ctx) return;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, width * dpr, height * dpr);
-    ctx.scale(dpr, dpr);
-
-    const cellW = x.bandwidth();
-    const cellH = height / 100;
-
-    data.forEach((cell) => {
-      if (cell.volume === 0) return;
-
-      ctx.fillStyle = colorScale(cell.volume);
-      ctx.globalAlpha = 0.7;
-
-      ctx.fillRect(x(cell.date), y(cell.price), cellW, cellH);
-    });
-  }, [data, x, y, width, height]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
-    />
-  );
-});
-
 const HeatMap = ({ data }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -304,6 +185,8 @@ const HeatMap = ({ data }) => {
     return grid;
   }, [data, x.domain(), y.domain()]);
 
+  if (!data) return;
+
   return (
     <div
       ref={containerRef}
@@ -314,15 +197,13 @@ const HeatMap = ({ data }) => {
       }}
     >
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
-        <foreignObject style={{ width: "100%", height: "100%" }}>
-          <BarMap
-            data={heatmapData}
-            x={x}
-            y={y}
-            height={containersHeight}
-            width={containerWidth}
-          />
-        </foreignObject>
+        <BarChart
+          data={heatmapData}
+          x={x}
+          y={y}
+          width={containerWidth}
+          height={containersHeight}
+        />
         <CandleAndHoverComponent
           candleData={data}
           heatmapData={heatmapData}
