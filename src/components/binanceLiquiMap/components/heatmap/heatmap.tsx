@@ -14,8 +14,7 @@ import BarChart from "./components/barChart/barChart";
 import lookUpMap from "./functions/lookUpMap";
 
 // Things to fix
-// White highlight-square to be on top of mouse (currently in the middle)
-// Error: <rect> attribute height: A negative value is not valid. ("-40")
+// White highlight-square to be on top of mouse (currently in the middle
 // Zoom
 
 // Shared parent to allow easier use of mouse-events

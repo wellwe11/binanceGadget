@@ -159,7 +159,7 @@ const ListeningRect = ({
         pointerEvents="all"
         style={{ zIndex: "1" }}
         width={maxXPixels > 0 ? maxXPixels : 0}
-        height={maxYPixels > 0 ? maxXPixels : 0}
+        height={maxYPixels > 0 ? maxYPixels : 0}
       />
       <line
         ref={lineRef}

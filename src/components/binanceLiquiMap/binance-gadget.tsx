@@ -146,12 +146,12 @@ const BinanceGadget = () => {
         </div>
 
         <div className="flex w-300">
-          <div className="ml-2 w-200 h-100">
+          <div className="ml-2 w-250 h-175">
             <HeatMap data={data} />
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-90 h-100">
+            <div className="w-45 h-175">
               <LiquidationMap
                 data={data}
                 liquidationMapData={liquidationMapData}
@@ -162,7 +162,7 @@ const BinanceGadget = () => {
       </div>
 
       <div
-        className="ml-15 h-30 w-185 flex flex-col flex-1"
+        className="ml-15 h-30 w-240 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
         <TimeLapsChart data={data.toReversed()} />
