@@ -7,6 +7,8 @@ const Axis = ({ children, x, y, height, width }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
 
+  console.log("asd");
+
   useEffect(() => {
     if (!xRef.current || !yRef.current) return;
     const xAxis = d3.select(xRef.current);

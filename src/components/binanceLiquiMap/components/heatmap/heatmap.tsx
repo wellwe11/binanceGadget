@@ -1,4 +1,11 @@
-import { Activity, useCallback, useMemo, useRef, useState } from "react";
+import {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import * as d3 from "d3";
 
@@ -13,6 +20,11 @@ import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
 import lookUpMap from "./functions/lookUpMap";
 
+// Things to fix
+// Background-color
+// Zoom
+// Error: <rect> attribute height: A negative value is not valid. ("-40")
+
 // Shared parent to allow easier use of mouse-events
 const CandleAndHoverComponent = ({
   candleData,
@@ -26,8 +38,10 @@ const CandleAndHoverComponent = ({
   pricePadding,
 }) => {
   const [activeCell, setActiveCell] = useState(null);
+  const rafRef = useRef(null);
+  const activeCellRef = useRef(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [hideHighlight, setHideHighlight] = useState(false);
+  const [hideHighlight, setHideHighlight] = useState(() => false);
   const maxVol = d3.max(heatmapData, (d) => d.volume);
 
   const lookUpHeatMap = useMemo(
@@ -44,42 +58,55 @@ const CandleAndHoverComponent = ({
   const handleHover = useCallback(
     (event) => {
       const [mouseX, mouseY] = d3.pointer(event);
-      setMousePos((prev) => {
-        if (prev.x === mouseX && prev.y === mouseY) return prev;
-        return { x: mouseX, y: mouseY };
-      });
 
-      const eachBand = x.step();
-      const rangeStart = x.range()[0];
-
-      const index = Math.round((mouseX - rangeStart) / eachBand);
-      const clampedIndex = Math.max(0, Math.min(index, x.domain().length - 1));
-
-      const date = x.domain()[clampedIndex];
-
-      if (!date) return;
-
-      const rawPrice = y.invert(mouseY);
-      const [yMin, yMax] = y.domain();
-      const priceStep = (yMax - yMin) / 100;
-
-      const snappedPrice =
-        Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
-
-      if (hideHighlight) {
-        const cell = candleData[clampedIndex];
-
-        setActiveCell(cell);
-      } else {
-        const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
-
-        if (!hideHighlight && cell && cell.price !== activeCell?.price) {
-          setActiveCell(cell);
-        }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
+
+      rafRef.current = requestAnimationFrame(() => {
+        setMousePos({ x: mouseX, y: mouseY });
+
+        const eachBand = x.step();
+        const rangeStart = x.range()[0];
+
+        const index = Math.round((mouseX - rangeStart) / eachBand);
+        const clampedIndex = Math.max(
+          0,
+          Math.min(index, x.domain().length - 1),
+        );
+
+        const date = x.domain()[clampedIndex];
+
+        if (!date) return;
+
+        if (hideHighlight) {
+          const cell = candleData[clampedIndex];
+
+          if (cell !== activeCellRef.current) {
+            activeCellRef.current = cell;
+
+            setActiveCell(cell);
+          }
+        } else {
+          const rawPrice = y.invert(mouseY);
+          const [yMin, yMax] = y.domain();
+          const priceStep = (yMax - yMin) / 100;
+
+          const snappedPrice =
+            Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
+
+          const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
+
+          if (cell.date.getTime() !== activeCellRef.current?.date.getTime()) {
+            activeCellRef.current = cell;
+            setActiveCell(cell);
+          }
+        }
+      });
     },
-    [lookUpHeatMap, xDomain, yDomain],
+    [lookUpHeatMap, yDomain, xDomain],
   );
+
   return (
     <g onMouseLeave={() => setActiveCell(null)}>
       <ListeningRect
