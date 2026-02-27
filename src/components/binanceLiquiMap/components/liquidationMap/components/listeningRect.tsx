@@ -94,7 +94,11 @@ const ListeningRect = ({
       listeningEl.style("cursor", isPointerCursor);
       const isShort = interpolatedPrice > currentPrice;
 
-      tooltip.attr("y", yPos + 15);
+      tooltip
+        .transition()
+        .duration(200)
+        .ease(d3.easeCubicOut)
+        .attr("y", yPos + 15);
 
       tooltipText.html(`
               <div class="flex flex-col gap-1 h-full w-full">
@@ -103,7 +107,7 @@ const ListeningRect = ({
               Price: ${Math.round(interpolatedPrice)}
               </div>
               <div class="flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full border border-white"
+              <div class="ml-4 w-2 h-2 rounded-full border border-white"
               style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
               ></div>
               Cumulative ${isShort ? "Short" : "Long"}: ${Math.round(interpolatedAccumulatedVol)}
@@ -112,7 +116,7 @@ const ListeningRect = ({
               ${
                 interpolatedVol > 0
                   ? `
-                  <div class="w-2 h-2 rounded-full border border-white"
+                  <div class="ml-4 w-2 h-2 rounded-full border border-white"
                   style="background-color: ${scaleColors(interpolatedVol)}"></div>
                   Liquidation Leverage: ${Math.round(interpolatedVol)}
                   </div>
@@ -169,14 +173,14 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={maxXPixels}
+        width={maxXPixels + 2}
         height="100"
         style={{ pointerEvents: "none" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-full text-white pointer-events-none py-2 z-30"
+            className="bg-black w-full h-full text-white pointer-events-none py-2 z-30 "
           />
         </Activity>
       </foreignObject>

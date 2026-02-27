@@ -7,7 +7,7 @@ const ListeningRect = ({
   activeCell,
   hideHighlight,
 }) => {
-  const cellH = height / 100;
+  const cellH = Math.abs(y.range()[0] - y.range()[1]) / 100;
 
   return (
     <g cursor="pointer">

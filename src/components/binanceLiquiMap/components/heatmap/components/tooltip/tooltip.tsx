@@ -7,7 +7,7 @@ import scaleColors from "../../functions/customScaleColors";
 import useSize from "./hooks/useSize";
 
 const CandleText = ({ activeCell }) => {
-  const candleCircleColor = `${activeCell.open < activeCell.close ? "#ff3939" : "#65ff65"}`;
+  const candleCircleColor = `${activeCell.open > activeCell.close ? "#ff3939" : "#65ff65"}`;
   const candleTextKeys = ["open", "high", "low", "close"];
   return (
     <div className="flex flex-col">

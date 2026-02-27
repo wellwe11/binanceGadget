@@ -28,8 +28,6 @@ const Axis = ({ children, shorts, longs, xBars, y, x }: AxisType) => {
 
   return (
     <svg height={maxYPixels > 0 ? maxYPixels : 0} width={maxXPixels + 50}>
-      {children}
-
       <DottedLine
         data={maxShorts}
         x={xBars}
@@ -40,6 +38,7 @@ const Axis = ({ children, shorts, longs, xBars, y, x }: AxisType) => {
       <DottedLine data={maxLongs} x={xBars} height={maxYPixels} opacity="0.3" />
       <DottedLine data={averageLongs} x={xBars} height={maxYPixels} />
       <DottedLine data={maxYPixels} height={maxYPixels} opacity="0.5" />
+      {children}
     </svg>
   );
 };

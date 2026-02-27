@@ -20,13 +20,13 @@ const CandleChart = ({ data, x, y, handleHover, setHideHighlight }) => {
           <line
             y1={y(d.low)}
             y2={y(d.high)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
+            stroke={d.open > d.close ? "#ff3939" : "#65ff65"}
             strokeWidth="1"
           />
           <line
             y1={y(d.open)}
             y2={y(d.close)}
-            stroke={d.open < d.close ? "#ff3939" : "#65ff65"}
+            stroke={d.open > d.close ? "#ff3939" : "#65ff65"}
             strokeWidth={x.bandwidth() * 0.5}
           />
         </g>

@@ -21,10 +21,9 @@ import BarChart from "./components/barChart/barChart";
 import lookUpMap from "./functions/lookUpMap";
 
 // Things to fix
-// Background-color
-// Zoom
 // White highlight-square to be on top of mouse (currently in the middle)
 // Error: <rect> attribute height: A negative value is not valid. ("-40")
+// Zoom
 
 // Shared parent to allow easier use of mouse-events
 const CandleAndHoverComponent = ({
@@ -38,11 +37,13 @@ const CandleAndHoverComponent = ({
   max,
   pricePadding,
 }) => {
-  const [activeCell, setActiveCell] = useState(null);
   const rafRef = useRef(null);
   const activeCellRef = useRef(null);
+
+  const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hideHighlight, setHideHighlight] = useState(() => false);
+
   const maxVol = d3.max(heatmapData, (d) => d.volume);
 
   const lookUpHeatMap = useMemo(
@@ -97,8 +98,11 @@ const CandleAndHoverComponent = ({
             Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
 
           const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
-
-          if (cell?.date.getTime() !== activeCellRef.current?.date.getTime()) {
+          console.log(cell);
+          if (
+            cell?.date.getTime() !== activeCellRef.current?.date.getTime() ||
+            cell?.price !== activeCellRef.current?.price
+          ) {
             activeCellRef.current = cell;
             setActiveCell(cell);
           }
