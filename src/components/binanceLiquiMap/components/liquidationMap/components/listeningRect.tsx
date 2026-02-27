@@ -158,8 +158,8 @@ const ListeningRect = ({
         strokeOpacity="0"
         pointerEvents="all"
         style={{ zIndex: "1" }}
-        width={maxXPixels}
-        height={maxYPixels}
+        width={maxXPixels > 0 ? maxXPixels : 0}
+        height={maxYPixels > 0 ? maxXPixels : 0}
       />
       <line
         ref={lineRef}

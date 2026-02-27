@@ -206,8 +206,8 @@ const HeatMap = ({ data }) => {
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
         <rect
           fill="#46009b45"
-          height={containersHeight - 50}
-          width={containerWidth - 40}
+          height={containersHeight > 0 ? containersHeight - 50 : 0}
+          width={containerWidth > 0 ? containerWidth - 40 : 0}
         />
 
         <BarChart
