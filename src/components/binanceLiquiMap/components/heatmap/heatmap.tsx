@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import Axis from "./components/axis";
 import Tooltip from "./components/tooltip/tooltip";
+import scaleColors from "./functions/customScaleColors";
 
 // Tooltip text
 // Always show:
@@ -212,20 +213,7 @@ const BarMap = React.memo(({ data, x, y, width, height }) => {
     return d3.max(data, (liq) => liq.volume) || 1;
   }, [data]);
 
-  const colorScale = useMemo(
-    () =>
-      d3
-        .scaleLinear()
-        .domain([0, maxVol * 0.1, maxVol * 0.2, maxVol * 0.6, maxVol])
-        .range([
-          "rgba(0,0,0,0)",
-          "#00bcc695",
-          "#00bcc699",
-          "#ffff00",
-          "#ffff00",
-        ]),
-    [maxVol],
-  );
+  const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
 
   useEffect(() => {
     if (!canvasRef.current) return;

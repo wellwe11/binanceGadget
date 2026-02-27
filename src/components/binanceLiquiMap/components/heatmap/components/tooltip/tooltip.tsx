@@ -20,7 +20,7 @@ const CandleText = ({ activeCell }) => {
 
 const CellText = ({ activeCell, max }) => {
   const cellTextKeys = ["price", "volume"];
-  const colorScale = scaleColors(max);
+  const colorScale = useMemo(() => scaleColors(max), [max]);
 
   return (
     <div className="flex flex-col">
@@ -92,7 +92,7 @@ const Tooltip = ({
         pointerEvents: "none",
       }}
     >
-      <div className="flex flex-col bg-black w-fit h-fit text-white pointer-events-none py-2 z-30 whitespace-nowrap ">
+      <div className="flex flex-col bg-black w-fit h-fit text-white pointer-events-none p-5 z-30 whitespace-nowrap rounded-md">
         <p>{formatter(activeCell.date)}</p>
         {hideHighlight ? (
           <CandleText activeCell={activeCell} />
