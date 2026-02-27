@@ -4,12 +4,12 @@ import React, {
   Activity,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import Axis from "./components/axis";
+import Tooltip from "./components/tooltip/tooltip";
 
 // Tooltip text
 // Always show:
@@ -59,152 +59,6 @@ const ListeningRect = ({
         />
       )}
     </g>
-  );
-};
-
-const Tooltip = ({
-  mousePos,
-  activeCell,
-  width,
-  height,
-  hideHighlight,
-  max,
-}) => {
-  const toolTipRef = useRef(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  const [adjustPos, setAdjustPos] = useState({ up: false, left: false });
-  const scaleColors = useMemo(
-    () =>
-      d3
-        .scaleLinear()
-        .domain([0, max * 0.1, max * 0.2, max * 0.6, max])
-        .range([
-          "rgba(0,0,0,0)",
-          "#00bcc695",
-          "#00bcc699",
-          "#ffff00",
-          "#ffff00",
-        ]),
-    [max],
-  );
-
-  useLayoutEffect(() => {
-    if (!toolTipRef.current) return;
-    const toolTipEl = d3.select(toolTipRef.current);
-
-    toolTipEl.attr("x", mousePos.x).attr("y", mousePos.y);
-
-    const { width, height } = toolTipRef.current.getBoundingClientRect();
-
-    setSize({ width, height });
-  }, []);
-
-  useEffect(() => {
-    if (!toolTipRef.current) return;
-    const toolTipEl = d3.select(toolTipRef.current);
-
-    const marginHeight = size.height + mousePos.y;
-    const marginWidth = size.width + mousePos.x;
-
-    setAdjustPos({
-      up: marginHeight >= height ? true : false,
-      left: marginWidth >= width ? true : false,
-    });
-
-    toolTipEl
-      .transition()
-      .duration(200)
-      .ease(d3.easeCubicOut)
-      .attr("x", mousePos.x)
-      .attr("y", mousePos.y);
-  }, [mousePos]);
-
-  if (!activeCell) return null;
-
-  const CandleText = () => (
-    <div className="flex flex-col">
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white"
-          style={{
-            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
-          }}
-        />
-        <p>Open {Math.round(activeCell.open)}</p>
-      </div>
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white"
-          style={{
-            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
-          }}
-        />
-        <p>High {Math.round(activeCell.high)}</p>
-      </div>
-
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white"
-          style={{
-            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
-          }}
-        />
-        <p>Low {Math.round(activeCell.low)}</p>
-      </div>
-
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white"
-          style={{
-            backgroundColor: `${activeCell.open < activeCell.close ? "red" : "green"}`,
-          }}
-        />
-        <p>Close {Math.round(activeCell.close)}</p>
-      </div>
-    </div>
-  );
-
-  const CellText = () => (
-    <div>
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white"
-          style={{
-            backgroundColor: `${scaleColors(activeCell.volume)}`,
-          }}
-        />
-        <p>Price {Math.round(activeCell.price)}</p>
-      </div>
-
-      <div className="flex items-center">
-        <div
-          className="w-2 h-2 rounded-full border border-white "
-          style={{
-            backgroundColor: `${scaleColors(activeCell.volume)}`,
-          }}
-        />
-        <p>Volume {Math.round(activeCell.volume)}</p>
-      </div>
-    </div>
-  );
-
-  return (
-    <foreignObject
-      ref={toolTipRef}
-      width="200"
-      height="200"
-      style={{
-        transform: `translate(${adjustPos.left ? `-${size.width + 20}px` : "20px"}, ${adjustPos.up ? `-${size.height + 20}px` : "0"})`,
-        transition: activeCell ? "transform 0.3s ease" : "",
-        pointerEvents: "none",
-      }}
-    >
-      <div className="flex flex-col bg-black w-full h-full text-white pointer-events-none py-2 z-30">
-        <p>{String(activeCell.date)}</p>
-
-        {hideHighlight ? <CandleText /> : <CellText />}
-      </div>
-    </foreignObject>
   );
 };
 
