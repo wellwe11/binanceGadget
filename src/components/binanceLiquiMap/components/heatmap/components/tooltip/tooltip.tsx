@@ -4,7 +4,7 @@ import TextWithCircle from "./components/textWithCircle";
 import firstLetterCapital from "../../../liquidationMap/functions/firstLetterCapital";
 import scaleColors from "../../functions/customScaleColors";
 
-import useSize from "./hooks/useSize";
+import useSize from "../../hooks/useSize";
 
 const CandleText = ({ activeCell }) => {
   const candleCircleColor = `${activeCell.open > activeCell.close ? "#ff3939" : "#65ff65"}`;

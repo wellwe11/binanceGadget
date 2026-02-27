@@ -2,6 +2,7 @@ import { Activity, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../../../functions/colorScale";
 import { ListeningRectType } from "../Types";
+import useSize from "../../heatmap/hooks/useSize";
 
 const ListeningRect = ({
   data,
@@ -17,6 +18,8 @@ const ListeningRect = ({
   const tooltipRef = useRef(null);
   const tooltipTextRef = useRef(null);
   const [displayToolbar, setDisplayToolbar] = useState(false);
+
+  const [tooltipWidth, tooltipHeight] = useSize(tooltipRef);
 
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
@@ -81,6 +84,12 @@ const ListeningRect = ({
 
       const xBarPos = xBars(interpolatedVol);
 
+      if (xPos + tooltipHeight + 25 > maxYPixels) {
+        tooltip.style("transform", "translate(0, -125px)");
+      } else {
+        tooltip.style("transform", "translate(0, 0)");
+      }
+
       circle
         .attr("cx", xPos)
         .attr("cy", yCoord)
@@ -132,7 +141,7 @@ const ListeningRect = ({
       circle.attr("r", 0).style("display", "none");
       tooltipLineY.style("display", "none");
     });
-  }, [displayToolbar, data, y, x, maxXPixels, maxYPixels]);
+  }, [displayToolbar, data, y, x, maxXPixels, maxYPixels, tooltipHeight]);
 
   return (
     <g
@@ -175,7 +184,7 @@ const ListeningRect = ({
         ref={tooltipRef}
         width={maxXPixels + 2}
         height="100"
-        style={{ pointerEvents: "none" }}
+        style={{ pointerEvents: "none", transition: "transform 0.4s ease" }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div

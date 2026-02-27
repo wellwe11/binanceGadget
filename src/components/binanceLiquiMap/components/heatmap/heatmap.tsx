@@ -98,7 +98,7 @@ const CandleAndHoverComponent = ({
             Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
 
           const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
-          console.log(cell);
+
           if (
             cell?.date.getTime() !== activeCellRef.current?.date.getTime() ||
             cell?.price !== activeCellRef.current?.price
