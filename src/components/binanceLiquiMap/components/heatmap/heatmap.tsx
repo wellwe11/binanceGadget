@@ -1,11 +1,4 @@
-import {
-  Activity,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Activity, useCallback, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
 

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const generateHeatmapData = (names: string[], days = 100) => {
+const generateHeatmapData = (names: string[], days = 120) => {
   const data = [];
   const today = new Date();
   let contractPool = [];

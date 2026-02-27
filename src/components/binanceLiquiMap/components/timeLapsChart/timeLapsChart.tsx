@@ -248,6 +248,8 @@ const Controllers = ({
   const firstObjectDate = data[data.length - 1 - Math.round(lowestVal)]?.date;
   const lastObjectDate = data[data.length - 1 - Math.round(highestVal)]?.date;
 
+  // Calculate if text on moving-graph should be placed inside or outside
+
   // <p> for left and right handle style.
   const textStyle =
     "absolute left-0 top-[-16%] pointer-events-none whitespace-nowrap select-none text-white";
@@ -323,11 +325,7 @@ const TimeLapsChart = ({ data }: MainProps) => {
   });
 
   return (
-    <div
-      ref={containerRef}
-      className="overflow-hidden"
-      style={{ width: "inherit", height: "inherit" }}
-    >
+    <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Controllers
         data={data}
         graphMargins={graphMargins}
