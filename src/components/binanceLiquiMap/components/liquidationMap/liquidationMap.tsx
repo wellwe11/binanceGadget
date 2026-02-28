@@ -117,7 +117,7 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
 
   const y = d3
     .scaleLinear()
-    .range([containersHeight - 40, 0])
+    .range([containersHeight - 50, 0])
     .domain([minPrice - pricePadding, maxPrice + pricePadding]);
 
   if (!accumulatedLongs || !accumulatedShorts) return;

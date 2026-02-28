@@ -11,6 +11,10 @@ import generateHeatmapData from "./generateData";
 import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import sortDataIntoBuckets from "./functions/sortDataIntoBuckets";
 
+// Abstract to top-layer
+// Create a global bucket-size so that graphs match each others layout
+// Create a global "visible data" so that graphs show same data-start&end-points
+
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
   const placeholderCurrencies = useMemo(

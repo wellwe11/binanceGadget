@@ -3,35 +3,6 @@ import * as d3 from "d3";
 
 import scaleColors from "../../../../functions/colorScale";
 
-// const BarChart = React.memo(({ data, x, y, width, height }) => {
-//   const colorScale = d3
-//     .scaleSequential(d3.interpolateBlues)
-//     .domain([0, d3.max(data, (d) => d.volume) || 1]);
-
-//   const cellW = width;
-//   const cellH = height / 100;
-
-//   const cellsWithVolume = data.filter((d) => d.volume > 0);
-
-//   return (
-//     <g>
-//       {cellsWithVolume.map((obj, index) => (
-//         <rect
-//           key={index}
-//           x={x(obj.date)}
-//           y={y(obj.price)}
-//           width={cellW}
-//           height={cellH}
-//           fill={colorScale(obj.volume)}
-//           opacity="0.1"
-//           cursor="pointer"
-//           onMouseEnter={() => console.log(obj)}
-//         />
-//       ))}
-//     </g>
-//   );
-// });
-
 const BarChart = React.memo(({ data, x, y, width, height }) => {
   const canvasRef = useRef(null);
 
