@@ -101,10 +101,11 @@ const BinanceGadget = () => {
     const flattedData = data.flatMap((d) => d.liquidations);
     const topPrice = Math.round(d3.max(data, (d) => d.value)) || 0;
 
-    const bucketSize = topPrice / 100;
+    const buckets = 200;
+    const bucketSize = topPrice / buckets;
     const map = {};
 
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i <= buckets; i++) {
       const bucketPrice = Math.round(i * bucketSize);
       map[bucketPrice] = { price: bucketPrice, volume: 0 };
     }

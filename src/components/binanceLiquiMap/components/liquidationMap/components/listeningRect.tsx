@@ -21,8 +21,6 @@ const ListeningRect = ({
 
   const [tooltipWidth, tooltipHeight] = useSize(tooltipRef);
 
-  console.log(tooltipHeight);
-
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
 
@@ -147,6 +145,8 @@ const ListeningRect = ({
     });
   }, [displayToolbar, data, y, x, maxXPixels, maxYPixels, tooltipHeight]);
 
+  console.log(tooltipWidth, maxXPixels);
+
   return (
     <g
       onMouseEnter={handleDisplayToolbar}
@@ -186,7 +186,7 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={maxXPixels + 2}
+        width={maxXPixels}
         height={tooltipHeight}
         style={{
           pointerEvents: "none",
@@ -196,7 +196,7 @@ const ListeningRect = ({
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-fit h-fit text-white pointer-events-none py-2 z-30 "
+            className="bg-black w-full h-fit text-white pointer-events-none py-4 z-30 "
           />
         </Activity>
       </foreignObject>

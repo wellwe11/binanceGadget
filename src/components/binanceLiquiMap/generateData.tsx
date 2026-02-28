@@ -1,13 +1,11 @@
 import * as d3 from "d3";
 
 // Need to create TimeBuckets as well.
-
-const generateHeatmapData = (names, days = 200) => {
+const generateHeatmapData = (names, days = 300) => {
   const data = [];
   const today = new Date();
   let contractPool = [];
 
-  // 1. Determine density based on timeframe
   let amountOfData;
   let timeOffset;
   if (days <= 1) {
@@ -19,15 +17,14 @@ const generateHeatmapData = (names, days = 200) => {
   }
 
   const lastPrices = {};
-  // Create "sticky" price levels where clusters will form
   const clusters = {};
 
   names.forEach((name) => {
     lastPrices[name] = 500;
-    // Pre-define 3-5 specific price levels for each coin to clump around
+    // ✅ Create 5-8 cluster zones
     clusters[name] = Array.from(
-      { length: 4 },
-      () => 500 + (Math.random() - 0.5) * 600,
+      { length: 7 },
+      () => 500 + (Math.random() - 0.5) * 400, // ✅ Tighter initial range
     );
   });
 
@@ -43,33 +40,45 @@ const generateHeatmapData = (names, days = 200) => {
       const low = Math.max(5, Math.min(open, close) - Math.random() * 5);
       lastPrices[name] = close;
 
-      // 2. DECREASE FREQUENCY: Only update/add clusters 15% of the time
-      if (Math.random() > 0.85) {
-        // Occasionally shift one cluster level to simulate market moving
+      // ✅ Add clusters 40% of the time (more frequent)
+      if (Math.random() > 0.6) {
         const clusterIdx = Math.floor(Math.random() * clusters[name].length);
-        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 400;
+        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 300;
 
-        // Add a "Heavy Cluster" to the pool
         const targetPrice = clusters[name][clusterIdx];
-        const priceStep = 10;
+        const priceStep = 5; // ✅ Smaller step for tighter clustering
 
-        // Spawn 5-10 orders tightly around this specific price
-        for (let j = 0; j < 8; j++) {
+        // ✅ Create 20-40 orders per cluster (much denser)
+        const ordersInCluster = Math.floor(Math.random() * 20) + 20;
+
+        for (let j = 0; j < ordersInCluster; j++) {
+          // ✅ Tighter spread (±3 units instead of ±7.5)
           const snappedPrice =
-            Math.round((targetPrice + (Math.random() * 15 - 7.5)) / priceStep) *
+            Math.round((targetPrice + (Math.random() * 6 - 3)) / priceStep) *
             priceStep;
 
           contractPool.push({
-            price: snappedPrice,
-            volume: Math.floor(Math.random() * 800) + 200, // Higher volume for clumps
+            price: Math.max(10, snappedPrice),
+            volume: Math.floor(Math.random() * 600) + 300, // ✅ Higher base volume
             type: snappedPrice > close ? "short" : "long",
           });
         }
       }
 
-      // 3. PERSISTENCE: Slowly decay the pool so clumps fade rather than disappear
-      if (contractPool.length > 800) {
-        contractPool.splice(0, 10); // Remove oldest orders slowly
+      // ✅ Remove liquidated positions (price passed through)
+      contractPool = contractPool.filter((contract) => {
+        if (contract.type === "short" && low >= contract.price) {
+          return false; // Liquidated
+        }
+        if (contract.type === "long" && high <= contract.price) {
+          return false; // Liquidated
+        }
+        return true;
+      });
+
+      // ✅ Higher pool limit for more density
+      if (contractPool.length > 3000) {
+        contractPool.splice(0, 50); // Remove oldest in larger batches
       }
 
       data.push({

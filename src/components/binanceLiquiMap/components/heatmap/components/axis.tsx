@@ -12,7 +12,7 @@ const Axis = ({ children, x, y, height, width }) => {
     const xAxis = d3.select(xRef.current);
     const yAxis = d3.select(yRef.current);
 
-    const xAxisTicks = x.domain().filter((d, i) => i % 10 === 0);
+    const xAxisTicks = x.domain().filter((d, i) => i % 50 === 0);
 
     xAxis.call(
       d3
@@ -29,15 +29,20 @@ const Axis = ({ children, x, y, height, width }) => {
   }, [x, y]);
 
   return (
-    <svg width={width} height={height}>
+    <svg
+      width={x.range()[1] > 0 ? x.range()[1] + 40 : 0}
+      height={y.range()[0] > 0 ? y.range()[0] + 40 : 0}
+      x={x.range()[0]}
+      y={y.range()[1]}
+    >
       <g
         ref={xRef}
-        transform={`translate(0, ${height - 40})`}
+        transform={`translate(0, ${y.range()[0]})`}
         className="text-white"
       />
       <g
         ref={yRef}
-        transform={`translate(${width - 40}, 0)`}
+        transform={`translate(${x.range()[1]}, 0)`}
         className="text-white"
       />
       {children}

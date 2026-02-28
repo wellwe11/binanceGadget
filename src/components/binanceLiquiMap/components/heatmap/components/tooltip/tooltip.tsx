@@ -35,14 +35,7 @@ const CellText = ({ activeCell, max }) => {
   );
 };
 
-const Tooltip = ({
-  mousePos,
-  activeCell,
-  width,
-  height,
-  hideHighlight,
-  max,
-}) => {
+const Tooltip = ({ mousePos, activeCell, x, y, hideHighlight, max }) => {
   const toolTipRef = useRef(null);
 
   // Adjusts position of tooltip so that it does not extend outside of it's container
@@ -58,22 +51,22 @@ const Tooltip = ({
 
     const toolTipEl = d3.select(toolTipRef.current);
 
-    toolTipEl.attr("x", mousePos.x).attr("y", mousePos.y);
-
-    const marginWidth = tooltipWidth + mousePos.x;
-    const marginHeight = tooltipHeight + mousePos.y;
-
-    setAdjustPos({
-      up: marginHeight >= height ? true : false,
-      left: marginWidth >= width ? true : false,
-    });
+    const marginWidth = mousePos.x + tooltipWidth >= x.range()[1];
+    const marginHeight = mousePos.y + tooltipHeight >= y.range()[0];
 
     toolTipEl
       .transition()
-      .duration(200)
+      .duration(100)
       .ease(d3.easeCubicOut)
       .attr("x", mousePos.x)
       .attr("y", mousePos.y);
+
+    if (adjustPos.left === marginWidth && adjustPos.up === marginHeight) return;
+
+    setAdjustPos({
+      left: marginWidth,
+      up: marginHeight,
+    });
   }, [mousePos, tooltipWidth, tooltipHeight]);
 
   if (!activeCell) return null;
@@ -81,10 +74,10 @@ const Tooltip = ({
   return (
     <foreignObject
       ref={toolTipRef}
-      width={tooltipWidth}
-      height={tooltipHeight}
+      width={x.range()[1] > 0 ? x.range()[1] : 0}
+      height={y.range()[0] > 0 ? y.range()[0] : 0}
       style={{
-        transform: `translate(${adjustPos.left ? `-${tooltipWidth}px` : "20px"}, ${adjustPos.up ? `-${tooltipHeight}px` : "0"})`,
+        transform: `translate(${adjustPos.left ? `-${tooltipWidth + 10}px` : "20px"}, ${adjustPos.up ? `-${tooltipHeight}px` : "0"})`,
         transition: activeCell ? "transform 0.3s ease, height 0.2s ease" : "",
         pointerEvents: "none",
       }}

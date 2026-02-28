@@ -23,8 +23,6 @@ const CandleAndHoverComponent = ({
   heatmapData,
   x,
   y,
-  containerWidth,
-  containersHeight,
   min,
   max,
   pricePadding,
@@ -34,7 +32,9 @@ const CandleAndHoverComponent = ({
 
   const [activeCell, setActiveCell] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   const [hideHighlight, setHideHighlight] = useState(() => false);
+  const [mouseOut, setMouseOut] = useState(true);
 
   const maxVol = d3.max(heatmapData, (d) => d.volume);
 
@@ -43,11 +43,8 @@ const CandleAndHoverComponent = ({
     [heatmapData],
   );
 
-  const xDomain = useMemo(() => x.domain(), [containerWidth, heatmapData]);
-  const yDomain = useMemo(
-    () => y.domain(),
-    [min, max, pricePadding, containersHeight],
-  );
+  const xDomain = useMemo(() => x.domain(), [heatmapData]);
+  const yDomain = useMemo(() => y.domain(), [min, max, pricePadding]);
 
   const handleHover = useCallback(
     (event) => {
@@ -105,16 +102,17 @@ const CandleAndHoverComponent = ({
   );
 
   return (
-    <g onMouseLeave={() => setActiveCell(null)}>
+    <g>
       <ListeningRect
         y={y}
         x={x}
-        width={containerWidth}
-        height={containersHeight}
         handleHover={handleHover}
         activeCell={activeCell}
         hideHighlight={hideHighlight}
+        setMouseOut={setMouseOut}
+        mouseOut={mouseOut}
       />
+
       <CandleChart
         data={candleData}
         x={x}
@@ -122,12 +120,12 @@ const CandleAndHoverComponent = ({
         handleHover={handleHover}
         setHideHighlight={setHideHighlight}
       />
-      <Activity mode={activeCell ? "visible" : "hidden"}>
+      <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
         <Tooltip
           mousePos={mousePos}
           activeCell={activeCell}
-          width={containerWidth}
-          height={containersHeight}
+          x={x}
+          y={y}
           hideHighlight={hideHighlight}
           max={maxVol}
         />
@@ -148,7 +146,7 @@ const HeatMap = ({ data }) => {
   // x = time
   const x = d3
     .scaleBand()
-    .range([30, containerWidth - 40])
+    .range([1, containerWidth - 40])
     .domain(data.map((d) => new Date(d.date)))
     .padding(0);
 
@@ -161,7 +159,7 @@ const HeatMap = ({ data }) => {
   const heatmapData = useMemo(() => {
     const [yMin, yMax] = y.domain();
 
-    const numBuckets = 100;
+    const numBuckets = 200;
     const priceStep = (yMax - yMin) / numBuckets;
     const grid = [];
 
@@ -206,8 +204,10 @@ const HeatMap = ({ data }) => {
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
         <rect
           fill="#440154"
-          height={containersHeight > 0 ? containersHeight - 50 : 0}
-          width={containerWidth > 0 ? containerWidth - 40 : 0}
+          width={x.range()[1] > 0 ? x.range()[1] : 0}
+          height={y.range()[0] > 0 ? y.range()[0] : 0}
+          x={x.range()[0]}
+          y={y.range()[1]}
         />
 
         <BarChart
@@ -216,14 +216,13 @@ const HeatMap = ({ data }) => {
           y={y}
           width={containerWidth}
           height={containersHeight}
+          unfilteredDataLength={data.length}
         />
         <CandleAndHoverComponent
           candleData={data}
           heatmapData={heatmapData}
           x={x}
           y={y}
-          containerWidth={containerWidth}
-          containersHeight={containersHeight}
           min={min}
           max={max}
           pricePadding={pricePadding}
