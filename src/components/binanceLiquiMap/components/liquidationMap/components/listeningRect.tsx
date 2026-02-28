@@ -21,6 +21,8 @@ const ListeningRect = ({
 
   const [tooltipWidth, tooltipHeight] = useSize(tooltipRef);
 
+  console.log(tooltipHeight);
+
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
 
@@ -83,8 +85,6 @@ const ListeningRect = ({
       const yPos = yCoord;
 
       const xBarPos = xBars(interpolatedVol);
-
-      console.log(yPos, tooltipHeight, maxYPixels);
 
       if (yPos + tooltipHeight + 25 > maxYPixels) {
         tooltip.style("transform", "translate(0, -125px)");
@@ -185,13 +185,16 @@ const ListeningRect = ({
       <foreignObject
         ref={tooltipRef}
         width={maxXPixels + 2}
-        height="100"
-        style={{ pointerEvents: "none", transition: "transform 0.4s ease" }}
+        height={tooltipHeight}
+        style={{
+          pointerEvents: "none",
+          transition: "transform 0.4s ease, height 0.2s ease",
+        }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-full text-white pointer-events-none py-2 z-30 "
+            className="bg-black w-fit h-fit text-white pointer-events-none py-2 z-30 "
           />
         </Activity>
       </foreignObject>
