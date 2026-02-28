@@ -30,7 +30,7 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     ctx.clearRect(0, 0, width * dpr, height * dpr);
     ctx.scale(dpr, dpr);
 
-    const cellH = Math.abs(y.range()[0] - y.range()[1]) / 200;
+    const cellH = Math.abs(y.range()[0]) / 200;
 
     data.forEach((cell) => {
       if (cell.volume === 0) return;

@@ -1,4 +1,4 @@
-import { Activity, useEffect, useRef, useState } from "react";
+import { Activity, memo, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../../../functions/colorScale";
 import { ListeningRectType } from "../Types";
@@ -84,8 +84,6 @@ const ListeningRect = ({
 
       const xBarPos = xBars(interpolatedVol);
 
-      console.log(tooltipHeight);
-
       if (yPos + tooltipHeight + 25 > maxYPixels) {
         tooltip.style("transform", `translate(0, -${tooltipHeight + 30}px)`);
       } else {
@@ -145,8 +143,6 @@ const ListeningRect = ({
     });
   }, [displayToolbar, data, y, x, maxXPixels, maxYPixels, tooltipHeight]);
 
-  console.log(tooltipWidth, maxXPixels);
-
   return (
     <g
       onMouseEnter={handleDisplayToolbar}
@@ -204,4 +200,4 @@ const ListeningRect = ({
   );
 };
 
-export default ListeningRect;
+export default memo(ListeningRect);

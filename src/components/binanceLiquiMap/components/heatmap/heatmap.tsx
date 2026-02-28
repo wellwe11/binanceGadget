@@ -18,6 +18,7 @@ import lookUpMap from "./functions/lookUpMap";
 // Zoom
 
 // Shared parent to allow easier use of mouse-events
+
 const CandleAndHoverComponent = ({
   candleData,
   heatmapData,
@@ -81,7 +82,7 @@ const CandleAndHoverComponent = ({
         } else {
           const rawPrice = y.invert(mouseY);
           const [yMin, yMax] = y.domain();
-          const priceStep = (yMax - yMin) / 100;
+          const priceStep = (yMax - yMin) / 200;
 
           const snappedPrice =
             Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
