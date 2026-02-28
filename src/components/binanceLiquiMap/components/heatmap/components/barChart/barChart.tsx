@@ -4,7 +4,6 @@ import * as d3 from "d3";
 import scaleColors from "../../functions/customScaleColors";
 
 // const BarChart = React.memo(({ data, x, y, width, height }) => {
-//   console.log(data);
 //   const colorScale = d3
 //     .scaleSequential(d3.interpolateBlues)
 //     .domain([0, d3.max(data, (d) => d.volume) || 1]);
@@ -12,9 +11,11 @@ import scaleColors from "../../functions/customScaleColors";
 //   const cellW = width;
 //   const cellH = height / 100;
 
+//   const cellsWithVolume = data.filter((d) => d.volume > 0);
+
 //   return (
 //     <g>
-//       {data.map((obj, index) => (
+//       {cellsWithVolume.map((obj, index) => (
 //         <rect
 //           key={index}
 //           x={x(obj.date)}
@@ -38,11 +39,11 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     return d3.max(data, (liq) => liq.volume) || 1;
   }, [data]);
 
-  const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
+  // const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
 
-  // const colorScale = d3
-  //   .scaleSequential(d3.interpolateBlues)
-  //   .domain([0, maxVol]);
+  const colorScale = d3
+    .scaleSequential(d3.interpolateViridis)
+    .domain([0, maxVol]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -62,8 +63,7 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     ctx.clearRect(0, 0, width * dpr, height * dpr);
     ctx.scale(dpr, dpr);
 
-    const cellW = width;
-    console.log(cellW);
+    const cellW = x.bandwidth();
     const cellH = height / 100;
 
     data.forEach((cell) => {
@@ -71,7 +71,7 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
 
       ctx.fillStyle = colorScale(cell.volume);
 
-      ctx.globalAlpha = 0.005;
+      // ctx.globalAlpha = 0.8;
 
       ctx.fillRect(x(cell.date), y(cell.price), Math.ceil(cellW), cellH);
     });

@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 // Need to create TimeBuckets as well.
 
-const generateHeatmapData = (names, days = 100) => {
+const generateHeatmapData = (names, days = 200) => {
   const data = [];
   const today = new Date();
   let contractPool = [];

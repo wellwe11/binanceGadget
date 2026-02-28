@@ -160,7 +160,8 @@ const HeatMap = ({ data }) => {
 
   const heatmapData = useMemo(() => {
     const [yMin, yMax] = y.domain();
-    const numBuckets = 100;
+
+    const numBuckets = 200;
     const priceStep = (yMax - yMin) / numBuckets;
     const grid = [];
 
@@ -204,7 +205,7 @@ const HeatMap = ({ data }) => {
     >
       <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
         <rect
-          fill="#46009b45"
+          fill="#440154"
           height={containersHeight > 0 ? containersHeight - 50 : 0}
           width={containerWidth > 0 ? containerWidth - 40 : 0}
         />
