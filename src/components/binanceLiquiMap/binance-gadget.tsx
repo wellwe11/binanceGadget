@@ -144,7 +144,7 @@ const BinanceGadget = () => {
       </div>
 
       <div className="flex w-fit">
-        <div className="w-10" style={{ height: "inherit" }}>
+        <div className="w-10 mb-4 -mt-8.5" style={{ height: "inherit" }}>
           {/* Need to calculate max and add it to Gradient max={number} */}
           <Gradient />
         </div>
