@@ -86,8 +86,10 @@ const ListeningRect = ({
 
       const xBarPos = xBars(interpolatedVol);
 
+      console.log(tooltipHeight);
+
       if (yPos + tooltipHeight + 25 > maxYPixels) {
-        tooltip.style("transform", "translate(0, -125px)");
+        tooltip.style("transform", `translate(0, -${tooltipHeight + 30}px)`);
       } else {
         tooltip.style("transform", "translate(0, 0)");
       }

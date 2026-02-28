@@ -14,6 +14,7 @@ import sortDataIntoBuckets from "./functions/sortDataIntoBuckets";
 // Abstract to top-layer
 // Create a global bucket-size so that graphs match each others layout
 // Create a global "visible data" so that graphs show same data-start&end-points
+// Global 'start' and 'end' point for data so that user can 'zoom' in with timeLapsChart
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
@@ -149,13 +150,13 @@ const BinanceGadget = () => {
           <Gradient />
         </div>
 
-        <div className="flex w-300">
+        <div className="flex w-screen">
           <div className="ml-2 w-250 h-175">
             <HeatMap data={data} />
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-45 h-175">
+            <div className="w-75 h-175">
               <LiquidationMap
                 data={data}
                 liquidationMapData={liquidationMapData}
