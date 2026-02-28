@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import * as d3 from "d3";
 
-import scaleColors from "../../functions/customScaleColors";
+import scaleColors from "../../../../functions/colorScale";
 
 // const BarChart = React.memo(({ data, x, y, width, height }) => {
 //   const colorScale = d3
@@ -39,11 +39,9 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     return d3.max(data, (liq) => liq.volume) || 1;
   }, [data]);
 
-  // const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
+  const colorScale = useMemo(() => scaleColors(maxVol), []);
 
-  const colorScale = d3
-    .scaleSequential(d3.interpolateViridis)
-    .domain([0, maxVol]);
+  console.log(maxVol);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -64,7 +62,7 @@ const BarChart = React.memo(({ data, x, y, width, height }) => {
     ctx.scale(dpr, dpr);
 
     const cellW = x.bandwidth();
-    const cellH = height / 100;
+    const cellH = height / 200;
 
     data.forEach((cell) => {
       if (cell.volume === 0) return;

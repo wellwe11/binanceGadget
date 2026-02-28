@@ -1,5 +1,6 @@
-import colorScale from "../../../functions/colorScale";
 import { XYType } from "../Types";
+
+import colorScale from "../../../functions/colorScale";
 
 const BarChart = ({ data, x, y }: XYType) => {
   const [min, max] = x.domain();

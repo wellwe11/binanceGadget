@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import TextWithCircle from "./components/textWithCircle";
 import firstLetterCapital from "../../../liquidationMap/functions/firstLetterCapital";
-import scaleColors from "../../functions/customScaleColors";
+import colorScale from "../../../../functions/colorScale";
 
 import useSize from "../../hooks/useSize";
 
@@ -22,12 +22,12 @@ const CandleText = ({ activeCell }) => {
 
 const CellText = ({ activeCell, max }) => {
   const cellTextKeys = ["price", "volume"];
-  const colorScale = useMemo(() => scaleColors(max), [max]);
+  const scaleColor = useMemo(() => colorScale(max), [max]);
 
   return (
     <div className="flex flex-col">
       {cellTextKeys.map((key, index) => (
-        <TextWithCircle key={index} circleColor={colorScale(activeCell.volume)}>
+        <TextWithCircle key={index} circleColor={scaleColor(activeCell.volume)}>
           {`${firstLetterCapital(key)} ${Math.round(activeCell[key])}`}
         </TextWithCircle>
       ))}

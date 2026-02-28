@@ -161,7 +161,7 @@ const HeatMap = ({ data }) => {
   const heatmapData = useMemo(() => {
     const [yMin, yMax] = y.domain();
 
-    const numBuckets = 200;
+    const numBuckets = 100;
     const priceStep = (yMax - yMin) / numBuckets;
     const grid = [];
 
