@@ -2,6 +2,19 @@
 
 A heatmap that tracks current price of specific coins and related liquidations.
 
+## TODO
+
+- Zoom-effect
+- Abstract data-filtering
+- Adapt code for Binance WebSocket API
+- Color-theme choice
+- Wire 'navbar buttons' to graphs
+- Wire timeLapsChart to allow control over timestamps
+
+## Related projects
+
+[Liquidation heatmap](https://github.com/wellwe11/graph) - A heatmap that shows liquidations; initial learning-project for d3.js.
+
 ## Tech Stack
 
 - **Frontend:** React (Vite)
