@@ -2,7 +2,9 @@ const lookUpMap = (arr, keyOne, keyTwo) => {
   const map = new Map();
 
   arr.forEach((c) => {
-    map.set(`${c[keyOne]}-${c[keyTwo].toFixed(4)}`, c);
+    const firstKey = c[keyOne];
+    const secondKey = c[keyTwo].toFixed(4);
+    map.set(`${firstKey}-${secondKey}`, c);
   });
 
   return map;

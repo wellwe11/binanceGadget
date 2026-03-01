@@ -8,8 +8,9 @@ const ListeningRect = ({
   hideHighlight,
   mouseOut,
   setMouseOut,
+  numBuckets,
 }) => {
-  const cellH = Math.abs(y.range()[0] - y.range()[1]) / 200;
+  const cellH = Math.abs(y.range()[0] - y.range()[1]) / numBuckets;
 
   return (
     <g cursor="pointer">

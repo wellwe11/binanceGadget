@@ -1,4 +1,4 @@
-import { Activity, useCallback, useMemo, useRef, useState } from "react";
+import { act, Activity, useCallback, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
 
@@ -26,12 +26,13 @@ const CandleAndHoverComponent = ({
   y,
   min,
   max,
-  pricePadding,
+  numBuckets,
 }) => {
   const rafRef = useRef(null);
   const activeCellRef = useRef(null);
 
   const [activeCell, setActiveCell] = useState(null);
+
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const [hideHighlight, setHideHighlight] = useState(() => false);
@@ -44,8 +45,11 @@ const CandleAndHoverComponent = ({
     [heatmapData],
   );
 
-  const xDomain = useMemo(() => x.domain(), [heatmapData]);
-  const yDomain = useMemo(() => y.domain(), [min, max, pricePadding]);
+  // {"Fri Nov 21 2025 09:47:54 GMT+0200 (Eastern European Standard Time)-289.6497" => Object}
+
+  const xDomain = useMemo(() => x.domain(), [x, candleData]);
+  const yDomain = useMemo(() => y.domain(), [min, max, y, candleData]);
+  const [yMin, yMax] = useMemo(() => y.domain(), [yDomain]);
 
   const handleHover = useCallback(
     (event) => {
@@ -81,29 +85,31 @@ const CandleAndHoverComponent = ({
           }
         } else {
           const rawPrice = y.invert(mouseY);
-          const [yMin, yMax] = y.domain();
-          const priceStep = (yMax - yMin) / 200;
 
+          const priceStep = (yMin - yMax) / numBuckets;
           const snappedPrice =
             Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
 
           const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
+          // console.log(cell, `${date}-${snappedPrice.toFixed(4)}`);
 
-          if (
-            cell?.date.getTime() !== activeCellRef.current?.date.getTime() ||
-            cell?.price !== activeCellRef.current?.price
-          ) {
-            activeCellRef.current = cell;
-            setActiveCell(cell);
+          if (cell) {
+            const isNewDate =
+              cell.date.getTime() !== activeCellRef.current?.date?.getTime();
+            const isNewPrice = cell.price !== activeCellRef.current?.price;
+            if (isNewDate || isNewPrice) {
+              activeCellRef.current = cell;
+              setActiveCell(cell);
+            }
           }
         }
       });
     },
-    [lookUpHeatMap, yDomain, xDomain],
+    [lookUpHeatMap, yDomain, xDomain, numBuckets],
   );
 
   return (
-    <g>
+    <g className="CandleAndHoverComponent">
       <ListeningRect
         y={y}
         x={x}
@@ -112,6 +118,7 @@ const CandleAndHoverComponent = ({
         hideHighlight={hideHighlight}
         setMouseOut={setMouseOut}
         mouseOut={mouseOut}
+        numBuckets={numBuckets}
       />
 
       <CandleChart
@@ -135,63 +142,22 @@ const CandleAndHoverComponent = ({
   );
 };
 
-const HeatMap = ({ data }) => {
+const HeatMap = ({ heatmapData, rawData, min, max, numBuckets }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
-
-  const max = d3.max(data, (d) => d.value);
-  const min = d3.min(data, (d) => d.value);
-  const pricePadding = (max - min) * 0.3;
 
   // x = time
   const x = d3
     .scaleBand()
     .range([1, containerWidth - 40])
-    .domain(data.map((d) => new Date(d.date)))
-    .padding(0);
+    .domain(rawData.map((d) => d.date));
 
   // y (right side) price
   const y = d3
     .scaleLinear()
     .range([containersHeight - 50, 0])
-    .domain([min - pricePadding, max + pricePadding]);
-
-  const heatmapData = useMemo(() => {
-    const [yMin, yMax] = y.domain();
-
-    const numBuckets = 200;
-    const priceStep = (yMax - yMin) / numBuckets;
-    const grid = [];
-
-    data.forEach((obj) => {
-      for (let i = 0; i < numBuckets; i++) {
-        const bucketPrice = yMin + i * priceStep;
-
-        const totalVolume =
-          obj?.liquidations.reduce((sum, l) => {
-            const isMatch =
-              l.price >= bucketPrice && l.price < bucketPrice + priceStep;
-            return isMatch ? sum + l.volume : sum;
-          }, 0) || 0;
-
-        const isLiquidated =
-          obj && bucketPrice >= obj.low && bucketPrice <= obj.high;
-
-        grid.push({
-          date: obj.date,
-          price: bucketPrice,
-          volume: isLiquidated ? 0 : totalVolume,
-          high: obj.high,
-          low: obj.low,
-          open: obj.open,
-          close: obj.close,
-        });
-      }
-    });
-
-    return grid;
-  }, [data, x.domain(), y.domain()]);
+    .domain([min, max]);
 
   return (
     <div
@@ -202,7 +168,7 @@ const HeatMap = ({ data }) => {
         position: "relative",
       }}
     >
-      <Axis x={x} y={y} height={containersHeight} width={containerWidth}>
+      <Axis x={x} y={y}>
         <rect
           fill="#440154"
           width={x.range()[1] > 0 ? x.range()[1] : 0}
@@ -211,22 +177,15 @@ const HeatMap = ({ data }) => {
           y={y.range()[1]}
         />
 
-        <BarChart
-          data={heatmapData}
-          x={x}
-          y={y}
-          width={containerWidth}
-          height={containersHeight}
-          unfilteredDataLength={data.length}
-        />
+        <BarChart data={heatmapData} x={x} y={y} numBuckets={numBuckets} />
         <CandleAndHoverComponent
-          candleData={data}
+          candleData={rawData}
           heatmapData={heatmapData}
           x={x}
           y={y}
           min={min}
           max={max}
-          pricePadding={pricePadding}
+          numBuckets={numBuckets}
         />
       </Axis>
     </div>

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y, height, width }) => {
+const Axis = ({ children, x, y }) => {
   // Change height and width to using [minPixels, maxPixels] = y.range()
   const xRef = useRef(null);
   const yRef = useRef(null);
