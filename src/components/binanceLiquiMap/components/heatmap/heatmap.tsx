@@ -161,8 +161,7 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
   const x = d3
     .scaleBand()
     .domain(visibleData.map((d) => d.date))
-    .range([0, containerWidth - 40])
-    .padding(0.1);
+    .range([0, containerWidth - 40]);
 
   // 4. Y Scale stays fixed (No vertical zoom)
   const y = d3
@@ -173,10 +172,10 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
   useEffect(() => {
     const zoom = d3
       .zoom()
-      .scaleExtent([1, 20]) // Max 20x wider
+      .scaleExtent([0, 4])
       .translateExtent([
-        [-10000, 0],
-        [10000, containersHeight],
+        [-Infinity, 0],
+        [Infinity, containersHeight],
       ])
       .on("zoom", (e) => setTransform(e.transform));
 
@@ -208,7 +207,7 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
           maxVol={maxVol}
         />
         <CandleAndHoverComponent
-          candleData={rawData}
+          candleData={visibleData}
           heatmapData={heatmapData}
           x={x}
           y={y}
