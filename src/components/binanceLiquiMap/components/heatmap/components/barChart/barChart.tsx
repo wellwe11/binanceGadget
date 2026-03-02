@@ -1,14 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import * as d3 from "d3";
 
 import scaleColors from "../../../../functions/colorScale";
 
-const BarChart = React.memo(({ data, x, y, numBuckets }) => {
+const BarChart = React.memo(({ data, x, y, numBuckets, maxVol }) => {
   const canvasRef = useRef(null);
-
-  const maxVol = useMemo(() => {
-    return d3.max(data, (liq) => liq.volume) || 1;
-  }, [data]);
 
   const colorScale = useMemo(() => scaleColors(maxVol), [maxVol]);
   const width = useMemo(() => x.range()[1], [x.domain()]);
@@ -32,7 +27,7 @@ const BarChart = React.memo(({ data, x, y, numBuckets }) => {
     ctx.clearRect(0, 0, width * dpr, height * dpr);
     ctx.scale(dpr, dpr);
 
-    const cellH = Math.abs(y.range()[0]) / numBuckets;
+    const cellH = Math.abs(height) / numBuckets;
 
     data.forEach((cell) => {
       if (cell.volume === 0) return;

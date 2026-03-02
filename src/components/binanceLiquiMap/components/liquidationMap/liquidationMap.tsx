@@ -12,26 +12,23 @@ import accumulateVal from "./functions/accumulateVal";
 
 import { DataType, accumulatedType } from "./Types";
 
-const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
+const LiquidationMap = ({
+  liquidationMapData,
+  minPrice,
+  maxPrice,
+  currentPrice,
+}: {
+  data: DataType[];
+}) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  // Starting-point for graphs
-  const currentPrice = liquidationMapData.currentPrice; // Placeholder for stale data. It will be the start-point for both graphs showing longs/shorts
-
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(
-    () => filterByType(liquidationMapData.prices, currentPrice),
+    () => filterByType(liquidationMapData, currentPrice),
     [liquidationMapData],
   );
-
-  // Define referal-point for PRICE (xBars)
-  const minPrice = d3.min(data, (d) => d.value);
-  const maxPrice = d3.max(data, (d) => d.value);
-
-  // Adds 'padding' to start and end of graph to avoid elements escaping visibility
-  const pricePadding = (maxPrice - minPrice) * 0.3;
 
   // Area data
   const accumulatedShorts = useMemo(() => {
@@ -44,7 +41,7 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
           accumulatedVol: 0,
         },
         {
-          price: maxPrice + pricePadding,
+          price: maxPrice,
           vol: 0,
           accumulatedVol: 0,
         },
@@ -54,7 +51,7 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
     return [
       ...accumulated,
       {
-        price: maxPrice + pricePadding,
+        price: maxPrice,
         vol: 0,
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
@@ -66,12 +63,12 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
     if (!filteredData.long || filteredData.long.length < 1)
       return [
         {
-          price: maxPrice + pricePadding,
+          price: maxPrice,
           vol: 0,
           accumulatedVol: 0,
         },
         {
-          price: minPrice - pricePadding,
+          price: minPrice,
           vol: 0,
           accumulatedVol: 0,
         },
@@ -81,7 +78,7 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
     return [
       ...accumulated,
       {
-        price: minPrice - pricePadding,
+        price: minPrice,
         vol: 0,
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
@@ -118,7 +115,7 @@ const LiquidationMap = ({ data, liquidationMapData }: { data: DataType[] }) => {
   const y = d3
     .scaleLinear()
     .range([containersHeight - 50, 0])
-    .domain([minPrice - pricePadding, maxPrice + pricePadding]);
+    .domain([minPrice, maxPrice]);
 
   if (!accumulatedLongs || !accumulatedShorts) return;
 

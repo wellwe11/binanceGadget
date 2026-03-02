@@ -11,7 +11,6 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
-import lookUpMap from "./functions/lookUpMap";
 
 // Things to fix
 // White highlight-square to be on top of mouse (currently in the middle
@@ -39,11 +38,6 @@ const CandleAndHoverComponent = ({
   const [hideHighlight, setHideHighlight] = useState(() => false);
   const [mouseOut, setMouseOut] = useState(true);
 
-  const lookUpHeatMap = useMemo(
-    () => lookUpMap(heatmapData, "date", "price"),
-    [heatmapData],
-  );
-
   const xDomain = useMemo(() => x.domain(), [x, candleData]);
   const yDomain = useMemo(() => y.domain(), [min, max, y, candleData]);
 
@@ -62,12 +56,12 @@ const CandleAndHoverComponent = ({
         const rangeStart = x.range()[0];
 
         const index = Math.round((mouseX - rangeStart) / eachBand);
+
         const clampedIndex = Math.max(
           0,
-          Math.min(index, x.domain().length - 1),
+          Math.min(index, candleData.length - 1),
         );
-
-        const date = x.domain()[clampedIndex];
+        const date = candleData[clampedIndex].date;
 
         if (!date) return;
 
@@ -86,7 +80,7 @@ const CandleAndHoverComponent = ({
           const snappedPrice =
             Math.floor((rawPrice - min) / priceStep) * priceStep + min;
 
-          const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
+          const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
 
           if (cell) {
             const isNewDate = cell.date !== activeCellRef.current?.date;
@@ -99,7 +93,7 @@ const CandleAndHoverComponent = ({
         }
       });
     },
-    [lookUpHeatMap, yDomain, xDomain, numBuckets],
+    [heatmapData, yDomain, xDomain, numBuckets],
   );
 
   return (
@@ -171,7 +165,13 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
           y={y.range()[1]}
         />
 
-        <BarChart data={heatmapData} x={x} y={y} numBuckets={numBuckets} />
+        <BarChart
+          data={heatmapData}
+          x={x}
+          y={y}
+          numBuckets={numBuckets}
+          maxVol={maxVol}
+        />
         <CandleAndHoverComponent
           candleData={rawData}
           heatmapData={heatmapData}

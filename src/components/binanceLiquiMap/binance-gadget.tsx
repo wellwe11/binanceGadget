@@ -1,7 +1,5 @@
 import React, { useMemo, useState, Activity } from "react";
 
-import * as d3 from "d3";
-
 import Gradient from "./components/gradient";
 import HeatMap from "./components/heatmap/heatmap";
 import LiquidationMap from "./components/liquidationMap/liquidationMap";
@@ -9,116 +7,7 @@ import Nav from "./components/nav/nav";
 import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
 import generateHeatmapData from "./generateData";
 import getMinMaxFromArr from "./functions/getMinMaxFromArr";
-import sortDataIntoBuckets from "./functions/sortDataIntoBuckets";
-
-// Create a wrapper for heatmap and it's data
-// Define x & y here
-
-const LiquidationMapWrapper = React.memo(({ data, displayLiquidationMap }) => {
-  const liquidationMapData = useMemo(() => {
-    const flattedData = data.flatMap((d) => d.liquidations);
-
-    const topPrice = Math.round(d3.max(data, (d) => d.value)) || 0;
-
-    const buckets = 100;
-    const bucketSize = topPrice / buckets;
-    const map = {};
-
-    for (let i = 1; i <= buckets; i++) {
-      const bucketPrice = Math.round(i * bucketSize);
-      map[bucketPrice] = { price: bucketPrice, volume: 0 };
-    }
-
-    flattedData.forEach((d) => {
-      const closestBucket = Math.round(d.price / bucketSize) * bucketSize;
-      const roundedBucket = Math.round(closestBucket);
-
-      if (map[roundedBucket]) {
-        map[roundedBucket].volume += d.volume;
-      }
-    });
-
-    return {
-      currentPrice: data[data.length - 1].value,
-      prices: Object.values(map),
-    };
-  }, [data]);
-
-  // const binnedData = useMemo(() => sortDataIntoBuckets(data), [data]);
-
-  // console.log(liquidationMapData, binnedData)
-
-  if (!liquidationMapData) return;
-
-  return (
-    <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-      <div className="w-75 h-175">
-        <LiquidationMap data={data} liquidationMapData={liquidationMapData} />
-      </div>
-    </Activity>
-  );
-});
-
-const HeatmapWrapper = ({ data }) => {
-  // Min/Max based on value
-  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
-
-  const NUM_BUCKETS = 400;
-  const pricePadding = (max.value - min.value) * 0.3;
-  const paddedMin = min.value - pricePadding;
-  const paddedMax = max.value + pricePadding;
-
-  // const maxVol = d3.max(heatmapData, (d) => d.volume);
-
-  const heatmapData = useMemo(() => {
-    const numBuckets = NUM_BUCKETS;
-    const priceStep = (paddedMax - paddedMin) / numBuckets;
-    const grid = [];
-    let maxVol = 0;
-
-    data.forEach((obj) => {
-      for (let i = 0; i < numBuckets; i++) {
-        const bucketPrice = paddedMin + i * priceStep;
-
-        const totalVolume =
-          obj?.liquidations.reduce((sum, l) => {
-            const isMatch =
-              l.price >= bucketPrice && l.price < bucketPrice + priceStep;
-            return isMatch ? sum + l.volume : sum;
-          }, 0) || 0;
-        totalVolume > maxVol ? (maxVol = totalVolume) : "";
-
-        const isLiquidated =
-          obj && bucketPrice >= obj.low && bucketPrice <= obj.high;
-
-        grid.push({
-          date: obj.date,
-          price: bucketPrice,
-          volume: isLiquidated ? 0 : totalVolume,
-          high: obj.high,
-          low: obj.low,
-          open: obj.open,
-          close: obj.close,
-        });
-      }
-    });
-
-    return { maxVol, grid };
-  }, [data, paddedMin, paddedMax]);
-
-  return (
-    <div className="ml-2 w-250 h-175">
-      <HeatMap
-        heatmapData={heatmapData.grid}
-        maxVol={heatmapData.maxVol}
-        rawData={data}
-        min={paddedMin}
-        max={paddedMax}
-        numBuckets={NUM_BUCKETS}
-      />
-    </div>
-  );
-};
+import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
@@ -195,16 +84,22 @@ const BinanceGadget = () => {
     }),
     [],
   );
+  const NUM_BUCKETS = 400;
 
   const data = useMemo(
-    () => generateHeatmapData(["BITCOIN"]),
+    () => generateHeatmapData(["BITCOIN"], NUM_BUCKETS),
     [placeholderCurrencies],
   );
 
-  // Need to handle data-filtering in this component, so that LiquidationMap AND Heatmap both use the exact same data
-  // Filter away longs from above price, and shorts from below price
-  // Filter away objects that clash with current price
-  // Filter away objects that extend beyond x/y
+  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+  const pricePadding = (max.value - min.value) * 0.3;
+  const paddedMin = min.value - pricePadding;
+  const paddedMax = max.value + pricePadding;
+
+  const someData = useMemo(
+    () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
+    [data, paddedMin, paddedMax, NUM_BUCKETS],
+  );
 
   return (
     <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
@@ -224,11 +119,27 @@ const BinanceGadget = () => {
         </div>
 
         <div className="flex w-screen">
-          <HeatmapWrapper data={data} />
-          <LiquidationMapWrapper
-            data={data}
-            displayLiquidationMap={displayLiquidationMap}
-          />
+          <div className="ml-2 w-250 h-175">
+            <HeatMap
+              heatmapData={someData.cellGrid}
+              maxVol={someData.maxVol}
+              rawData={data}
+              min={paddedMin}
+              max={paddedMax}
+              numBuckets={NUM_BUCKETS}
+            />
+          </div>
+
+          <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
+            <div className="w-75 h-175">
+              <LiquidationMap
+                liquidationMapData={someData.aggregateBar}
+                minPrice={paddedMin}
+                maxPrice={paddedMax}
+                currentPrice={someData.currentPrice}
+              />
+            </div>
+          </Activity>
         </div>
       </div>
 
