@@ -27,6 +27,7 @@ const CandleAndHoverComponent = ({
   min,
   max,
   numBuckets,
+  maxVol,
 }) => {
   const rafRef = useRef(null);
   const activeCellRef = useRef(null);
@@ -38,18 +39,13 @@ const CandleAndHoverComponent = ({
   const [hideHighlight, setHideHighlight] = useState(() => false);
   const [mouseOut, setMouseOut] = useState(true);
 
-  const maxVol = d3.max(heatmapData, (d) => d.volume);
-
   const lookUpHeatMap = useMemo(
     () => lookUpMap(heatmapData, "date", "price"),
     [heatmapData],
   );
 
-  // {"Fri Nov 21 2025 09:47:54 GMT+0200 (Eastern European Standard Time)-289.6497" => Object}
-
   const xDomain = useMemo(() => x.domain(), [x, candleData]);
   const yDomain = useMemo(() => y.domain(), [min, max, y, candleData]);
-  const [yMin, yMax] = useMemo(() => y.domain(), [yDomain]);
 
   const handleHover = useCallback(
     (event) => {
@@ -86,16 +82,14 @@ const CandleAndHoverComponent = ({
         } else {
           const rawPrice = y.invert(mouseY);
 
-          const priceStep = (yMin - yMax) / numBuckets;
+          const priceStep = (min - max) / numBuckets;
           const snappedPrice =
-            Math.floor((rawPrice - yMin) / priceStep) * priceStep + yMin;
+            Math.floor((rawPrice - min) / priceStep) * priceStep + min;
 
           const cell = lookUpHeatMap.get(`${date}-${snappedPrice.toFixed(4)}`);
-          // console.log(cell, `${date}-${snappedPrice.toFixed(4)}`);
 
           if (cell) {
-            const isNewDate =
-              cell.date.getTime() !== activeCellRef.current?.date?.getTime();
+            const isNewDate = cell.date !== activeCellRef.current?.date;
             const isNewPrice = cell.price !== activeCellRef.current?.price;
             if (isNewDate || isNewPrice) {
               activeCellRef.current = cell;
@@ -142,7 +136,7 @@ const CandleAndHoverComponent = ({
   );
 };
 
-const HeatMap = ({ heatmapData, rawData, min, max, numBuckets }) => {
+const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
@@ -186,6 +180,7 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets }) => {
           min={min}
           max={max}
           numBuckets={numBuckets}
+          maxVol={maxVol}
         />
       </Axis>
     </div>

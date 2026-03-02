@@ -68,10 +68,13 @@ const HeatmapWrapper = ({ data }) => {
   const paddedMin = min.value - pricePadding;
   const paddedMax = max.value + pricePadding;
 
+  // const maxVol = d3.max(heatmapData, (d) => d.volume);
+
   const heatmapData = useMemo(() => {
     const numBuckets = NUM_BUCKETS;
     const priceStep = (paddedMax - paddedMin) / numBuckets;
     const grid = [];
+    let maxVol = 0;
 
     data.forEach((obj) => {
       for (let i = 0; i < numBuckets; i++) {
@@ -83,6 +86,7 @@ const HeatmapWrapper = ({ data }) => {
               l.price >= bucketPrice && l.price < bucketPrice + priceStep;
             return isMatch ? sum + l.volume : sum;
           }, 0) || 0;
+        totalVolume > maxVol ? (maxVol = totalVolume) : "";
 
         const isLiquidated =
           obj && bucketPrice >= obj.low && bucketPrice <= obj.high;
@@ -99,13 +103,14 @@ const HeatmapWrapper = ({ data }) => {
       }
     });
 
-    return grid;
+    return { maxVol, grid };
   }, [data, paddedMin, paddedMax]);
 
   return (
     <div className="ml-2 w-250 h-175">
       <HeatMap
-        heatmapData={heatmapData}
+        heatmapData={heatmapData.grid}
+        maxVol={heatmapData.maxVol}
         rawData={data}
         min={paddedMin}
         max={paddedMax}
