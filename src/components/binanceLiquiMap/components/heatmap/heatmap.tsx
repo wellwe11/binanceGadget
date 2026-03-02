@@ -18,6 +18,7 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
+import useZoom from "./hooks/useZoom";
 
 // Things to fix
 // White highlight-square to be on top of mouse (currently in the middle
@@ -142,20 +143,14 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
   const zoomRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
-  const [transform, setTransform] = useState(d3.zoomIdentity);
 
-  const visibleCount = Math.max(10, Math.floor(rawData.length / transform.k));
-
-  const scrollRatio = -transform.x / (containerWidth || 1);
-  const startIdx = Math.max(
-    0,
-    Math.min(
-      rawData.length - visibleCount,
-      Math.floor(scrollRatio * rawData.length),
-    ),
+  // Controls data when zooming
+  const { visibleData } = useZoom(
+    rawData,
+    zoomRef,
+    containerWidth,
+    containersHeight,
   );
-
-  const visibleData = rawData.slice(startIdx, startIdx + visibleCount);
 
   // 3. X Scale uses the current slice
   const x = d3
@@ -169,18 +164,6 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
     .domain([min, max])
     .range([containersHeight - 50, 0]);
 
-  useEffect(() => {
-    const zoom = d3
-      .zoom()
-      .scaleExtent([0, 4])
-      .translateExtent([
-        [-Infinity, 0],
-        [Infinity, containersHeight],
-      ])
-      .on("zoom", (e) => setTransform(e.transform));
-
-    d3.select(zoomRef.current).call(zoom);
-  }, [containerWidth]);
   return (
     <div
       ref={containerRef}
