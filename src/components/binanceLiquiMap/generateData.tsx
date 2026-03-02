@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
 // Need to create TimeBuckets as well.
-const generateHeatmapData = (names, days = 800) => {
+const generateHeatmapData = (names, days) => {
   const data = [];
   const today = new Date();
   let contractPool = [];
@@ -41,21 +41,22 @@ const generateHeatmapData = (names, days = 800) => {
       lastPrices[name] = close;
 
       // ✅ Add clusters 50% of the time (more frequent)
-      if (Math.random() > 0.5) {
+      if (Math.random() > 0.2) {
         const clusterIdx = Math.floor(Math.random() * clusters[name].length);
-        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 300;
+        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 50;
 
         const targetPrice = clusters[name][clusterIdx];
-        const priceStep = 2; // ✅ Smaller step for tighter clustering
+        const priceStep = 1; // ✅ Smaller step for tighter clustering
 
         // ✅ Create 20-40 orders per cluster (much denser)
-        const ordersInCluster = Math.floor(Math.random() * 5);
+        const ordersInCluster = Math.floor(Math.random() * (days / 10));
 
         for (let j = 0; j < ordersInCluster; j++) {
           // ✅ Tighter spread (±3 units instead of ±7.5)
           const snappedPrice =
-            Math.round((targetPrice + (Math.random() * 6 - 3)) / priceStep) *
-            priceStep;
+            Math.round(
+              (targetPrice + Math.random() * (days / 10)) / priceStep,
+            ) * priceStep;
 
           contractPool.push({
             price: Math.max(10, snappedPrice),

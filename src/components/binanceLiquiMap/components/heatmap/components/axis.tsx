@@ -2,8 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y }) => {
-  // Change height and width to using [minPixels, maxPixels] = y.range()
+const Axis = ({ children, x, y, zoomRef }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
 
@@ -30,6 +29,7 @@ const Axis = ({ children, x, y }) => {
 
   return (
     <svg
+      ref={zoomRef}
       width={x.range()[1] > 0 ? x.range()[1] + 40 : 0}
       height={y.range()[0] > 0 ? y.range()[0] + 40 : 0}
       x={x.range()[0]}

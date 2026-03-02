@@ -4,6 +4,7 @@ const getCombinedHeatmapData = (data, min, max, amountOfBuckets) => {
   const cellGrid = new Map();
   const bucketMap = new Map();
   let globalMaxVol = 0;
+  let totalVol = 0;
 
   for (let i = 0; i < amountOfBuckets; i++) {
     const p = min + i * priceStep;
@@ -26,6 +27,7 @@ const getCombinedHeatmapData = (data, min, max, amountOfBuckets) => {
       const bucketPrice = min + i * priceStep;
       const vol = sliceVolumes[i];
       if (vol > globalMaxVol) globalMaxVol = vol;
+      totalVol += vol;
 
       const isLiquidated = bucketPrice >= obj.low && bucketPrice <= obj.high;
       const key = `${obj.date}-${bucketPrice.toFixed(4)}`;
@@ -40,7 +42,8 @@ const getCombinedHeatmapData = (data, min, max, amountOfBuckets) => {
   });
 
   return {
-    maxVol: globalMaxVol,
+    maxVolume: globalMaxVol,
+    totalVolume: totalVol,
     cellGrid,
     aggregateBar: Array.from(bucketMap.values()),
     currentPrice: data[data.length - 1].value,

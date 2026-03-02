@@ -1,4 +1,11 @@
-import { act, Activity, useCallback, useMemo, useRef, useState } from "react";
+import {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import * as d3 from "d3";
 
@@ -132,21 +139,49 @@ const CandleAndHoverComponent = ({
 
 const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
   const containerRef = useRef(null);
+  const zoomRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
+  const [transform, setTransform] = useState(d3.zoomIdentity);
 
-  // x = time
+  const visibleCount = Math.max(10, Math.floor(rawData.length / transform.k));
+
+  const scrollRatio = -transform.x / (containerWidth || 1);
+  const startIdx = Math.max(
+    0,
+    Math.min(
+      rawData.length - visibleCount,
+      Math.floor(scrollRatio * rawData.length),
+    ),
+  );
+
+  const visibleData = rawData.slice(startIdx, startIdx + visibleCount);
+
+  // 3. X Scale uses the current slice
   const x = d3
     .scaleBand()
-    .range([1, containerWidth - 40])
-    .domain(rawData.map((d) => d.date));
+    .domain(visibleData.map((d) => d.date))
+    .range([0, containerWidth - 40])
+    .padding(0.1);
 
-  // y (right side) price
+  // 4. Y Scale stays fixed (No vertical zoom)
   const y = d3
     .scaleLinear()
-    .range([containersHeight - 50, 0])
-    .domain([min, max]);
+    .domain([min, max])
+    .range([containersHeight - 50, 0]);
 
+  useEffect(() => {
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 20]) // Max 20x wider
+      .translateExtent([
+        [-10000, 0],
+        [10000, containersHeight],
+      ])
+      .on("zoom", (e) => setTransform(e.transform));
+
+    d3.select(zoomRef.current).call(zoom);
+  }, [containerWidth]);
   return (
     <div
       ref={containerRef}
@@ -156,7 +191,7 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
         position: "relative",
       }}
     >
-      <Axis x={x} y={y}>
+      <Axis x={x} y={y} zoomRef={zoomRef}>
         <rect
           fill="#440154"
           width={x.range()[1] > 0 ? x.range()[1] : 0}

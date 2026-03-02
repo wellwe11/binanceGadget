@@ -84,19 +84,22 @@ const BinanceGadget = () => {
     }),
     [],
   );
-  const NUM_BUCKETS = 400;
+  const NUM_BUCKETS = 100;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], NUM_BUCKETS),
     [placeholderCurrencies],
   );
 
+  // Min/Max values (value of coin)
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+
+  // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
   const pricePadding = (max.value - min.value) * 0.3;
   const paddedMin = min.value - pricePadding;
   const paddedMax = max.value + pricePadding;
 
-  const someData = useMemo(
+  const processedData = useMemo(
     () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
     [data, paddedMin, paddedMax, NUM_BUCKETS],
   );
@@ -114,15 +117,14 @@ const BinanceGadget = () => {
 
       <div className="flex w-fit">
         <div className="w-10 mb-4 -mt-8.5" style={{ height: "inherit" }}>
-          {/* Need to calculate max and add it to Gradient max={number} */}
-          <Gradient />
+          <Gradient max={processedData.totalVolume} />
         </div>
 
         <div className="flex w-screen">
           <div className="ml-2 w-250 h-175">
             <HeatMap
-              heatmapData={someData.cellGrid}
-              maxVol={someData.maxVol}
+              heatmapData={processedData.cellGrid}
+              maxVol={processedData.maxVolume}
               rawData={data}
               min={paddedMin}
               max={paddedMax}
@@ -133,10 +135,10 @@ const BinanceGadget = () => {
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
             <div className="w-75 h-175">
               <LiquidationMap
-                liquidationMapData={someData.aggregateBar}
+                liquidationMapData={processedData.aggregateBar}
                 minPrice={paddedMin}
                 maxPrice={paddedMax}
-                currentPrice={someData.currentPrice}
+                currentPrice={processedData.currentPrice}
               />
             </div>
           </Activity>
