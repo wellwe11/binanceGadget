@@ -20,11 +20,11 @@ import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
 import useZoom from "./hooks/useZoom";
 
-// Things to fix
-// White highlight-square to be on top of mouse (currently in the middle
-// Zoom
-
-// Shared parent to allow easier use of mouse-events
+/**
+ * TODO:
+ * Add custom color-choice
+ * Bind functionalityx to navbar
+ */
 
 const CandleAndHoverComponent = ({
   candleData,
@@ -152,7 +152,6 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
     containersHeight,
   );
 
-  // 3. X Scale uses the current slice
   const x = d3
     .scaleBand()
     .domain(visibleData.map((d) => d.date))
@@ -173,7 +172,12 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
         position: "relative",
       }}
     >
-      <Axis x={x} y={y} zoomRef={zoomRef}>
+      <Axis
+        x={x}
+        y={y}
+        zoomRef={zoomRef}
+        zoomAmount={Math.round(visibleData.length / 10)}
+      >
         <rect
           fill="#440154"
           width={x.range()[1] > 0 ? x.range()[1] : 0}

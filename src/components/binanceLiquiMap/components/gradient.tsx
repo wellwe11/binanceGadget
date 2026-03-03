@@ -17,9 +17,10 @@ interface GradientType {
   gradientScale?: GradientScaleNamed;
 }
 
-const Gradient = ({ max = 78140000 }: GradientType) => {
-  const maxVol = 12175;
-  const scaleColor = colorScale(maxVol);
+export const Gradient = ({ max, colorTheme }: GradientType) => {
+  const maxVol = max || 100;
+  const scaleColor = colorScale(maxVol, colorTheme);
+  const gradientId = `grad-${colorTheme || "interpolateViridis"}`;
 
   const gradientScale = {
     start: scaleColor(0),
@@ -38,7 +39,7 @@ const Gradient = ({ max = 78140000 }: GradientType) => {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <p className={textClass}>{formulatedMax}</p>
+      {max && <p className={textClass}>{formulatedMax}</p>}
       <svg
         width="100%"
         height="100%"
@@ -46,7 +47,7 @@ const Gradient = ({ max = 78140000 }: GradientType) => {
         className="rounded-xs"
       >
         <defs>
-          <linearGradient id="gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+          <linearGradient id={gradientId} x1="0%" y1="100%" x2="0%" y2="0%">
             <stop startOffset="0%" stopColor={gradientScale.start} />
             <stop offset="33%" stopColor={gradientScale.midLow} />
             <stop offset="66%" stopColor={gradientScale.midHigh} />
@@ -54,9 +55,9 @@ const Gradient = ({ max = 78140000 }: GradientType) => {
           </linearGradient>
         </defs>
 
-        <rect width="100%" height="100%" fill="url(#gradient)" />
+        <rect width="100%" height="100%" fill={`url(#${gradientId})`} />
       </svg>
-      <p className={textClass}>0</p>
+      {max && <p className={textClass}>0</p>}
     </div>
   );
 };

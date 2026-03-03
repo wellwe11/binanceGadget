@@ -6,6 +6,7 @@ import MenuButton from "./components/menuButton";
 import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
+import { Gradient } from "../gradient";
 
 // In this document you'll find wrappers, as well as the complete Nav component.
 // Each wrapper contains the general styling such as width, height etc.
@@ -192,11 +193,37 @@ const DisplayLiquidationButton = ({ setter }) => {
     setter(isChecked);
   };
   return (
-    <input
-      onChange={handleChecked}
-      type="checkbox"
-      className="w-5 h-5 bg-amber-300"
-    />
+    <div className="flex items-center gap-2.5">
+      <p className="text-white">Liquidation Map</p>
+      <input
+        onChange={handleChecked}
+        type="checkbox"
+        className="w-5 h-5 bg-amber-300 cursor-pointer"
+      />
+    </div>
+  );
+};
+
+const ThemeSelection = ({ setColorTheme }) => {
+  const buttonColors = [
+    "interpolateViridis", // Purple > blue > green > yellow
+    "interpolateInferno", // Black > purple > orange > yellow
+    "interpolateCividis", // Dark blue > yellow
+    "interpolateYlGnBu", // White > light yellow > blue > dark blue
+  ];
+
+  return (
+    <div className="flex gap-2">
+      {buttonColors.map((button, index) => (
+        <button
+          className="w-5 h-5 cursor-pointer"
+          key={index}
+          onClick={() => setColorTheme(button)}
+        >
+          <Gradient colorTheme={button} />
+        </button>
+      ))}
+    </div>
   );
 };
 
@@ -205,6 +232,7 @@ const Nav = ({
   pair,
   time,
   displayMap,
+  setColorTheme,
 }: {
   symbol: string[];
   pair: string[];
@@ -251,7 +279,10 @@ const Nav = ({
           </div>
         </div>
         <div className="py-2">
-          <Slider />
+          <div className="flex gap-5 py-2">
+            <ThemeSelection setColorTheme={setColorTheme} />
+            <Slider />
+          </div>
           <DisplayLiquidationButton setter={displayMap} />
         </div>
       </div>

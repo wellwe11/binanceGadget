@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y, zoomRef }) => {
+const Axis = ({ children, x, y, zoomRef, zoomAmount }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
 
@@ -11,7 +11,7 @@ const Axis = ({ children, x, y, zoomRef }) => {
     const xAxis = d3.select(xRef.current);
     const yAxis = d3.select(yRef.current);
 
-    const xAxisTicks = x.domain().filter((d, i) => i % 50 === 0);
+    const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
 
     xAxis.call(
       d3
@@ -25,7 +25,7 @@ const Axis = ({ children, x, y, zoomRef }) => {
 
     xAxis.select(".domain").remove();
     yAxis.select(".domain").remove();
-  }, [x, y]);
+  }, [x, y, zoomAmount]);
 
   return (
     <svg

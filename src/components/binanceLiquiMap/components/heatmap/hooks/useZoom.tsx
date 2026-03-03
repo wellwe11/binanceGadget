@@ -17,8 +17,6 @@ const useZoom = (data, ref, width, height) => {
 
   const visibleData = data.slice(startIdx, startIdx + visibleCount);
 
-  console.log(startIdx, transform);
-
   useEffect(() => {
     if (!ref.current) return;
 
