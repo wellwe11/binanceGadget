@@ -8,11 +8,6 @@ import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 import { Gradient } from "../gradient";
 
-// In this document you'll find wrappers, as well as the complete Nav component.
-// Each wrapper contains the general styling such as width, height etc.
-// Each wrapper handles it's own logic
-// Each wrapper has abstract and un-direct components
-
 type setShowArrayStringType = React.Dispatch<
   React.SetStateAction<liquidationType[]>
 >;
@@ -53,16 +48,16 @@ const ResetButton = () => {
   );
 };
 
-const Slider = () => {
-  const [dragVal, setDragVal] = useState(60);
+const Slider = ({ threshold, setThreshold }) => {
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement, Element>) => {
     const val = +e.target.value;
-    setDragVal(val);
+    setThreshold(val);
   };
+
   return (
     <div className="w-70 flex gap-3">
       <div className="flex-1">
-        <DragInput value={dragVal} setValue={handleDrag} />
+        <DragInput value={threshold} setValue={handleDrag} />
       </div>
       <div className="flex items-center text-left" style={{ width: "60%" }}>
         <p
@@ -70,7 +65,7 @@ const Slider = () => {
           style={{
             fontSize: "12px",
           }}
-        >{`Liquidity Threshold = ${dragVal < 100 ? "0." + dragVal : 1}`}</p>
+        >{`Liquidity Threshold = ${threshold < 100 ? "0." + threshold : 1}`}</p>
       </div>
     </div>
   );
@@ -233,6 +228,8 @@ const Nav = ({
   time,
   displayMap,
   setColorTheme,
+  setThreshold,
+  threshold,
 }: {
   symbol: string[];
   pair: string[];
@@ -281,7 +278,7 @@ const Nav = ({
         <div className="py-2">
           <div className="flex gap-5 py-2">
             <ThemeSelection setColorTheme={setColorTheme} />
-            <Slider />
+            <Slider setThreshold={setThreshold} threshold={threshold} />
           </div>
           <DisplayLiquidationButton setter={displayMap} />
         </div>

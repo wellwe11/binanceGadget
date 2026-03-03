@@ -9,12 +9,18 @@ import generateHeatmapData from "./generateData";
 import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 
+// Attach Liquidity Threshold
+// Attach Liquidation Leverage & SuperCharts button
+
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
   const [colorTheme, setColorTheme] = useState({
     name: "interpolateViridis",
     color: "#440154",
   });
+
+  const [threshhold, setThreshold] = useState(() => 60);
+
   const placeholderCurrencies = useMemo(
     () => [
       "BTC",
@@ -51,7 +57,6 @@ const BinanceGadget = () => {
     [],
   );
 
-  console.log(colorTheme);
   const placeholderPairs = useMemo(
     () => [
       "Binance BTC/USDT Perpetual",
@@ -118,6 +123,8 @@ const BinanceGadget = () => {
           time={times}
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
+          setThreshold={setThreshold}
+          threshold={threshhold}
         />
       </div>
 
@@ -126,6 +133,7 @@ const BinanceGadget = () => {
           <Gradient
             max={processedData.totalVolume}
             colorTheme={colorTheme.name}
+            threshhold={threshhold}
           />
         </div>
 
@@ -133,6 +141,7 @@ const BinanceGadget = () => {
           <div className="ml-2 w-250 h-175">
             <HeatMap
               colorTheme={colorTheme}
+              threshhold={threshhold}
               heatmapData={processedData.cellGrid}
               maxVol={processedData.maxVolume}
               rawData={data}

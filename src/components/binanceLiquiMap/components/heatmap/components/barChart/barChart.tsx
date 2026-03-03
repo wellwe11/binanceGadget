@@ -3,12 +3,12 @@ import React, { useEffect, useMemo, useRef } from "react";
 import scaleColors from "../../../../functions/colorScale";
 
 const BarChart = React.memo(
-  ({ data, x, y, numBuckets, maxVol, colorTheme }) => {
+  ({ data, x, y, numBuckets, maxVol, colorTheme, threshhold }) => {
     const canvasRef = useRef(null);
 
     const colorScale = useMemo(
-      () => scaleColors(maxVol, colorTheme.name),
-      [maxVol, colorTheme],
+      () => scaleColors(maxVol, colorTheme.name, threshhold),
+      [maxVol, colorTheme, threshhold],
     );
     const width = useMemo(() => x.range()[1], [x.domain()]);
     const height = useMemo(() => y.range()[0], [y.domain()]);

@@ -20,9 +20,13 @@ const CandleText = ({ activeCell }) => {
   );
 };
 
-const CellText = ({ activeCell, max }) => {
+const CellText = ({ activeCell, max, colorTheme, threshhold }) => {
+  console.log(colorTheme, threshhold);
   const cellTextKeys = ["price", "volume"];
-  const scaleColor = useMemo(() => colorScale(max), [max]);
+  const scaleColor = useMemo(
+    () => colorScale(max, colorTheme.name, threshhold),
+    [max, threshhold],
+  );
 
   return (
     <div className="flex flex-col">
@@ -35,7 +39,16 @@ const CellText = ({ activeCell, max }) => {
   );
 };
 
-const Tooltip = ({ mousePos, activeCell, x, y, hideHighlight, max }) => {
+const Tooltip = ({
+  mousePos,
+  activeCell,
+  x,
+  y,
+  hideHighlight,
+  max,
+  colorTheme,
+  threshhold,
+}) => {
   const toolTipRef = useRef(null);
 
   // Adjusts position of tooltip so that it does not extend outside of it's container
@@ -87,7 +100,12 @@ const Tooltip = ({ mousePos, activeCell, x, y, hideHighlight, max }) => {
         {hideHighlight ? (
           <CandleText activeCell={activeCell} />
         ) : (
-          <CellText activeCell={activeCell} max={max} />
+          <CellText
+            activeCell={activeCell}
+            max={max}
+            colorTheme={colorTheme}
+            threshhold={threshhold}
+          />
         )}
       </div>
     </foreignObject>
