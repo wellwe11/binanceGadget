@@ -1,11 +1,4 @@
-import {
-  Activity,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Activity, useCallback, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
 
@@ -138,7 +131,15 @@ const CandleAndHoverComponent = ({
   );
 };
 
-const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
+const HeatMap = ({
+  heatmapData,
+  rawData,
+  min,
+  max,
+  numBuckets,
+  maxVol,
+  colorTheme,
+}) => {
   const containerRef = useRef(null);
   const zoomRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -192,6 +193,7 @@ const HeatMap = ({ heatmapData, rawData, min, max, numBuckets, maxVol }) => {
           y={y}
           numBuckets={numBuckets}
           maxVol={maxVol}
+          colorTheme={colorTheme}
         />
         <CandleAndHoverComponent
           candleData={visibleData}
