@@ -207,9 +207,9 @@ const DisplayLiquidationButton = ({ setter }) => {
 const ThemeSelection = ({ setColorTheme }) => {
   const buttonColors = [
     { name: "interpolateViridis", baseColor: "#440154" }, // Purple > blue > green > yellow
-    { name: "interpolateInferno", baseColor: "#000004" }, // Black > purple > orange > yellow
-    { name: "interpolateCividis", baseColor: "#00204d" }, // Dark blue > yellow
-    { name: "interpolateYlGnBu", baseColor: "#ffffd9" }, // White > light yellow > blue > dark blue
+    { name: "interpolatePlasma", baseColor: "#1a0b3b" }, // Black > purple > orange > yellow
+    { name: "interpolateCividis", baseColor: "#111c2e" }, // Dark blue > yellow
+    { name: "interpolateTurbo", baseColor: "#000033" }, // White > light yellow > blue > dark blue
   ];
 
   return (

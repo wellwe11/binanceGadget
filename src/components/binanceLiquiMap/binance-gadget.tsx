@@ -89,7 +89,7 @@ const BinanceGadget = () => {
     }),
     [],
   );
-  const NUM_BUCKETS = 200;
+  const NUM_BUCKETS = 300;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], NUM_BUCKETS),
