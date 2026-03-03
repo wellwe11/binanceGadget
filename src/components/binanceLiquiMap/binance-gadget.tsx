@@ -19,6 +19,10 @@ const BinanceGadget = () => {
     color: "#440154",
   });
   const [threshhold, setThreshold] = useState(() => 60);
+  const [showCharts, setShowCharts] = useState<liquidationType[]>([
+    "Liquidation Leverage",
+    "Supercharts",
+  ]);
 
   const placeholderCurrencies = useMemo(
     () => [
@@ -124,6 +128,8 @@ const BinanceGadget = () => {
           setColorTheme={setColorTheme}
           setThreshold={setThreshold}
           threshold={threshhold}
+          showCharts={showCharts}
+          setShowCharts={setShowCharts}
         />
       </div>
 
@@ -147,6 +153,7 @@ const BinanceGadget = () => {
               min={paddedMin}
               max={paddedMax}
               numBuckets={NUM_BUCKETS}
+              showCharts={showCharts}
             />
           </div>
 

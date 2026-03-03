@@ -230,6 +230,8 @@ const Nav = ({
   setColorTheme,
   setThreshold,
   threshold,
+  showCharts,
+  setShowCharts,
 }: {
   symbol: string[];
   pair: string[];
@@ -237,10 +239,6 @@ const Nav = ({
   displayMap: boolean;
 }) => {
   const [pairOrSymbol, setPairOrSymbol] = useState<string[]>(pair);
-  const [showCharts, setShowCharts] = useState<liquidationType[]>([
-    "Liquidation Leverage",
-    "Supercharts",
-  ]);
 
   return (
     <div className="h-fit w-full flex flex-col justify-between px-2 py-1">

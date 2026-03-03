@@ -38,6 +38,7 @@ const CandleAndHoverComponent = ({
   maxVol,
   threshhold,
   colorTheme,
+  showCharts,
 }) => {
   const rafRef = useRef(null);
   const activeCellRef = useRef(null);
@@ -109,24 +110,31 @@ const CandleAndHoverComponent = ({
 
   return (
     <g className="CandleAndHoverComponent">
-      <ListeningRect
-        y={y}
-        x={x}
-        handleHover={handleHover}
-        activeCell={activeCell}
-        hideHighlight={hideHighlight}
-        setMouseOut={setMouseOut}
-        mouseOut={mouseOut}
-        numBuckets={numBuckets}
-      />
+      <Activity mode={showCharts.length > 0 ? "visible" : "hidden"}>
+        <ListeningRect
+          y={y}
+          x={x}
+          handleHover={handleHover}
+          activeCell={activeCell}
+          hideHighlight={hideHighlight}
+          setMouseOut={setMouseOut}
+          mouseOut={mouseOut}
+          numBuckets={numBuckets}
+        />
+      </Activity>
 
-      <CandleChart
-        data={candleData}
-        x={x}
-        y={y}
-        handleHover={handleHover}
-        setHideHighlight={setHideHighlight}
-      />
+      <Activity
+        mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
+      >
+        <CandleChart
+          data={candleData}
+          x={x}
+          y={y}
+          handleHover={handleHover}
+          setHideHighlight={setHideHighlight}
+        />
+      </Activity>
+
       <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
         <Tooltip
           mousePos={mousePos}
@@ -152,6 +160,7 @@ const HeatMap = ({
   maxVol,
   colorTheme,
   threshhold,
+  showCharts,
 }) => {
   const containerRef = useRef(null);
   const zoomRef = useRef(null);
@@ -195,23 +204,30 @@ const HeatMap = ({
         zoomRef={zoomRef}
         zoomAmount={Math.round(visibleData.length / 10)}
       >
-        <rect
-          fill={colorTheme.color}
-          width={x.range()[1] > 0 ? x.range()[1] : 0}
-          height={y.range()[0] > 0 ? y.range()[0] : 0}
-          x={x.range()[0]}
-          y={y.range()[1]}
-        />
+        <Activity
+          mode={
+            showCharts.includes("Liquidation Leverage") ? "visible" : "hidden"
+          }
+        >
+          <rect
+            fill={colorTheme.color}
+            width={x.range()[1] > 0 ? x.range()[1] : 0}
+            height={y.range()[0] > 0 ? y.range()[0] : 0}
+            x={x.range()[0]}
+            y={y.range()[1]}
+          />
 
-        <BarChart
-          data={heatmapData}
-          x={x}
-          y={y}
-          numBuckets={numBuckets}
-          maxVol={maxVol}
-          colorTheme={colorTheme}
-          threshhold={threshhold}
-        />
+          <BarChart
+            data={heatmapData}
+            x={x}
+            y={y}
+            numBuckets={numBuckets}
+            maxVol={maxVol}
+            colorTheme={colorTheme}
+            threshhold={threshhold}
+          />
+        </Activity>
+
         <CandleAndHoverComponent
           candleData={visibleData}
           heatmapData={heatmapData}
@@ -223,6 +239,7 @@ const HeatMap = ({
           maxVol={maxVol}
           threshhold={threshhold}
           colorTheme={colorTheme}
+          showCharts={showCharts}
         />
       </Axis>
     </div>
