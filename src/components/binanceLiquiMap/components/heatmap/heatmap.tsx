@@ -153,7 +153,7 @@ const CandleAndHoverComponent = ({
 
 const HeatMap = ({
   heatmapData,
-  rawData,
+  visibleData,
   min,
   max,
   numBuckets,
@@ -161,26 +161,10 @@ const HeatMap = ({
   colorTheme,
   threshhold,
   showCharts,
-  transform,
-  setTransform,
-  zoomSource,
+  zoomRef,
+  containerWidth,
+  containersHeight,
 }) => {
-  const containerRef = useRef(null);
-  const zoomRef = useRef(null);
-  const [containerWidth, containersHeight] =
-    useTrackContainerSize(containerRef);
-
-  // Controls data when zooming
-  const { visibleData } = useZoom(
-    rawData,
-    zoomRef,
-    containerWidth,
-    containersHeight,
-    transform,
-    setTransform,
-    zoomSource,
-  );
-
   const x = useMemo(() => {
     return d3
       .scaleBand()
@@ -197,7 +181,6 @@ const HeatMap = ({
 
   return (
     <div
-      ref={containerRef}
       style={{
         width: "inherit",
         height: "inherit",

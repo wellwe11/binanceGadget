@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
+
 const useZoom = (
   data,
   ref,
@@ -9,7 +10,7 @@ const useZoom = (
   setTransform,
   zoomSource,
 ) => {
-  const zoomBehaviorRef = useRef(null);
+  const zoomBehaviorRef = useRef(null); //
 
   const visibleCount = Math.max(10, Math.floor(data.length / transform.k));
   const pixelsPerIndex = width / visibleCount;
@@ -74,5 +75,4 @@ const useZoom = (
 
   return { visibleData, transform, setTransform, zoomSource };
 };
-
 export default useZoom;

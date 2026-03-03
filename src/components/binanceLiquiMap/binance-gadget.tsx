@@ -10,6 +10,8 @@ import TimeLapsChart from "./components/timeLapsChart/timeLapsChart";
 import generateHeatmapData from "./generateData";
 import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
+import useZoom from "./hooks/useZoom";
+import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
@@ -26,6 +28,12 @@ const BinanceGadget = () => {
   const [transform, setTransform] = useState(() => d3.zoomIdentity);
 
   const zoomSource = useRef(null);
+
+  const containerRef = useRef(null);
+  const [containerWidth, containersHeight] =
+    useTrackContainerSize(containerRef);
+
+  const zoomRef = useRef(null);
 
   const placeholderCurrencies = useMemo(
     () => [
@@ -122,6 +130,19 @@ const BinanceGadget = () => {
     [data, paddedMin, paddedMax, NUM_BUCKETS],
   );
 
+  if (!data) return;
+
+  // Controls data when zooming
+  const { visibleData } = useZoom(
+    data,
+    zoomRef,
+    containerWidth,
+    containersHeight,
+    transform,
+    setTransform,
+    zoomSource,
+  );
+
   return (
     <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
       <div className="bg-gray-950">
@@ -148,20 +169,20 @@ const BinanceGadget = () => {
         </div>
 
         <div className="flex w-screen">
-          <div className="ml-2 w-250 h-175">
+          <div className="ml-2 w-250 h-175" ref={containerRef}>
             <HeatMap
-              colorTheme={colorTheme}
-              threshhold={threshhold}
               heatmapData={processedData.cellGrid}
-              maxVol={processedData.maxVolume}
-              rawData={data}
+              visibleData={visibleData}
               min={paddedMin}
               max={paddedMax}
               numBuckets={NUM_BUCKETS}
+              maxVol={processedData.maxVolume}
+              colorTheme={colorTheme}
+              threshhold={threshhold}
               showCharts={showCharts}
-              transform={transform}
-              setTransform={setTransform}
-              zoomSource={zoomSource}
+              zoomRef={zoomRef}
+              containerWidth={containerWidth}
+              containersHeight={containersHeight}
             />
           </div>
 
