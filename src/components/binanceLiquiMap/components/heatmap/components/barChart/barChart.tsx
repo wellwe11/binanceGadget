@@ -16,7 +16,6 @@ const BarChart = React.memo(
 
     useEffect(() => {
       if (!canvasRef.current) return;
-      console.log("asd");
 
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");

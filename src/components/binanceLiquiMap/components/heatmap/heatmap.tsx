@@ -180,7 +180,7 @@ const HeatMap = ({
       .scaleBand()
       .domain(visibleData.map((d) => d.date))
       .range([0, containerWidth - 40]);
-  }, [visibleData.length, containerWidth]);
+  }, [visibleData, containerWidth]);
 
   const y = useMemo(() => {
     return d3
