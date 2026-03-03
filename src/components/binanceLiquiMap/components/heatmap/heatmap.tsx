@@ -18,7 +18,7 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
-import useZoom from "./hooks/useZoom";
+import useZoom from "../../hooks/useZoom";
 import { number } from "framer-motion";
 
 /**
@@ -161,6 +161,9 @@ const HeatMap = ({
   colorTheme,
   threshhold,
   showCharts,
+  transform,
+  setTransform,
+  zoomSource,
 }) => {
   const containerRef = useRef(null);
   const zoomRef = useRef(null);
@@ -173,6 +176,9 @@ const HeatMap = ({
     zoomRef,
     containerWidth,
     containersHeight,
+    transform,
+    setTransform,
+    zoomSource,
   );
 
   const x = useMemo(() => {
@@ -198,49 +204,52 @@ const HeatMap = ({
         position: "relative",
       }}
     >
-      <Axis
-        x={x}
-        y={y}
-        zoomRef={zoomRef}
-        zoomAmount={Math.round(visibleData.length / 10)}
-      >
-        <Activity
-          mode={
-            showCharts.includes("Liquidation Leverage") ? "visible" : "hidden"
-          }
+      <Axis x={x} y={y} zoomAmount={Math.round(visibleData.length / 10)}>
+        <g
+          ref={zoomRef}
+          width={x.range()[1] > 0 ? x.range()[1] : 0}
+          height={y.range()[0] > 0 ? y.range()[0] : 0}
+          x={x.range()[0]}
+          y={y.range()[1]}
         >
-          <rect
-            fill={colorTheme.color}
-            width={x.range()[1] > 0 ? x.range()[1] : 0}
-            height={y.range()[0] > 0 ? y.range()[0] : 0}
-            x={x.range()[0]}
-            y={y.range()[1]}
-          />
+          <Activity
+            mode={
+              showCharts.includes("Liquidation Leverage") ? "visible" : "hidden"
+            }
+          >
+            <rect
+              fill={colorTheme.color}
+              width={x.range()[1] > 0 ? x.range()[1] : 0}
+              height={y.range()[0] > 0 ? y.range()[0] : 0}
+              x={x.range()[0]}
+              y={y.range()[1]}
+            />
 
-          <BarChart
-            data={heatmapData}
+            <BarChart
+              data={heatmapData}
+              x={x}
+              y={y}
+              numBuckets={numBuckets}
+              maxVol={maxVol}
+              colorTheme={colorTheme}
+              threshhold={threshhold}
+            />
+          </Activity>
+
+          <CandleAndHoverComponent
+            candleData={visibleData}
+            heatmapData={heatmapData}
             x={x}
             y={y}
+            min={min}
+            max={max}
             numBuckets={numBuckets}
             maxVol={maxVol}
-            colorTheme={colorTheme}
             threshhold={threshhold}
+            colorTheme={colorTheme}
+            showCharts={showCharts}
           />
-        </Activity>
-
-        <CandleAndHoverComponent
-          candleData={visibleData}
-          heatmapData={heatmapData}
-          x={x}
-          y={y}
-          min={min}
-          max={max}
-          numBuckets={numBuckets}
-          maxVol={maxVol}
-          threshhold={threshhold}
-          colorTheme={colorTheme}
-          showCharts={showCharts}
-        />
+        </g>
       </Axis>
     </div>
   );

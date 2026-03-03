@@ -1,4 +1,6 @@
-import React, { useMemo, useState, Activity, useEffect } from "react";
+import React, { useMemo, useState, Activity, useEffect, useRef } from "react";
+
+import * as d3 from "d3";
 
 import Gradient from "./components/gradient";
 import HeatMap from "./components/heatmap/heatmap";
@@ -9,9 +11,7 @@ import generateHeatmapData from "./generateData";
 import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 
-// Attach Liquidity Threshold
-// Attach Liquidation Leverage & SuperCharts button
-
+// Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
   const [colorTheme, setColorTheme] = useState({
@@ -23,6 +23,9 @@ const BinanceGadget = () => {
     "Liquidation Leverage",
     "Supercharts",
   ]);
+  const [transform, setTransform] = useState(() => d3.zoomIdentity);
+
+  const zoomSource = useRef(null);
 
   const placeholderCurrencies = useMemo(
     () => [
@@ -104,6 +107,8 @@ const BinanceGadget = () => {
     [placeholderCurrencies],
   );
 
+  const reversedData = useMemo(() => data.toReversed(), [data]);
+
   // Min/Max values (value of coin)
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
@@ -154,6 +159,9 @@ const BinanceGadget = () => {
               max={paddedMax}
               numBuckets={NUM_BUCKETS}
               showCharts={showCharts}
+              transform={transform}
+              setTransform={setTransform}
+              zoomSource={zoomSource}
             />
           </div>
 
@@ -175,7 +183,12 @@ const BinanceGadget = () => {
         className="ml-15 h-30 w-240 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
       >
-        <TimeLapsChart data={data.toReversed()} />
+        <TimeLapsChart
+          data={reversedData}
+          transform={transform}
+          setTransform={setTransform}
+          zoomSource={zoomSource}
+        />
       </div>
     </div>
   );

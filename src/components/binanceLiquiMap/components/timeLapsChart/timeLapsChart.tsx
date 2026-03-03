@@ -1,6 +1,7 @@
 import React, {
   Activity,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -113,12 +114,14 @@ const MoveableGraphContainerRect = ({
   // User clicks somewhere on the fixed sized graph, and it moved the smaller, moveable rect (which is where the moveable graph also goes)
   const handleClickGraph = (e: SVGRectClickEvent) => {
     const clickedVal = calcWhereUserClicked(e);
+
     moveGraph(max, 0, clickedVal, setGraphMargins);
   };
 
   // User drags the current moveable graph, which also moves the smaller moveable rect as well
   const handleMoveGraph = (e: SVGRectClickEvent) => {
     const clickedVal = calcWhereUserClicked(e);
+
     if (clickedVal > lowestVal && clickedVal < highestVal) {
       trackDrag(setGraphMargins, max, 1);
     }
@@ -227,22 +230,24 @@ const Controllers = ({
   setDisplayText: SetBoolean;
 }) => {
   // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
+
+  const start = graphMargins.start;
+  const end = graphMargins.end;
+  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
+
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
 
   const handleGraphStart = (e: InputChangeEvent) => {
     const value = +e.target.value;
+
     setGraphMargins((prev) => ({ ...prev, start: value }));
   };
 
   const handleGraphEnd = (e: InputChangeEvent) => {
     const value = +e.target.value;
+
     setGraphMargins((prev) => ({ ...prev, end: value }));
   };
-
-  const start = graphMargins.start;
-  const end = graphMargins.end;
-
-  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
 
   // This is the actual text that is shown on left and right handler (The ones that control the size of the movable graph).
   const firstObjectDate = data[data.length - 1 - Math.round(lowestVal)]?.date;
@@ -309,7 +314,12 @@ const Controllers = ({
 };
 
 // Parent wrapper.
-const TimeLapsChart = ({ data }: MainProps) => {
+const TimeLapsChart = ({
+  data,
+  transform,
+  setTransform,
+  zoomSource,
+}: MainProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [containerWidth, containersHeight] =
@@ -324,6 +334,41 @@ const TimeLapsChart = ({ data }: MainProps) => {
     end: data.length - 1,
   });
 
+  useEffect(() => {
+    if (zoomSource.current !== "heatmap") return;
+
+    const itemsVisible = data.length / transform.k;
+    const itemWidth = containerWidth / data.length;
+    const newStart = -transform.x / (itemWidth * transform.k);
+
+    setGraphMargins({
+      start: Math.max(0, newStart),
+      end: Math.min(data.length - 1, newStart + itemsVisible),
+    });
+  }, [transform.x, transform.k, data.length, containerWidth]);
+
+  useEffect(() => {
+    if (zoomSource.current === "heatmap") return;
+
+    const sliceWidth = Math.round(graphMargins.end - graphMargins.start);
+    const calculatedK = data.length / (sliceWidth || 1);
+    const itemWidth = containerWidth / data.length;
+
+    zoomSource.current = "timelaps";
+
+    setTransform({
+      k: calculatedK,
+      x: -(graphMargins.start * itemWidth * calculatedK),
+      y: 0,
+    });
+
+    setTimeout(() => {
+      if (zoomSource.current === "timelaps") {
+        zoomSource.current = null;
+      }
+    }, 50);
+  }, [graphMargins.start, graphMargins.end, containerWidth, data.length]);
+
   return (
     <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
       <Controllers
@@ -332,6 +377,8 @@ const TimeLapsChart = ({ data }: MainProps) => {
         setGraphMargins={setGraphMargins}
         displayText={displayText}
         setDisplayText={setDisplayText}
+        transform={transform}
+        setTransform={setTransform}
       />
 
       <Charts
