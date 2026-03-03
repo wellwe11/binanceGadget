@@ -1,4 +1,4 @@
-import React, { useMemo, useState, Activity } from "react";
+import React, { useMemo, useState, Activity, useEffect } from "react";
 
 import Gradient from "./components/gradient";
 import HeatMap from "./components/heatmap/heatmap";
@@ -18,7 +18,6 @@ const BinanceGadget = () => {
     name: "interpolateViridis",
     color: "#440154",
   });
-
   const [threshhold, setThreshold] = useState(() => 60);
 
   const placeholderCurrencies = useMemo(

@@ -10,11 +10,13 @@ const BarChart = React.memo(
       () => scaleColors(maxVol, colorTheme.name, threshhold),
       [maxVol, colorTheme, threshhold],
     );
+
     const width = useMemo(() => x.range()[1], [x.domain()]);
     const height = useMemo(() => y.range()[0], [y.domain()]);
 
     useEffect(() => {
       if (!canvasRef.current) return;
+      console.log("asd");
 
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
@@ -32,7 +34,6 @@ const BarChart = React.memo(
       ctx.scale(dpr, dpr);
 
       const cellH = Math.abs(height) / numBuckets;
-
       data.forEach((cell) => {
         if (cell.volume === 0) return;
 
@@ -47,7 +48,7 @@ const BarChart = React.memo(
           cellH,
         );
       });
-    }, [data, x, y, width, height]);
+    }, [data, x, y, width, height, colorScale]);
 
     return (
       <foreignObject style={{ width, height }}>

@@ -25,7 +25,7 @@ const CellText = ({ activeCell, max, colorTheme, threshhold }) => {
   const cellTextKeys = ["price", "volume"];
   const scaleColor = useMemo(
     () => colorScale(max, colorTheme.name, threshhold),
-    [max, threshhold],
+    [max, colorTheme, threshhold],
   );
 
   return (

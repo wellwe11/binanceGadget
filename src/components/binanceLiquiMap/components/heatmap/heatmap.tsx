@@ -1,4 +1,11 @@
-import React, { Activity, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import * as d3 from "d3";
 
@@ -12,6 +19,7 @@ import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
 import useZoom from "./hooks/useZoom";
+import { number } from "framer-motion";
 
 /**
  * TODO:
@@ -19,123 +27,121 @@ import useZoom from "./hooks/useZoom";
  * Bind functionalityx to navbar
  */
 
-const CandleAndHoverComponent = React.memo(
-  ({
-    candleData,
-    heatmapData,
-    x,
-    y,
-    min,
-    max,
-    numBuckets,
-    maxVol,
-    threshhold,
-    colorTheme,
-  }) => {
-    const rafRef = useRef(null);
-    const activeCellRef = useRef(null);
+const CandleAndHoverComponent = ({
+  candleData,
+  heatmapData,
+  x,
+  y,
+  min,
+  max,
+  numBuckets,
+  maxVol,
+  threshhold,
+  colorTheme,
+}) => {
+  const rafRef = useRef(null);
+  const activeCellRef = useRef(null);
 
-    const [activeCell, setActiveCell] = useState(null);
+  const [activeCell, setActiveCell] = useState(null);
 
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-    const [hideHighlight, setHideHighlight] = useState(() => false);
-    const [mouseOut, setMouseOut] = useState(true);
+  const [hideHighlight, setHideHighlight] = useState(() => false);
+  const [mouseOut, setMouseOut] = useState(true);
 
-    const xDomain = useMemo(() => x.domain(), [x, candleData]);
-    const yDomain = useMemo(() => y.domain(), [min, max, y, candleData]);
+  const xDomain = useMemo(() => x.domain(), [x, candleData.length]);
+  const yDomain = useMemo(() => y.domain(), [min, max, y, candleData.length]);
 
-    const handleHover = useCallback(
-      (event) => {
-        const [mouseX, mouseY] = d3.pointer(event);
+  const handleHover = useCallback(
+    (event) => {
+      const [mouseX, mouseY] = d3.pointer(event);
 
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current);
-        }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
 
-        rafRef.current = requestAnimationFrame(() => {
-          setMousePos({ x: mouseX, y: mouseY });
+      rafRef.current = requestAnimationFrame(() => {
+        setMousePos({ x: mouseX, y: mouseY });
 
-          const eachBand = x.step();
-          const rangeStart = x.range()[0];
+        const eachBand = x.step();
+        const rangeStart = x.range()[0];
 
-          const index = Math.round((mouseX - rangeStart) / eachBand);
+        const index = Math.round((mouseX - rangeStart) / eachBand);
 
-          const clampedIndex = Math.max(
-            0,
-            Math.min(index, candleData.length - 1),
-          );
-          const date = candleData[clampedIndex].date;
+        const clampedIndex = Math.max(
+          0,
+          Math.min(index, candleData.length - 1),
+        );
+        const date = candleData[clampedIndex].date;
 
-          if (!date) return;
+        if (!date) return;
 
-          if (hideHighlight) {
-            const cell = candleData[clampedIndex];
+        if (hideHighlight) {
+          const cell = candleData[clampedIndex];
 
-            if (cell !== activeCellRef.current) {
+          if (cell !== activeCellRef.current) {
+            activeCellRef.current = cell;
+
+            setActiveCell(cell);
+          }
+        } else {
+          const rawPrice = y.invert(mouseY);
+
+          const priceStep = (min - max) / numBuckets;
+          const snappedPrice =
+            Math.floor((rawPrice - min) / priceStep) * priceStep + min;
+
+          const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
+
+          if (cell) {
+            const isNewDate = cell.date !== activeCellRef.current?.date;
+            const isNewPrice = cell.price !== activeCellRef.current?.price;
+            if (isNewDate || isNewPrice) {
               activeCellRef.current = cell;
-
               setActiveCell(cell);
             }
-          } else {
-            const rawPrice = y.invert(mouseY);
-
-            const priceStep = (min - max) / numBuckets;
-            const snappedPrice =
-              Math.floor((rawPrice - min) / priceStep) * priceStep + min;
-
-            const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
-
-            if (cell) {
-              const isNewDate = cell.date !== activeCellRef.current?.date;
-              const isNewPrice = cell.price !== activeCellRef.current?.price;
-              if (isNewDate || isNewPrice) {
-                activeCellRef.current = cell;
-                setActiveCell(cell);
-              }
-            }
           }
-        });
-      },
-      [heatmapData, yDomain, xDomain, numBuckets],
-    );
+        }
+      });
+    },
+    [heatmapData, yDomain, xDomain, numBuckets],
+  );
 
-    return (
-      <g className="CandleAndHoverComponent">
-        <ListeningRect
-          y={y}
-          x={x}
-          handleHover={handleHover}
+  return (
+    <g className="CandleAndHoverComponent">
+      <ListeningRect
+        y={y}
+        x={x}
+        handleHover={handleHover}
+        activeCell={activeCell}
+        hideHighlight={hideHighlight}
+        setMouseOut={setMouseOut}
+        mouseOut={mouseOut}
+        numBuckets={numBuckets}
+      />
+
+      <CandleChart
+        data={candleData}
+        x={x}
+        y={y}
+        handleHover={handleHover}
+        setHideHighlight={setHideHighlight}
+      />
+      <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
+        <Tooltip
+          mousePos={mousePos}
           activeCell={activeCell}
-          hideHighlight={hideHighlight}
-          setMouseOut={setMouseOut}
-          mouseOut={mouseOut}
-          numBuckets={numBuckets}
-        />
-
-        <CandleChart
-          data={candleData}
           x={x}
           y={y}
-          handleHover={handleHover}
-          setHideHighlight={setHideHighlight}
+          hideHighlight={hideHighlight}
+          max={maxVol}
+          threshhold={threshhold}
+          colorTheme={colorTheme}
         />
-        <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
-          <Tooltip
-            mousePos={mousePos}
-            activeCell={activeCell}
-            x={x}
-            y={y}
-            hideHighlight={hideHighlight}
-            max={maxVol}
-            threshhold={threshhold}
-            colorTheme={colorTheme}
-          />
-        </Activity>
-      </g>
-    );
-  },
-);
+      </Activity>
+    </g>
+  );
+};
 
 const HeatMap = ({
   heatmapData,
@@ -160,16 +166,19 @@ const HeatMap = ({
     containersHeight,
   );
 
-  const x = d3
-    .scaleBand()
-    .domain(visibleData.map((d) => d.date))
-    .range([0, containerWidth - 40]);
+  const x = useMemo(() => {
+    return d3
+      .scaleBand()
+      .domain(visibleData.map((d) => d.date))
+      .range([0, containerWidth - 40]);
+  }, [visibleData.length, containerWidth]);
 
-  // 4. Y Scale stays fixed (No vertical zoom)
-  const y = d3
-    .scaleLinear()
-    .domain([min, max])
-    .range([containersHeight - 50, 0]);
+  const y = useMemo(() => {
+    return d3
+      .scaleLinear()
+      .domain([min, max])
+      .range([containersHeight - 50, 0]);
+  }, [min, max, containersHeight]);
 
   return (
     <div
