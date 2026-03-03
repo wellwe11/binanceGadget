@@ -11,6 +11,7 @@ const ListeningRect = ({
   y,
   currentPrice,
   max,
+  colorTheme,
 }: ListeningRectType) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
@@ -24,7 +25,7 @@ const ListeningRect = ({
   const handleDisplayToolbar = () => setDisplayToolbar(true);
   const handleHideToolbar = () => setDisplayToolbar(false);
 
-  const scaleColors = colorScale(max);
+  const scaleColors = colorScale(max, colorTheme);
   const [maxYPixels, minYPixels] = y.range();
   const [minXPixels, maxXPixels] = x.range();
 

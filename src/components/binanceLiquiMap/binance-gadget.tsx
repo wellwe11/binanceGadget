@@ -11,7 +11,10 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
-  const [colorTheme, setColorTheme] = useState("interpolateViridis");
+  const [colorTheme, setColorTheme] = useState({
+    name: "interpolateViridis",
+    color: "#440154",
+  });
   const placeholderCurrencies = useMemo(
     () => [
       "BTC",
@@ -86,7 +89,7 @@ const BinanceGadget = () => {
     }),
     [],
   );
-  const NUM_BUCKETS = 100;
+  const NUM_BUCKETS = 200;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], NUM_BUCKETS),
@@ -120,7 +123,10 @@ const BinanceGadget = () => {
 
       <div className="flex w-fit">
         <div className="w-10 mb-4 -mt-8.5" style={{ height: "inherit" }}>
-          <Gradient max={processedData.totalVolume} colorTheme={colorTheme} />
+          <Gradient
+            max={processedData.totalVolume}
+            colorTheme={colorTheme.name}
+          />
         </div>
 
         <div className="flex w-screen">
@@ -139,7 +145,7 @@ const BinanceGadget = () => {
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
             <div className="w-75 h-175">
               <LiquidationMap
-                colorTheme={colorTheme}
+                colorTheme={colorTheme.name}
                 liquidationMapData={processedData.aggregateBar}
                 minPrice={paddedMin}
                 maxPrice={paddedMax}

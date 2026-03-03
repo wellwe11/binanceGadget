@@ -180,7 +180,7 @@ const HeatMap = ({
         zoomAmount={Math.round(visibleData.length / 10)}
       >
         <rect
-          fill="#440154"
+          fill={colorTheme.color}
           width={x.range()[1] > 0 ? x.range()[1] : 0}
           height={y.range()[0] > 0 ? y.range()[0] : 0}
           x={x.range()[0]}

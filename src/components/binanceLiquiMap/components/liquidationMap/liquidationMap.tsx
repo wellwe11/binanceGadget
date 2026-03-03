@@ -17,6 +17,7 @@ const LiquidationMap = ({
   minPrice,
   maxPrice,
   currentPrice,
+  colorTheme,
 }: {
   data: DataType[];
 }) => {
@@ -128,13 +129,24 @@ const LiquidationMap = ({
         x={x}
         y={y}
       >
-        <BarChart data={accumulatedShorts} x={xBars} y={y} />
+        <BarChart
+          data={accumulatedShorts}
+          x={xBars}
+          y={y}
+          colorTheme={colorTheme}
+        />
         <AreaChart data={accumulatedShorts} x={x} y={y} color="#00f2ff" />
 
-        <BarChart data={accumulatedLongs} x={xBars} y={y} />
+        <BarChart
+          data={accumulatedLongs}
+          x={xBars}
+          y={y}
+          colorTheme={colorTheme}
+        />
         <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
         <ListeningRect
+          colorTheme={colorTheme}
           data={sortedData.toReversed()}
           x={x}
           xBars={xBars}

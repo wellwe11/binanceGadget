@@ -206,21 +206,21 @@ const DisplayLiquidationButton = ({ setter }) => {
 
 const ThemeSelection = ({ setColorTheme }) => {
   const buttonColors = [
-    "interpolateViridis", // Purple > blue > green > yellow
-    "interpolateInferno", // Black > purple > orange > yellow
-    "interpolateCividis", // Dark blue > yellow
-    "interpolateYlGnBu", // White > light yellow > blue > dark blue
+    { name: "interpolateViridis", baseColor: "#440154" }, // Purple > blue > green > yellow
+    { name: "interpolateInferno", baseColor: "#000004" }, // Black > purple > orange > yellow
+    { name: "interpolateCividis", baseColor: "#00204d" }, // Dark blue > yellow
+    { name: "interpolateYlGnBu", baseColor: "#ffffd9" }, // White > light yellow > blue > dark blue
   ];
 
   return (
     <div className="flex gap-2">
-      {buttonColors.map((button, index) => (
+      {buttonColors.map(({ name, baseColor }, index) => (
         <button
           className="w-5 h-5 cursor-pointer"
           key={index}
-          onClick={() => setColorTheme(button)}
+          onClick={() => setColorTheme({ name, color: baseColor })}
         >
-          <Gradient colorTheme={button} />
+          <Gradient colorTheme={name} />
         </button>
       ))}
     </div>

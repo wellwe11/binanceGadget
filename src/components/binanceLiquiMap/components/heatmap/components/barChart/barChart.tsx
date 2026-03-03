@@ -7,7 +7,7 @@ const BarChart = React.memo(
     const canvasRef = useRef(null);
 
     const colorScale = useMemo(
-      () => scaleColors(maxVol, colorTheme),
+      () => scaleColors(maxVol, colorTheme.name),
       [maxVol, colorTheme],
     );
     const width = useMemo(() => x.range()[1], [x.domain()]);

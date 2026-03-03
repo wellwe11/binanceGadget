@@ -2,9 +2,9 @@ import { XYType } from "../Types";
 
 import colorScale from "../../../functions/colorScale";
 
-const BarChart = ({ data, x, y }: XYType) => {
+const BarChart = ({ data, x, y, colorTheme }: XYType) => {
   const [min, max] = x.domain();
-  const scaleColors = colorScale(max);
+  const scaleColors = colorScale(max, colorTheme);
 
   return (
     <g>
