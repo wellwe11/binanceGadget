@@ -7,7 +7,7 @@ const TextWithCircle = ({ children, circleColor }) => {
           backgroundColor: circleColor,
         }}
       />
-      <p>{children}</p>
+      {children}
     </div>
   );
 };

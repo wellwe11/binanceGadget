@@ -1,4 +1,4 @@
-import React, { useMemo, useState, Activity, useEffect, useRef } from "react";
+import { useMemo, useState, Activity, useRef } from "react";
 
 import * as d3 from "d3";
 

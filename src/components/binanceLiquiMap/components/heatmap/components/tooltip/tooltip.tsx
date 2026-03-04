@@ -31,7 +31,10 @@ const CellText = ({ activeCell, max, colorTheme, threshhold }) => {
     <div className="flex flex-col">
       {cellTextKeys.map((key, index) => (
         <TextWithCircle key={index} circleColor={scaleColor(activeCell.volume)}>
-          {`${firstLetterCapital(key)} ${Math.round(activeCell[key])}`}
+          <div className="flex justify-between w-full">
+            <p>{`${firstLetterCapital(key)}`}</p>
+            <p>{`${Math.round(activeCell[key])}`}</p>
+          </div>
         </TextWithCircle>
       ))}
     </div>
