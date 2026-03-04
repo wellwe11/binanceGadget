@@ -162,8 +162,8 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
-      <div className="bg-gray-950 w-300">
+    <div className="flex flex-col pt-5 pl-1 w-fit max-w-300 h-full bg-amber-200">
+      <div className="bg-gray-950 w-full">
         <Nav
           symbol={placeholderCurrencies}
           time={Object.keys(times)}
@@ -183,8 +183,11 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="flex w-fit">
-        <div className="w-10 mb-4 -mt-8.5" style={{ height: "inherit" }}>
+      <div className="flex w-full bg-amber-500">
+        <div
+          className="mb-4 -mt-8.5"
+          style={{ height: "inherit", width: "5%", maxWidth: "50px" }}
+        >
           <Gradient
             max={processedData.totalVolume}
             colorTheme={colorTheme.name}
@@ -192,8 +195,12 @@ const BinanceGadget = () => {
           />
         </div>
 
-        <div className="flex w-screen">
-          <div className="ml-2 w-230 h-160" ref={containerRef}>
+        <div className="flex" style={{ width: "95%" }}>
+          <div
+            className="ml-2 h-160"
+            ref={containerRef}
+            style={{ width: "70%" }}
+          >
             <HeatMap
               heatmapData={processedData.cellGrid}
               visibleData={visibleData}
@@ -212,7 +219,7 @@ const BinanceGadget = () => {
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-45 h-160">
+            <div className="h-full" style={{ width: "30%" }}>
               <LiquidationMap
                 colorTheme={colorTheme.name}
                 liquidationMapData={processedData.aggregateBar}

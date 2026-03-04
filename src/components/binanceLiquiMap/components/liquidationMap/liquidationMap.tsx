@@ -25,6 +25,8 @@ const LiquidationMap = ({
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
+  console.log(containerWidth, containersHeight);
+
   // Filter data by type (i.e. long, short)
   const filteredData = useMemo(
     () => filterByType(liquidationMapData, currentPrice),
