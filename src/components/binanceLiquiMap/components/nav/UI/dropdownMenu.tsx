@@ -166,7 +166,7 @@ const DropdownMenu = ({
   value?: number;
   canSearch?: boolean;
 }) => {
-  const [currentButton, setCurrentButton] = useState(() => value);
+  const [currentButton, setCurrentButton] = useState(value);
   const [expandBar, setExpandBar] = useState(false);
   const handleExpandBar = () => setExpandBar(!expandBar);
   const handleClick = (e) => {
@@ -184,7 +184,10 @@ const DropdownMenu = ({
         {keys[currentButton]}
       </MainBar>
 
-      <div className="relative w-inherit">
+      <div
+        className="relative w-inherit"
+        onMouseLeave={() => setTimeout(() => setExpandBar(false), 500)}
+      >
         <FallMenu
           setShow={setExpandBar}
           showMenu={expandBar}

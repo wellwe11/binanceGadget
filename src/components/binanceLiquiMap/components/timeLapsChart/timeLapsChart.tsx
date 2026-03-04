@@ -130,7 +130,6 @@ const MoveableGraphContainerRect = ({
   const x = (lowestVal / (data.length - 1)) * width;
   const adaptedWidth = (width / (data.length - 1)) * (highestVal - lowestVal);
 
-  console.log(height);
   return (
     <>
       <rect
@@ -191,8 +190,6 @@ const Charts = ({
         .domain([0, d3.max(data, (d: Data) => d.value)]),
     [data, height, width],
   );
-
-  console.log(width, height);
 
   return (
     <Axis width={width} height={height}>

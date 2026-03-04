@@ -1,4 +1,4 @@
-import { useMemo, useState, Activity, useRef } from "react";
+import { useMemo, useState, Activity, useRef, useEffect } from "react";
 
 import * as d3 from "d3";
 
@@ -120,6 +120,12 @@ const BinanceGadget = () => {
     [],
   );
 
+  const handleSetPairOrSymbol = (e) => {
+    const pairOrSymbolArr = [placeholderPairs, placeholderCurrencies];
+    setActiveCoin(0);
+    setPairOrSymbol(pairOrSymbolArr[e]);
+  };
+
   const coin = pairOrSymbol[activeCoin];
 
   const activeDays = Object.values(times)[days];
@@ -165,7 +171,6 @@ const BinanceGadget = () => {
     <div className="flex flex-col pt-5 pl-1 w-fit h-200 max-w-300  bg-black">
       <div className="bg-gray-950 w-full flex" style={{ height: "35%" }}>
         <Nav
-          symbol={placeholderCurrencies}
           time={Object.keys(times)}
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
@@ -176,9 +181,8 @@ const BinanceGadget = () => {
           setRefreshGraph={setRefreshGraph}
           setDays={setDays}
           setActiveCoin={setActiveCoin}
-          pair={placeholderPairs}
           pairOrSymbol={pairOrSymbol}
-          setPairOrSymbol={setPairOrSymbol}
+          setPairOrSymbol={handleSetPairOrSymbol}
           activeCoin={coin}
         />
       </div>

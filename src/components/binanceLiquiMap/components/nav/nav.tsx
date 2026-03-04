@@ -103,8 +103,6 @@ const TimeDropMenu = ({ time, setDays }: { time: Object[] }) => {
 };
 
 const PairSymbolClickMenu = ({
-  pair,
-  symbol,
   setter,
 }: {
   symbol: string[];
@@ -112,17 +110,8 @@ const PairSymbolClickMenu = ({
   setter: setPairType;
 }) => {
   const Pair_SymbolButtons = ["Pair", "Symbol"];
-  const pairOrSymbolArr = [pair, symbol];
 
-  const handleSelectPairOrSymbol = (index: number) => {
-    setter(pairOrSymbolArr[index]);
-  };
-
-  return (
-    <ClickMenu onSelect={handleSelectPairOrSymbol}>
-      {Pair_SymbolButtons}
-    </ClickMenu>
-  );
+  return <ClickMenu onSelect={setter}>{Pair_SymbolButtons}</ClickMenu>;
 };
 
 const GraphTypeControllerMenu = ({
@@ -238,8 +227,6 @@ const ThemeSelection = ({ setColorTheme }) => {
 };
 
 const Nav = ({
-  symbol,
-  pair,
   time,
   displayMap,
   setColorTheme,
@@ -264,11 +251,7 @@ const Nav = ({
       <div className="w-fit h-full flex flex-col justify-center items-start">
         <div className=" w-full h-full flex flex-col flex-wrap ">
           <div className="generic_height w-32">
-            <PairSymbolClickMenu
-              pair={pair}
-              symbol={symbol}
-              setter={setPairOrSymbol}
-            />
+            <PairSymbolClickMenu setter={setPairOrSymbol} />
           </div>
           <h4
             style={{

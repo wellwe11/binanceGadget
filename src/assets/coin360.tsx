@@ -8,10 +8,10 @@ const Coin360Svg = () => {
       <text
         x="65"
         y="55"
-        font-family="Arial, sans-serif"
-        font-size="38"
+        fontFamily="Arial, sans-serif"
+        fontSize="38"
         fill="#FFFFFF"
-        font-weight="normal"
+        fontWeight="normal"
       >
         COIN360
       </text>
