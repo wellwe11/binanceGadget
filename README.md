@@ -4,12 +4,8 @@ A heatmap that tracks current price of specific coins and related liquidations.
 
 ## TODO
 
-- Zoom-effect
 - Abstract data-filtering
 - Adapt code for Binance WebSocket API
-- Color-theme choice
-- Wire 'navbar buttons' to graphs
-- Wire timeLapsChart to allow control over timestamps
 
 ## Related projects
 
