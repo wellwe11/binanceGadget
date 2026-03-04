@@ -13,7 +13,6 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Fix mouse-speed on timeLapsChart. It is currently updating slower with a lot of data. Does not fit mouse-speed always.
 // Theres some bug with the zoom - timeLapsChart does not always update.
 // Connect time with amount of data.
 // Connect type of coin.
