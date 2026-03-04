@@ -27,7 +27,11 @@ const Axis = ({ children, shorts, longs, xBars, y, x }: AxisType) => {
   const [minXPixels, maxXPixels] = x.range();
 
   return (
-    <svg height={maxYPixels > 0 ? maxYPixels : 0} width={maxXPixels + 50}>
+    <svg
+      height={maxYPixels > 0 ? maxYPixels : 0}
+      width={maxXPixels}
+      viewBox={`0 0 ${maxXPixels} ${maxYPixels}`}
+    >
       <DottedLine
         data={maxShorts}
         x={xBars}

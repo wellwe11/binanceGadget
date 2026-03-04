@@ -162,8 +162,8 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="flex flex-col pt-5 pl-1 w-fit max-w-300 h-full bg-amber-200">
-      <div className="bg-gray-950 w-full">
+    <div className="flex flex-col pt-5 pl-1 w-fit h-200 max-w-300  bg-black">
+      <div className="bg-gray-950 w-full flex" style={{ height: "35%" }}>
         <Nav
           symbol={placeholderCurrencies}
           time={Object.keys(times)}
@@ -183,67 +183,87 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div className="flex w-full bg-amber-500">
-        <div
-          className="mb-4 -mt-8.5"
-          style={{ height: "inherit", width: "5%", maxWidth: "50px" }}
-        >
-          <Gradient
-            max={processedData.totalVolume}
-            colorTheme={colorTheme.name}
-            threshhold={threshhold}
-          />
-        </div>
-
-        <div className="flex" style={{ width: "95%" }}>
+      <div style={{ height: "65%" }} className="flex flex-col justify-between ">
+        <div className="flex w-300 gap-2.5" style={{ height: "95%" }}>
           <div
-            className="ml-2 h-160"
-            ref={containerRef}
-            style={{ width: "70%" }}
+            className="mb-4 -mt-8.5"
+            style={{ width: "5%", maxWidth: "50px" }}
           >
-            <HeatMap
-              heatmapData={processedData.cellGrid}
-              visibleData={visibleData}
-              min={paddedMin}
-              max={paddedMax}
-              numBuckets={NUM_BUCKETS}
-              maxVol={processedData.maxVolume}
-              colorTheme={colorTheme}
+            <Gradient
+              max={processedData.totalVolume}
+              colorTheme={colorTheme.name}
               threshhold={threshhold}
-              showCharts={showCharts}
-              zoomRef={zoomRef}
-              containerWidth={containerWidth}
-              containersHeight={containersHeight}
-              activeDays={activeDays}
             />
           </div>
 
-          <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="h-full" style={{ width: "30%" }}>
-              <LiquidationMap
-                colorTheme={colorTheme.name}
-                liquidationMapData={processedData.aggregateBar}
-                minPrice={paddedMin}
-                maxPrice={paddedMax}
-                currentPrice={processedData.currentPrice}
+          <div className="flex" style={{ width: "95%" }}>
+            <div
+              ref={containerRef}
+              style={{
+                width: !displayLiquidationMap ? "100%" : "80%",
+                height: "100%",
+              }}
+            >
+              <HeatMap
+                heatmapData={processedData.cellGrid}
+                visibleData={visibleData}
+                min={paddedMin}
+                max={paddedMax}
+                numBuckets={NUM_BUCKETS}
+                maxVol={processedData.maxVolume}
+                colorTheme={colorTheme}
+                threshhold={threshhold}
+                showCharts={showCharts}
+                zoomRef={zoomRef}
+                containerWidth={containerWidth}
+                containersHeight={containersHeight}
+                activeDays={activeDays}
               />
             </div>
-          </Activity>
-        </div>
-      </div>
 
-      <div
-        className="ml-15 h-30 w-215 flex flex-col flex-1"
-        style={{ border: "1px solid black" }}
-        key={refreshGraph}
-      >
-        <TimeLapsChart
-          key={days + coin}
-          data={reversedData}
-          transform={transform}
-          setTransform={setTransform}
-          zoomSource={zoomSource}
-        />
+            <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
+              <div style={{ width: "19%", height: "100%" }}>
+                <LiquidationMap
+                  colorTheme={colorTheme.name}
+                  liquidationMapData={processedData.aggregateBar}
+                  minPrice={paddedMin}
+                  maxPrice={paddedMax}
+                  currentPrice={processedData.currentPrice}
+                />
+              </div>
+            </Activity>
+          </div>
+        </div>
+
+        <div
+          className="flex w-full gap-2.5"
+          style={{ height: "15%" }}
+          key={refreshGraph}
+        >
+          <div
+            className="mb-4 -mt-8.5"
+            style={{ height: "inherit", width: "5%", maxWidth: "50px" }}
+          />
+
+          <div style={{ width: "95%" }} className=" flex">
+            <div style={{ width: !displayLiquidationMap ? "100%" : "80%" }}>
+              <TimeLapsChart
+                key={days + coin}
+                data={reversedData}
+                transform={transform}
+                setTransform={setTransform}
+                zoomSource={zoomSource}
+              />
+            </div>
+            <div
+              className=""
+              style={{
+                width: !displayLiquidationMap ? "0%" : "20%",
+                height: "100%",
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

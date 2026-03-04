@@ -130,6 +130,7 @@ const MoveableGraphContainerRect = ({
   const x = (lowestVal / (data.length - 1)) * width;
   const adaptedWidth = (width / (data.length - 1)) * (highestVal - lowestVal);
 
+  console.log(height);
   return (
     <>
       <rect
@@ -138,7 +139,7 @@ const MoveableGraphContainerRect = ({
         style={{ cursor: "pointer" }}
         x="0"
         width="100%"
-        height={height}
+        height={`${height}px`}
         fill="transparent"
       />
 
@@ -147,7 +148,7 @@ const MoveableGraphContainerRect = ({
         onMouseLeave={handleHoverFalse}
         onMouseDown={handleMoveGraph}
         width={`${adaptedWidth}px`}
-        height={height}
+        height={`${height}px`}
         x={x}
         fill="transparent"
         style={{ cursor: "ew-resize" }}
@@ -191,8 +192,10 @@ const Charts = ({
     [data, height, width],
   );
 
+  console.log(width, height);
+
   return (
-    <Axis width={width}>
+    <Axis width={width} height={height}>
       <MoveableGraphContainerRect
         data={data}
         graphMargins={graphMargins}
@@ -384,7 +387,8 @@ const TimeLapsChart = ({
   return (
     <div
       ref={containerRef}
-      style={{ width: "inherit", height: "inherit" }}
+      className="w-full h-full"
+      style={{ width: "calc(100% - 40px)" }} // Because heatmaps x-angle is -40
       onMouseUp={() => setIsClicking(false)}
       onMouseDown={() => setIsClicking(true)}
       onMouseLeave={() => setIsClicking(false)}

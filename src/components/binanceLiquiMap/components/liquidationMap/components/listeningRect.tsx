@@ -205,7 +205,7 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={maxXPixels + 50} // because x is +50
+        width={maxXPixels}
         height={tooltipHeight}
         style={{
           pointerEvents: "none",

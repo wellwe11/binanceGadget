@@ -123,7 +123,7 @@ const LiquidationMap = ({
   if (!accumulatedLongs || !accumulatedShorts) return;
 
   return (
-    <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
+    <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
       <Axis
         shorts={filteredData.short}
         longs={filteredData.long}

@@ -1,8 +1,7 @@
-import { useRef } from "react";
-
 const Axis = ({
   children,
   width,
+  height,
 }: {
   children: React.ReactNode;
   width: number;
@@ -10,7 +9,7 @@ const Axis = ({
   return (
     <svg
       className="block w-full h-full"
-      viewBox={`0 0 ${width} 200`}
+      viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
     >
       {children}

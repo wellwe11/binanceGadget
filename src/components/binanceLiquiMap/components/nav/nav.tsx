@@ -260,40 +260,42 @@ const Nav = ({
   displayMap: boolean;
 }) => {
   return (
-    <div className="h-fit w-full flex flex-col justify-between px-2 py-1">
-      <div className="w-full flex flex-col justify-center items-start">
-        <div className="generic_height w-32">
-          <PairSymbolClickMenu
-            pair={pair}
-            symbol={symbol}
-            setter={setPairOrSymbol}
-          />
+    <div className="w-full flex flex-col justify-between px-2 py-1 flex-wrap">
+      <div className="w-fit h-full flex flex-col justify-center items-start">
+        <div className=" w-full h-full flex flex-col flex-wrap ">
+          <div className="generic_height w-32">
+            <PairSymbolClickMenu
+              pair={pair}
+              symbol={symbol}
+              setter={setPairOrSymbol}
+            />
+          </div>
+          <h4
+            style={{
+              fontSize: "28px",
+              fontVariationSettings: "'wght' 550",
+              color: "white",
+            }}
+          >
+            {activeCoin + " Heatmap" || "Please add title"}
+          </h4>
+          <p className="text-white max-w-100 text-wrap text-xs font-extralight py-1">
+            This heatmap is still in under development. Data is directly created
+            inside of the component. This may cause unpredictable behaviour.
+            With live data, this will be resolved.
+          </p>
+          <p className="text-gray-300 max-w-100 text-wrap text-xs font-extralight py-1">
+            If data looks 'odd', please click the refresh-button found on the
+            right-hand side of the navigational bar.
+          </p>
+          <p className="text-gray-400 max-w-100 text-wrap text-xs font-extralight py-1">
+            Snapshot is currently disabled.
+          </p>
         </div>
-        <h4
-          style={{
-            fontSize: "28px",
-            fontVariationSettings: "'wght' 550",
-            color: "white",
-          }}
-        >
-          {activeCoin + " Heatmap" || "Please add title"}
-        </h4>
-        <p className="text-white w-100 text-xs font-extralight py-1">
-          This heatmap is still in under development. Data is directly created
-          inside of the component. This may cause unpredictable behaviour. With
-          live data, this will be resolved.
-        </p>
-        <p className="text-gray-300 w-100 text-xs font-extralight py-1">
-          If data looks 'odd', please click the refresh-button found on the
-          right-hand side of the navigational bar.
-        </p>
-        <p className="text-gray-400 w-100 text-xs font-extralight py-1">
-          Snapshot is currently disabled.
-        </p>
       </div>
 
-      <div className="flex flex-col items-end">
-        <div className="generic_height w-full flex justify-end items-center">
+      <div className="h-full flex flex-col justify-between">
+        <div className="generic_height flex items-center justify-end">
           <div className="flex z-3">
             <TimeDropMenu time={time} setDays={setDays} />
             <PairSymbolDropMenu
@@ -307,17 +309,22 @@ const Nav = ({
             <SnapShotButton />
           </div>
         </div>
-        <div className="py-2">
-          <div className="flex gap-5 py-2">
-            <ThemeSelection setColorTheme={setColorTheme} />
-            <Slider setThreshold={setThreshold} threshold={threshold} />
-          </div>
-          <DisplayLiquidationButton setter={displayMap} />
-        </div>
-      </div>
 
-      <div className="width-full flex justify-center">
-        <GraphTypeControllerMenu arr={showCharts} setter={setShowCharts} />
+        <div className="flex justify-end gap-5">
+          <div className="flex flex-col gap-5 py-2">
+            <div className="flex gap-2.5">
+              <ThemeSelection setColorTheme={setColorTheme} />
+              <Slider setThreshold={setThreshold} threshold={threshold} />
+            </div>
+            <div className="flex gap-2.5">
+              <GraphTypeControllerMenu
+                arr={showCharts}
+                setter={setShowCharts}
+              />
+              <DisplayLiquidationButton setter={displayMap} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
