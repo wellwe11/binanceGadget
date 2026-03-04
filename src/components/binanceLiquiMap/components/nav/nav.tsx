@@ -16,18 +16,12 @@ type liquidationType = "Liquidation Leverage" | "Supercharts";
 type setPairType = React.Dispatch<React.SetStateAction<string[]>>;
 
 const SnapShotButton = () => {
-  const [rotation, setRotation] = useState(0);
-
   return (
     <div onClick={() => setRotation((prev) => prev + 180)}>
       <MenuButton>
         <div
           className="transition-transform duration-500 ease-bounce"
-          style={{
-            height: "20px",
-            transform: `rotate(${rotation}deg)`,
-            color: "white",
-          }}
+          style={{ height: "20px", color: "white" }}
         >
           <CameraSVG />
         </div>
@@ -37,10 +31,22 @@ const SnapShotButton = () => {
 };
 
 const ResetButton = ({ setRefreshGraph }) => {
+  const [rotation, setRotation] = useState(0);
+
   return (
-    <div className="flex gap-1 mx-1">
+    <div
+      className="flex gap-1 mx-1"
+      onClick={() => setRotation((prev) => prev + 180)}
+    >
       <MenuButton handler={() => setRefreshGraph((prev) => prev + 1)}>
-        <div className="" style={{ height: "20px", color: "white" }}>
+        <div
+          className="transition-transform duration-500 ease-bounce"
+          style={{
+            height: "20px",
+            transform: `rotate(${rotation}deg)`,
+            color: "white",
+          }}
+        >
           <ResetSVG />
         </div>
       </MenuButton>
@@ -74,7 +80,7 @@ const Slider = ({ threshold, setThreshold }) => {
 const PairSymbolDropMenu = ({ pairOrSymbol }: { pairOrSymbol: string[] }) => {
   return (
     <div className="w-70">
-      <DropdownMenu keys={pairOrSymbol} />
+      <DropdownMenu keys={pairOrSymbol} canSearch={false} />
     </div>
   );
 };

@@ -357,7 +357,12 @@ const TimeLapsChart = ({
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
 
-    const sliceWidth = Math.round(graphMargins.end - graphMargins.start);
+    const [lowestVal, highestVal] = useSetHighSetLow(
+      graphMargins.start,
+      graphMargins.end,
+    );
+
+    const sliceWidth = Math.round(highestVal - lowestVal);
     const calculatedK = data.length / (sliceWidth || 1);
     const itemWidth = containerWidth / data.length;
 

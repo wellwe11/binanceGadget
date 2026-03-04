@@ -17,6 +17,7 @@ import useTrackContainerSize from "./hooks/useTrackContainerSize";
 // COnnect pair/symbol
 // Make it fit for smaller screens
 // Add coin 360 logo
+// Fix bug when user 'reverses' the timeLapsChart
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
@@ -39,6 +40,9 @@ const BinanceGadget = () => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
+
+  const [activeCoin, setActiveCoin] = useState(null);
+  const [pairOrSymbol, setPairOrSymbol] = useState(null);
 
   const zoomRef = useRef(null);
 
