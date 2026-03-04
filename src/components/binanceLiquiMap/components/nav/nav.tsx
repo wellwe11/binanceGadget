@@ -286,15 +286,14 @@ const Nav = ({
               setActiveCoin={setActiveCoin}
             />
           </div>
-
-          <div className="generic_height flex flex-wrap pl-1">
-            <ResetButton setRefreshGraph={setRefreshGraph} />
-            <SnapShotButton />
-          </div>
         </div>
 
         <div className="flex flex-wrap justify-end gap-5">
           <div className="flex flex-col gap-5 py-2">
+            <div className="generic_height flex flex-wrap justify-end pr-3">
+              <ResetButton setRefreshGraph={setRefreshGraph} />
+              <SnapShotButton />
+            </div>
             <div className="flex gap-2.5">
               <ThemeSelection setColorTheme={setColorTheme} />
               <Slider setThreshold={setThreshold} threshold={threshold} />
