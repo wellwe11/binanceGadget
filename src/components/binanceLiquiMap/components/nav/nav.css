@@ -16,7 +16,7 @@
   }
 
   .generic_height {
-    height: 30px;
+    min-height: 30px;
   }
 }
 .ease-bounce {

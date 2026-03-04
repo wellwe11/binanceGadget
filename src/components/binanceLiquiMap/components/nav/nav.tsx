@@ -248,8 +248,8 @@ const Nav = ({
 }) => {
   return (
     <div className="w-full flex flex-col justify-between px-2 py-1 flex-wrap">
-      <div className="w-fit h-full flex flex-col justify-center items-start">
-        <div className=" w-full h-full flex flex-col flex-wrap ">
+      <div className="flex-1 min-w-[300px]">
+        <div className="flex flex-col">
           <div className="generic_height w-32">
             <PairSymbolClickMenu setter={setPairOrSymbol} />
           </div>
@@ -277,9 +277,9 @@ const Nav = ({
         </div>
       </div>
 
-      <div className="h-full flex flex-col justify-between">
+      <div className="h-full flex flex-col items-end justify-between">
         <div className="generic_height flex items-center justify-end">
-          <div className="flex z-3">
+          <div className="flex flex-1 flex-wrap z-3">
             <TimeDropMenu time={time} setDays={setDays} />
             <PairSymbolDropMenu
               pairOrSymbol={pairOrSymbol}
@@ -287,13 +287,13 @@ const Nav = ({
             />
           </div>
 
-          <div className="generic_height flex pl-1">
+          <div className="generic_height flex flex-wrap pl-1">
             <ResetButton setRefreshGraph={setRefreshGraph} />
             <SnapShotButton />
           </div>
         </div>
 
-        <div className="flex justify-end gap-5">
+        <div className="flex flex-wrap justify-end gap-5">
           <div className="flex flex-col gap-5 py-2">
             <div className="flex gap-2.5">
               <ThemeSelection setColorTheme={setColorTheme} />

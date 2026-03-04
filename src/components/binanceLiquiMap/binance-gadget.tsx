@@ -168,8 +168,8 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="flex flex-col pt-5 pl-1 w-fit h-200 max-w-300  bg-black">
-      <div className="bg-gray-950 w-full flex" style={{ height: "35%" }}>
+    <div className="flex flex-col pt-5 pl-1 h-200 w-300  bg-black">
+      <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
           time={Object.keys(times)}
           displayMap={setDisplayLiquidationMap}
@@ -188,7 +188,7 @@ const BinanceGadget = () => {
       </div>
 
       <div style={{ height: "65%" }} className="flex flex-col justify-between ">
-        <div className="flex w-300 gap-2.5" style={{ height: "95%" }}>
+        <div className="flex gap-2.5" style={{ height: "95%" }}>
           <div
             className="mb-4 -mt-8.5"
             style={{ width: "5%", maxWidth: "50px" }}
