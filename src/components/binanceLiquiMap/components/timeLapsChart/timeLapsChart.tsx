@@ -380,7 +380,7 @@ const TimeLapsChart = ({
         zoomSource.current = null;
       }
     }, 50);
-  }, [isClicking]);
+  }, [isClicking, graphMargins.start, graphMargins.end]);
 
   return (
     <div
@@ -388,6 +388,7 @@ const TimeLapsChart = ({
       style={{ width: "inherit", height: "inherit" }}
       onMouseUp={() => setIsClicking(false)}
       onMouseDown={() => setIsClicking(true)}
+      onMouseLeave={() => setIsClicking(false)}
     >
       <Controllers
         data={data}
