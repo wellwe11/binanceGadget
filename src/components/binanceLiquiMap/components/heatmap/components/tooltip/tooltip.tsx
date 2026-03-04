@@ -5,6 +5,7 @@ import firstLetterCapital from "../../../../functions/firstLetterCapital";
 import colorScale from "../../../../functions/colorScale";
 
 import useSize from "../../../../hooks/useSize";
+import formulateNumber from "../../../../functions/formulateNumber";
 
 const CandleText = ({ activeCell }) => {
   const candleCircleColor = `${activeCell.open > activeCell.close ? "#ff3939" : "#65ff65"}`;
@@ -13,7 +14,7 @@ const CandleText = ({ activeCell }) => {
     <div className="flex flex-col">
       {candleTextKeys.map((key, index) => (
         <TextWithCircle circleColor={candleCircleColor} key={index}>
-          {`${firstLetterCapital(key)} ${Math.round(activeCell[key])}`}
+          {`${firstLetterCapital(key)} ${formulateNumber(Math.round(activeCell[key]))}`}
         </TextWithCircle>
       ))}
     </div>
@@ -33,7 +34,7 @@ const CellText = ({ activeCell, max, colorTheme, threshhold }) => {
         <TextWithCircle key={index} circleColor={scaleColor(activeCell.volume)}>
           <div className="flex justify-between w-full">
             <p>{`${firstLetterCapital(key)}`}</p>
-            <p>{`${Math.round(activeCell[key])}`}</p>
+            <p>{`${formulateNumber(Math.round(activeCell[key]))}`}</p>
           </div>
         </TextWithCircle>
       ))}

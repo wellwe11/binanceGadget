@@ -13,7 +13,6 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Add snapshot
 // Make it fit for smaller screens
 // Fix types
 // Upload to Vercel
