@@ -14,7 +14,7 @@ import Axis from "./components/axis";
 import InputRange from "./components/inputRange";
 import trackDrag from "../../functions/trackDrag";
 import moveGraph from "../../functions/moveGraph";
-import useSetHighSetLow from "../../hooks/useSetHighSetLow";
+import getHighGetLow from "../../functions/getHighGetLow";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 
 export type Data = {
@@ -59,7 +59,7 @@ const MoveableGraph = ({
   sliceStart: number;
   sliceEnd: number;
 }) => {
-  const [lowestVal, highestVal] = useSetHighSetLow(sliceStart, sliceEnd);
+  const [lowestVal, highestVal] = getHighGetLow(sliceStart, sliceEnd);
 
   const min = data.length - highestVal - 1;
   const max = data.length - lowestVal + 1;
@@ -94,7 +94,7 @@ const MoveableGraphContainerRect = ({
 
   const start = graphMargins.start,
     end = graphMargins.end;
-  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
+  const [lowestVal, highestVal] = getHighGetLow(start, end);
 
   const handleHoverTrue = () => setHover(true);
   const handleHoverFalse = () => setHover(false);
@@ -235,7 +235,7 @@ const Controllers = ({
 
   const start = graphMargins.start;
   const end = graphMargins.end;
-  const [lowestVal, highestVal] = useSetHighSetLow(start, end);
+  const [lowestVal, highestVal] = getHighGetLow(start, end);
 
   const dateFormat = d3.timeFormat("%-d %b %Y, %H:%M");
 
@@ -356,7 +356,7 @@ const TimeLapsChart = ({
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
 
-    const [lowestVal, highestVal] = useSetHighSetLow(
+    const [lowestVal, highestVal] = getHighGetLow(
       graphMargins.start,
       graphMargins.end,
     );
