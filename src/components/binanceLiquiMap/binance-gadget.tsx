@@ -13,6 +13,14 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
+// Fix Zoom. Currently, when minimizing timeLapsCHart, heatmap updates on every move. It should only update when user releases mouse.
+// Connect time with amount of data.
+// Connect type of coin.
+// COnnect pair/symbol
+// Make it fit for smaller screens
+// Add coin 360 logo
+// Fix mouse-speed on timeLapsChart. It is currently updating slower with a lot of data. Does not fit mouse-speed always.
+
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);

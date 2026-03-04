@@ -334,12 +334,16 @@ const TimeLapsChart = ({
     end: data.length - 1,
   });
 
+  const [isClicking, setIsClicking] = useState(false);
+
   useEffect(() => {
     if (zoomSource.current !== "heatmap") return;
 
     const itemsVisible = data.length / transform.k;
     const itemWidth = containerWidth / data.length;
     const newStart = -transform.x / (itemWidth * transform.k);
+
+    if (!newStart) return;
 
     setGraphMargins({
       start: Math.max(0, newStart),
@@ -348,7 +352,8 @@ const TimeLapsChart = ({
   }, [transform.x, transform.k, data.length, containerWidth]);
 
   useEffect(() => {
-    if (zoomSource.current === "heatmap") return;
+    if (zoomSource.current === "heatmap" || isClicking) return;
+    console.log(2);
 
     const sliceWidth = Math.round(graphMargins.end - graphMargins.start);
     const calculatedK = data.length / (sliceWidth || 1);
@@ -356,6 +361,7 @@ const TimeLapsChart = ({
 
     zoomSource.current = "timelaps";
 
+    if (isClicking) return;
     setTransform({
       k: calculatedK,
       x: -(graphMargins.start * itemWidth * calculatedK),
@@ -367,18 +373,21 @@ const TimeLapsChart = ({
         zoomSource.current = null;
       }
     }, 50);
-  }, [graphMargins.start, graphMargins.end, containerWidth, data.length]);
+  }, [isClicking]);
 
   return (
-    <div ref={containerRef} style={{ width: "inherit", height: "inherit" }}>
+    <div
+      ref={containerRef}
+      style={{ width: "inherit", height: "inherit" }}
+      onMouseUp={() => setIsClicking(false)}
+      onMouseDown={() => setIsClicking(true)}
+    >
       <Controllers
         data={data}
         graphMargins={graphMargins}
         setGraphMargins={setGraphMargins}
         displayText={displayText}
         setDisplayText={setDisplayText}
-        transform={transform}
-        setTransform={setTransform}
       />
 
       <Charts

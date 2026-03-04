@@ -1,6 +1,7 @@
 import { XYType } from "../Types";
 
 import colorScale from "../../../functions/colorScale";
+import { memo } from "react";
 
 const BarChart = ({ data, x, y, colorTheme }: XYType) => {
   const [min, max] = x.domain();
@@ -40,4 +41,4 @@ const BarChart = ({ data, x, y, colorTheme }: XYType) => {
   );
 };
 
-export default BarChart;
+export default memo(BarChart);
