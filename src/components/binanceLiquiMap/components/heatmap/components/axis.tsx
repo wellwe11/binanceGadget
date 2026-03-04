@@ -6,7 +6,7 @@ const Axis = ({ children, x, y, zoomAmount, activeDays }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
   const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
-  console.log(activeDays);
+
   const d3TimeFormat = activeDays >= 14 ? "%d %b" : "%m, %H:%M";
 
   useEffect(() => {

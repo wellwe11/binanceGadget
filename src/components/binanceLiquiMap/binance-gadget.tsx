@@ -41,8 +41,7 @@ const BinanceGadget = () => {
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  const [activeCoin, setActiveCoin] = useState(null);
-  const [pairOrSymbol, setPairOrSymbol] = useState(null);
+  const [activeCoin, setActiveCoin] = useState(0);
 
   const zoomRef = useRef(null);
 
@@ -104,6 +103,7 @@ const BinanceGadget = () => {
     ],
     [],
   );
+  const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
 
   const times = useMemo(
     () => ({
@@ -121,12 +121,14 @@ const BinanceGadget = () => {
     [],
   );
 
+  const coin = pairOrSymbol[activeCoin];
+
   const activeDays = Object.values(times)[days];
   const NUM_BUCKETS = 200;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
-    [placeholderCurrencies, refreshGraph, activeDays],
+    [placeholderCurrencies, refreshGraph, activeDays, coin],
   );
 
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
@@ -165,7 +167,6 @@ const BinanceGadget = () => {
       <div className="bg-gray-950">
         <Nav
           symbol={placeholderCurrencies}
-          pair={placeholderPairs}
           time={Object.keys(times)}
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
@@ -175,6 +176,11 @@ const BinanceGadget = () => {
           setShowCharts={setShowCharts}
           setRefreshGraph={setRefreshGraph}
           setDays={setDays}
+          setActiveCoin={setActiveCoin}
+          pair={placeholderPairs}
+          pairOrSymbol={pairOrSymbol}
+          setPairOrSymbol={setPairOrSymbol}
+          activeCoin={coin}
         />
       </div>
 
@@ -226,7 +232,7 @@ const BinanceGadget = () => {
         key={refreshGraph}
       >
         <TimeLapsChart
-          key={days}
+          key={days + coin}
           data={reversedData}
           transform={transform}
           setTransform={setTransform}

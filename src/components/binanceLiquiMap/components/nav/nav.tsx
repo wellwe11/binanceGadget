@@ -77,10 +77,19 @@ const Slider = ({ threshold, setThreshold }) => {
   );
 };
 
-const PairSymbolDropMenu = ({ pairOrSymbol }: { pairOrSymbol: string[] }) => {
+const PairSymbolDropMenu = ({
+  pairOrSymbol,
+  setActiveCoin,
+}: {
+  pairOrSymbol: string[];
+}) => {
   return (
     <div className="w-70">
-      <DropdownMenu keys={pairOrSymbol} canSearch={false} />
+      <DropdownMenu
+        keys={pairOrSymbol}
+        canSearch={false}
+        handler={setActiveCoin}
+      />
     </div>
   );
 };
@@ -240,14 +249,16 @@ const Nav = ({
   setShowCharts,
   setRefreshGraph,
   setDays,
+  pairOrSymbol,
+  setPairOrSymbol,
+  setActiveCoin,
+  activeCoin,
 }: {
   symbol: string[];
   pair: string[];
   time: Object[];
   displayMap: boolean;
 }) => {
-  const [pairOrSymbol, setPairOrSymbol] = useState<string[]>(pair);
-
   return (
     <div className="h-fit w-full flex flex-col justify-between px-2 py-1">
       <div className="w-full flex flex-col justify-center items-start">
@@ -265,7 +276,7 @@ const Nav = ({
             color: "white",
           }}
         >
-          Binance BTC/USDT Liquidation Heatmap
+          {activeCoin + " Heatmap" || "Please add title"}
         </h4>
       </div>
 
@@ -273,7 +284,10 @@ const Nav = ({
         <div className="generic_height w-full flex justify-end items-center">
           <div className="flex z-3">
             <TimeDropMenu time={time} setDays={setDays} />
-            <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
+            <PairSymbolDropMenu
+              pairOrSymbol={pairOrSymbol}
+              setActiveCoin={setActiveCoin}
+            />
           </div>
 
           <div className="generic_height flex pl-1">
