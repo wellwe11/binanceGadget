@@ -13,8 +13,6 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Fix scrolling dates
-// Connect time with amount of data.
 // Connect type of coin.
 // COnnect pair/symbol
 // Make it fit for smaller screens
@@ -120,18 +118,20 @@ const BinanceGadget = () => {
   );
 
   const activeDays = Object.values(times)[days];
-  const NUM_BUCKETS = activeDays >= 87 ? 200 : 100;
-  console.log(activeDays);
+  const NUM_BUCKETS = 200;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
     [placeholderCurrencies, refreshGraph, activeDays],
   );
 
-  const reversedData = useMemo(() => data.toReversed(), [data]);
+  const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
   // Min/Max values (value of coin)
-  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+  const { min, max } = useMemo(
+    () => getMinMaxFromArr(data),
+    [data, activeDays],
+  );
 
   // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
   const pricePadding = (max.value - min.value) * 0.3;
@@ -140,7 +140,7 @@ const BinanceGadget = () => {
 
   const processedData = useMemo(
     () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
-    [data, paddedMin, paddedMax, NUM_BUCKETS],
+    [data, paddedMin, paddedMax, NUM_BUCKETS, activeDays],
   );
 
   if (!data) return;
@@ -198,6 +198,7 @@ const BinanceGadget = () => {
               zoomRef={zoomRef}
               containerWidth={containerWidth}
               containersHeight={containersHeight}
+              activeDays={activeDays}
             />
           </div>
 
@@ -221,6 +222,7 @@ const BinanceGadget = () => {
         key={refreshGraph}
       >
         <TimeLapsChart
+          key={days}
           data={reversedData}
           transform={transform}
           setTransform={setTransform}

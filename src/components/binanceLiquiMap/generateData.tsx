@@ -1,28 +1,24 @@
 import * as d3 from "d3";
+
 const generateHeatmapData = (names, days) => {
   const data = [];
   const today = new Date();
   let contractPool = [];
 
-  // ✅ Calculate amount of data based on timeframe
-  let amountOfData;
-  if (days <= 29) {
-    amountOfData = 100;
-  } else if (days <= 87) {
-    amountOfData = 200;
-  } else if (days <= 182) {
-    amountOfData = 300;
-  } else if (days <= 365) {
-    amountOfData = 600;
-  } else {
-    amountOfData = 1200;
-  }
+  // ✅ Always ensure at least 100 points
+  let amountOfData = 300;
 
-  // ✅ Calculate interval
-  const totalHours = days * 24;
-  const intervalHours = totalHours / amountOfData;
+  if (days > 29) amountOfData = 400;
+  if (days > 87) amountOfData = 500;
+  if (days > 182) amountOfData = 600;
+  if (days > 365) amountOfData = 1200;
 
-  const timeOffset = (i) => d3.timeHour.offset(today, -(i * intervalHours));
+  // ✅ Use Minutes for interval to handle short durations (like 12h) accurately
+  const totalMinutes = days * 24 * 60;
+  const intervalMinutes = totalMinutes / amountOfData;
+
+  // Use d3.timeMinute instead of timeHour for higher granularity
+  const timeOffset = (i) => d3.timeMinute.offset(today, -(i * intervalMinutes));
 
   const lastPrices = {};
   const clusters = {};
@@ -100,7 +96,7 @@ const generateHeatmapData = (names, days) => {
         high,
         low,
         value: close,
-        liquidations: [...contractPool], // ✅ All surviving liquidations carry forward
+        liquidations: [...contractPool],
       });
     });
   }

@@ -2,10 +2,12 @@ import { useEffect, useMemo, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y, zoomAmount, visibleData }) => {
+const Axis = ({ children, x, y, zoomAmount, activeDays }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
   const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
+  console.log(activeDays);
+  const d3TimeFormat = activeDays >= 14 ? "%d %b" : "%m, %H:%M";
 
   useEffect(() => {
     if (!xRef.current || !yRef.current) return;
@@ -16,7 +18,7 @@ const Axis = ({ children, x, y, zoomAmount, visibleData }) => {
       d3
         .axisBottom(x)
         .tickValues(xAxisTicks)
-        .tickFormat(d3.timeFormat("%m, %H:%M"))
+        .tickFormat(d3.timeFormat(d3TimeFormat))
         .tickSize(0),
     );
 
@@ -24,7 +26,7 @@ const Axis = ({ children, x, y, zoomAmount, visibleData }) => {
 
     xAxis.select(".domain").remove();
     yAxis.select(".domain").remove();
-  }, [x, y, visibleData]);
+  }, [x, y]);
 
   return (
     <svg

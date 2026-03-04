@@ -147,6 +147,7 @@ const HeatMap = ({
   zoomRef,
   containerWidth,
   containersHeight,
+  activeDays,
 }) => {
   const x = useMemo(() => {
     return d3
@@ -174,7 +175,7 @@ const HeatMap = ({
         x={x}
         y={y}
         zoomAmount={Math.round(visibleData.length / 10)}
-        visibleData={visibleData}
+        activeDays={activeDays}
       >
         <g
           ref={zoomRef}
