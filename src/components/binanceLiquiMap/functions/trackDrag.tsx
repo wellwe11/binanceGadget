@@ -1,4 +1,4 @@
-import { SetGraphMargins } from "../timeLapsChart";
+import { SetGraphMargins } from "../components/timeLapsChart/timeLapsChart";
 
 type TrackDragInterface = (
   setter: SetGraphMargins,

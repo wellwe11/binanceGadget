@@ -2,7 +2,8 @@ import { Activity, memo, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../../../functions/colorScale";
 import { ListeningRectType } from "../Types";
-import useSize from "../../heatmap/hooks/useSize";
+import useSize from "../../../hooks/useSize";
+import formulateNumber from "../../../functions/formulateNumber";
 
 const ListeningRect = ({
   data,
@@ -112,29 +113,50 @@ const ListeningRect = ({
 
       tooltipText.html(`
               <div class="flex flex-col gap-1 h-full w-full">
-              <div class="flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full"></div>
-              Price: ${Math.round(interpolatedPrice)}
-              </div>
-              <div class="flex items-center gap-2">
-              <div class="ml-4 w-2 h-2 rounded-full border border-white"
-              style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
-              ></div>
-              Cumulative ${isShort ? "Short" : "Long"}: ${Math.round(interpolatedAccumulatedVol)}
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full"></div>
+                    <div class="flex justify-between w-full">
+                      <div>
+                        Price: 
+                      </div>
+                    <div>
+                      ${Math.round(interpolatedPrice)}
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full border border-white"
+                  style="background-color: ${isShort ? "#00f2ff" : "#ff0000"}"
+                  ></div>
+                  <div class="flex justify-between w-full">
+                    <div>
+                      Cumulative ${isShort ? "Short" : "Long"}: 
+                    </div>
+                    <div>
+                      ${formulateNumber(Math.round(+interpolatedAccumulatedVol))}
+                    </div>
+                  </div>
               </div>
               <div class="flex items-center gap-2">
               ${
                 interpolatedVol > 0
                   ? `
-                  <div class="ml-4 w-2 h-2 rounded-full border border-white"
-                  style="background-color: ${scaleColors(interpolatedVol)}"></div>
-                  Liquidation Leverage: ${Math.round(interpolatedVol)}
-                  </div>
-                  `
+                <div class="w-2 h-2 rounded-full border border-white"
+                style="background-color: ${scaleColors(interpolatedVol)}"></div>
+                <div class="flex justify-between w-full">
+                <div>
+                Liquidation Leverage: 
+                </div>
+                <div>
+                ${formulateNumber(Math.round(interpolatedVol))}
+                </div>
+                </div>
+                `
                   : ""
               }
-                  </div>
-                  </div>
+              </div>
+              </div>
+              </div>
                   `);
     });
 
@@ -183,17 +205,19 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={maxXPixels}
+        width={maxXPixels + 50} // because x is +50
         height={tooltipHeight}
         style={{
           pointerEvents: "none",
           transition: "transform 0.4s ease, height 0.2s ease",
+          zIndex: 100,
         }}
       >
         <Activity mode={displayToolbar ? "visible" : "hidden"}>
           <div
             ref={tooltipTextRef}
-            className="bg-black w-full h-fit text-white pointer-events-none py-4 z-30 "
+            className="bg-black h-fit w-max text-white pointer-events-none py-4 z-30 "
+            style={{ width: "100%" }}
           />
         </Activity>
       </foreignObject>

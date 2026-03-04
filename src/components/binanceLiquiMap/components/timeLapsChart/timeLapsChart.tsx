@@ -12,9 +12,9 @@ import * as d3 from "d3";
 import Chart from "./components/chart";
 import Axis from "./components/axis";
 import InputRange from "./components/inputRange";
-import trackDrag from "./functions/trackDrag";
-import moveGraph from "./functions/moveGraph";
-import useSetHighSetLow from "./hooks/useSetHighSetLow";
+import trackDrag from "../../functions/trackDrag";
+import moveGraph from "../../functions/moveGraph";
+import useSetHighSetLow from "../../hooks/useSetHighSetLow";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 
 export type Data = {

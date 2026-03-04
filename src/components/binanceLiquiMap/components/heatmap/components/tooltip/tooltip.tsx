@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
-import TextWithCircle from "./components/textWithCircle";
-import firstLetterCapital from "../../../liquidationMap/functions/firstLetterCapital";
+import TextWithCircle from "./textWithCircle";
+import firstLetterCapital from "../../../../functions/firstLetterCapital";
 import colorScale from "../../../../functions/colorScale";
 
-import useSize from "../../hooks/useSize";
+import useSize from "../../../../hooks/useSize";
 
 const CandleText = ({ activeCell }) => {
   const candleCircleColor = `${activeCell.open > activeCell.close ? "#ff3939" : "#65ff65"}`;

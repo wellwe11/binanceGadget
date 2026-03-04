@@ -6,9 +6,9 @@ import Axis from "./components/axis";
 
 import Tooltip from "./components/tooltip/tooltip";
 
-import CandleChart from "./components/candleChart/candleChart";
-import ListeningRect from "./components/listeningRect/listeningRect";
-import BarChart from "./components/barChart/barChart";
+import CandleChart from "./components/candleChart";
+import ListeningRect from "./components/listeningRect";
+import BarChart from "./components/barChart";
 import Coin360Svg from "../../../../assets/coin360";
 
 const CandleAndHoverComponent = ({
@@ -173,7 +173,7 @@ const HeatMap = ({
       }}
     >
       <div
-        className="w-50"
+        className="w-50 pointer-events-none"
         style={{
           position: "absolute",
           left: `${containerWidth}px`,

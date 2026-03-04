@@ -5,10 +5,10 @@ import BarChart from "./components/barChart";
 import AreaChart from "./components/areaChart";
 import ListeningRect from "./components/listeningRect";
 
-import filterByType from "./functions/filterByType";
+import filterByType from "../../functions/filterByType";
 import { useMemo, useRef } from "react";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
-import accumulateVal from "./functions/accumulateVal";
+import accumulateVal from "../../functions/accumulateVal";
 
 import { DataType, accumulatedType } from "./Types";
 

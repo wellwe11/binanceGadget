@@ -1,4 +1,5 @@
 import colorScale from "../functions/colorScale";
+import formulateNumber from "../functions/formulateNumber";
 
 type Gradient = {
   percentage: string;
@@ -30,16 +31,10 @@ export const Gradient = ({ max, colorTheme }: GradientType) => {
   };
 
   const textClass = "text-white text-[12px] text-center pt-2 pb-2";
-  const formulatedMax = Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  })
-    .format(max)
-    .toLowerCase();
 
   return (
     <div className="flex flex-col h-full w-full">
-      {max && <p className={textClass}>{formulatedMax}</p>}
+      {max && <p className={textClass}>{formulateNumber(max)}</p>}
       <svg
         width="100%"
         height="100%"

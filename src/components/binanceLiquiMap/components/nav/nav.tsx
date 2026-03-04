@@ -278,14 +278,17 @@ const Nav = ({
         >
           {activeCoin + " Heatmap" || "Please add title"}
         </h4>
-        <p className="text-white w-100 text-xs">
+        <p className="text-white w-100 text-xs font-extralight py-1">
           This heatmap is still in under development. Data is directly created
           inside of the component. This may cause unpredictable behaviour. With
           live data, this will be resolved.
         </p>
-        <p className="text-gray-300 w-100 text-xs">
+        <p className="text-gray-300 w-100 text-xs font-extralight py-1">
           If data looks 'odd', please click the refresh-button found on the
           right-hand side of the navigational bar.
+        </p>
+        <p className="text-gray-400 w-100 text-xs font-extralight py-1">
+          Snapshot is currently disabled.
         </p>
       </div>
 

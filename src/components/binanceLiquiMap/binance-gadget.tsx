@@ -14,9 +14,10 @@ import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
 // Add snapshot
-// Add coin 360 logo
 // Make it fit for smaller screens
-// Fix bug when user 'reverses' the timeLapsChart
+// Fix types
+// Upload to Vercel
+// Send james
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
@@ -163,7 +164,7 @@ const BinanceGadget = () => {
 
   return (
     <div className="flex flex-col pt-5 pl-1 w-fit h-full bg-black">
-      <div className="bg-gray-950">
+      <div className="bg-gray-950 w-300">
         <Nav
           symbol={placeholderCurrencies}
           time={Object.keys(times)}
@@ -193,7 +194,7 @@ const BinanceGadget = () => {
         </div>
 
         <div className="flex w-screen">
-          <div className="ml-2 w-250 h-175" ref={containerRef}>
+          <div className="ml-2 w-230 h-160" ref={containerRef}>
             <HeatMap
               heatmapData={processedData.cellGrid}
               visibleData={visibleData}
@@ -212,7 +213,7 @@ const BinanceGadget = () => {
           </div>
 
           <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-            <div className="w-75 h-175">
+            <div className="w-45 h-160">
               <LiquidationMap
                 colorTheme={colorTheme.name}
                 liquidationMapData={processedData.aggregateBar}
@@ -226,7 +227,7 @@ const BinanceGadget = () => {
       </div>
 
       <div
-        className="ml-15 h-30 w-240 flex flex-col flex-1"
+        className="ml-15 h-30 w-215 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
         key={refreshGraph}
       >
