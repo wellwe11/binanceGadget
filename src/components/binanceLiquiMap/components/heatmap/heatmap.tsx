@@ -9,6 +9,7 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
+import Coin360Svg from "../../../../assets/coin360";
 
 const CandleAndHoverComponent = ({
   candleData,
@@ -171,6 +172,18 @@ const HeatMap = ({
         position: "relative",
       }}
     >
+      <div
+        className="w-50"
+        style={{
+          position: "absolute",
+          left: `${containerWidth}px`,
+          top: `${containersHeight}px`,
+          transform: "translate(-14.5rem, -7rem)",
+        }}
+      >
+        <Coin360Svg />
+      </div>
+
       <Axis
         x={x}
         y={y}

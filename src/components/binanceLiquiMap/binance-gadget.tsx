@@ -13,10 +13,9 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Connect type of coin.
-// COnnect pair/symbol
-// Make it fit for smaller screens
+// Add snapshot
 // Add coin 360 logo
+// Make it fit for smaller screens
 // Fix bug when user 'reverses' the timeLapsChart
 
 // Tie timeLapsChart to heatmap
