@@ -170,7 +170,12 @@ const HeatMap = ({
         position: "relative",
       }}
     >
-      <Axis x={x} y={y} zoomAmount={Math.round(visibleData.length / 10)}>
+      <Axis
+        x={x}
+        y={y}
+        zoomAmount={Math.round(visibleData.length / 10)}
+        visibleData={visibleData}
+      >
         <g
           ref={zoomRef}
           width={x.range()[1] > 0 ? x.range()[1] : 0}

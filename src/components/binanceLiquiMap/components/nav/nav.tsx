@@ -29,19 +29,19 @@ const SnapShotButton = () => {
             color: "white",
           }}
         >
-          <ResetSVG />
+          <CameraSVG />
         </div>
       </MenuButton>
     </div>
   );
 };
 
-const ResetButton = () => {
+const ResetButton = ({ setRefreshGraph }) => {
   return (
     <div className="flex gap-1 mx-1">
-      <MenuButton>
+      <MenuButton handler={() => setRefreshGraph((prev) => prev + 1)}>
         <div className="" style={{ height: "20px", color: "white" }}>
-          <CameraSVG />
+          <ResetSVG />
         </div>
       </MenuButton>
     </div>
@@ -79,10 +79,10 @@ const PairSymbolDropMenu = ({ pairOrSymbol }: { pairOrSymbol: string[] }) => {
   );
 };
 
-const TimeDropMenu = ({ time }: { time: Object[] }) => {
+const TimeDropMenu = ({ time, setDays }: { time: Object[] }) => {
   return (
     <div className="w-30 mx-1">
-      <DropdownMenu keys={Object.keys(time)} canSearch={false} />
+      <DropdownMenu keys={time} canSearch={false} handler={setDays} />
     </div>
   );
 };
@@ -232,6 +232,8 @@ const Nav = ({
   threshold,
   showCharts,
   setShowCharts,
+  setRefreshGraph,
+  setDays,
 }: {
   symbol: string[];
   pair: string[];
@@ -264,13 +266,13 @@ const Nav = ({
       <div className="flex flex-col items-end">
         <div className="generic_height w-full flex justify-end items-center">
           <div className="flex z-3">
-            <TimeDropMenu time={time} />
+            <TimeDropMenu time={time} setDays={setDays} />
             <PairSymbolDropMenu pairOrSymbol={pairOrSymbol} />
           </div>
 
           <div className="generic_height flex pl-1">
+            <ResetButton setRefreshGraph={setRefreshGraph} />
             <SnapShotButton />
-            <ResetButton />
           </div>
         </div>
         <div className="py-2">

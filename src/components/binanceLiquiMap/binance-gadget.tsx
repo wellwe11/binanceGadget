@@ -13,7 +13,7 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Theres some bug with the zoom - timeLapsChart does not always update.
+// Fix scrolling dates
 // Connect time with amount of data.
 // Connect type of coin.
 // COnnect pair/symbol
@@ -33,8 +33,10 @@ const BinanceGadget = () => {
     "Supercharts",
   ]);
   const [transform, setTransform] = useState(() => d3.zoomIdentity);
+  const [refreshGraph, setRefreshGraph] = useState(0);
 
   const zoomSource = useRef(null);
+  const [days, setDays] = useState(0);
 
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -103,23 +105,27 @@ const BinanceGadget = () => {
 
   const times = useMemo(
     () => ({
-      "24 hour": { days: 1 },
-      "48 hour": { days: 2 },
-      "3 day": { days: 3 },
-      "1 week": { days: 7 },
-      "2 week": { days: 14 },
-      "1 month": { days: 29 },
-      "3 month": { days: 87 },
-      "6 month": { days: 182 },
-      "1 year": { days: 365 },
+      "12 hour": 0.5,
+      "24 hour": 1,
+      "48 hour": 2,
+      "3 day": 3,
+      "1 week": 7,
+      "2 week": 14,
+      "1 month": 29,
+      "3 month": 87,
+      "6 month": 182,
+      "1 year": 365,
     }),
     [],
   );
-  const NUM_BUCKETS = 200;
+
+  const activeDays = Object.values(times)[days];
+  const NUM_BUCKETS = activeDays >= 87 ? 200 : 100;
+  console.log(activeDays);
 
   const data = useMemo(
-    () => generateHeatmapData(["BITCOIN"], NUM_BUCKETS),
-    [placeholderCurrencies],
+    () => generateHeatmapData(["BITCOIN"], activeDays),
+    [placeholderCurrencies, refreshGraph, activeDays],
   );
 
   const reversedData = useMemo(() => data.toReversed(), [data]);
@@ -156,13 +162,15 @@ const BinanceGadget = () => {
         <Nav
           symbol={placeholderCurrencies}
           pair={placeholderPairs}
-          time={times}
+          time={Object.keys(times)}
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
           setThreshold={setThreshold}
           threshold={threshhold}
           showCharts={showCharts}
           setShowCharts={setShowCharts}
+          setRefreshGraph={setRefreshGraph}
+          setDays={setDays}
         />
       </div>
 
@@ -210,6 +218,7 @@ const BinanceGadget = () => {
       <div
         className="ml-15 h-30 w-240 flex flex-col flex-1"
         style={{ border: "1px solid black" }}
+        key={refreshGraph}
       >
         <TimeLapsChart
           data={reversedData}

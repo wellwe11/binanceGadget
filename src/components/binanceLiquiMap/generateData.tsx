@@ -1,30 +1,37 @@
 import * as d3 from "d3";
-
-// Need to create TimeBuckets as well.
 const generateHeatmapData = (names, days) => {
   const data = [];
   const today = new Date();
   let contractPool = [];
 
+  // ✅ Calculate amount of data based on timeframe
   let amountOfData;
-  let timeOffset;
-  if (days <= 1) {
-    amountOfData = 25;
-    timeOffset = (i) => d3.timeHour.offset(today, -i);
+  if (days <= 29) {
+    amountOfData = 100;
+  } else if (days <= 87) {
+    amountOfData = 200;
+  } else if (days <= 182) {
+    amountOfData = 300;
+  } else if (days <= 365) {
+    amountOfData = 600;
   } else {
-    amountOfData = days;
-    timeOffset = (i) => d3.timeDay.offset(today, -i);
+    amountOfData = 1200;
   }
+
+  // ✅ Calculate interval
+  const totalHours = days * 24;
+  const intervalHours = totalHours / amountOfData;
+
+  const timeOffset = (i) => d3.timeHour.offset(today, -(i * intervalHours));
 
   const lastPrices = {};
   const clusters = {};
 
   names.forEach((name) => {
     lastPrices[name] = 500;
-    // ✅ Create 5-8 cluster zones
     clusters[name] = Array.from(
-      { length: 7 },
-      () => 500 + (Math.random() - 0.5) * 400, // ✅ Tighter initial range
+      { length: 5 },
+      () => 500 + (Math.random() - 0.5) * 400,
     );
   });
 
@@ -40,46 +47,49 @@ const generateHeatmapData = (names, days) => {
       const low = Math.max(5, Math.min(open, close) - Math.random() * 5);
       lastPrices[name] = close;
 
-      // ✅ Add clusters 50% of the time (more frequent)
-      if (Math.random() > 0.2) {
+      // ✅ Less frequent clustering (25% chance)
+      if (Math.random() > 0.75) {
         const clusterIdx = Math.floor(Math.random() * clusters[name].length);
-        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 50;
+        clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 100;
 
         const targetPrice = clusters[name][clusterIdx];
-        const priceStep = 1; // ✅ Smaller step for tighter clustering
+        const priceStep = 5;
 
-        // ✅ Create 20-40 orders per cluster (much denser)
-        const ordersInCluster = Math.floor(Math.random() * (days / 10));
+        // ✅ Moderate orders per cluster (12-20)
+        const ordersInCluster = Math.floor(Math.random() * 8) + 12;
 
         for (let j = 0; j < ordersInCluster; j++) {
-          // ✅ Tighter spread (±3 units instead of ±7.5)
+          const spread = 35;
           const snappedPrice =
             Math.round(
-              (targetPrice + Math.random() * (days / 10)) / priceStep,
+              (targetPrice + (Math.random() - 0.5) * spread) / priceStep,
             ) * priceStep;
 
           contractPool.push({
             price: Math.max(10, snappedPrice),
-            volume: Math.floor(Math.random() * 600) + 300, // ✅ Higher base volume
+            volume: Math.floor(Math.random() * 600) + 300,
             type: snappedPrice > close ? "short" : "long",
           });
         }
       }
 
-      // ✅ Remove liquidated positions (price passed through)
+      // ✅ Remove ONLY liquidated positions (price passed through)
       contractPool = contractPool.filter((contract) => {
+        // Short liquidated if price went ABOVE it
         if (contract.type === "short" && low >= contract.price) {
-          return false; // Liquidated
+          return false;
         }
+        // Long liquidated if price went BELOW it
         if (contract.type === "long" && high <= contract.price) {
-          return false; // Liquidated
+          return false;
         }
+        // Keep all others - they persist until liquidated
         return true;
       });
 
-      // ✅ Higher pool limit for more density
-      if (contractPool.length > 3000) {
-        contractPool.splice(0, 50); // Remove oldest in larger batches
+      // ✅ Moderate pool limit (600)
+      if (contractPool.length > 600) {
+        contractPool.splice(0, 50);
       }
 
       data.push({
@@ -90,10 +100,11 @@ const generateHeatmapData = (names, days) => {
         high,
         low,
         value: close,
-        liquidations: [...contractPool],
+        liquidations: [...contractPool], // ✅ All surviving liquidations carry forward
       });
     });
   }
+
   return data;
 };
 

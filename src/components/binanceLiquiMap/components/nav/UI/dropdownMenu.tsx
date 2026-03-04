@@ -160,6 +160,7 @@ const DropdownMenu = ({
   keys,
   value = 0,
   canSearch = true,
+  handler,
 }: {
   keys: string[];
   value?: number;
@@ -168,6 +169,10 @@ const DropdownMenu = ({
   const [currentButton, setCurrentButton] = useState(() => value);
   const [expandBar, setExpandBar] = useState(false);
   const handleExpandBar = () => setExpandBar(!expandBar);
+  const handleClick = (e) => {
+    setCurrentButton(e);
+    handler(e);
+  };
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -183,7 +188,7 @@ const DropdownMenu = ({
         <FallMenu
           setShow={setExpandBar}
           showMenu={expandBar}
-          handler={setCurrentButton}
+          handler={handleClick}
         >
           {keys}
         </FallMenu>

@@ -1,23 +1,22 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import * as d3 from "d3";
 
-const Axis = ({ children, x, y, zoomAmount }) => {
+const Axis = ({ children, x, y, zoomAmount, visibleData }) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
+  const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
 
   useEffect(() => {
     if (!xRef.current || !yRef.current) return;
     const xAxis = d3.select(xRef.current);
     const yAxis = d3.select(yRef.current);
 
-    const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
-
     xAxis.call(
       d3
         .axisBottom(x)
         .tickValues(xAxisTicks)
-        .tickFormat(d3.timeFormat("%b %Y"))
+        .tickFormat(d3.timeFormat("%m, %H:%M"))
         .tickSize(0),
     );
 
@@ -25,7 +24,7 @@ const Axis = ({ children, x, y, zoomAmount }) => {
 
     xAxis.select(".domain").remove();
     yAxis.select(".domain").remove();
-  }, [x, y, zoomAmount]);
+  }, [x, y, visibleData]);
 
   return (
     <svg

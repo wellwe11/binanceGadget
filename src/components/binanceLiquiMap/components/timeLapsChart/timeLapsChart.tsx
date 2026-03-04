@@ -344,8 +344,6 @@ const TimeLapsChart = ({
   useEffect(() => {
     if (zoomSource.current !== "heatmap") return;
 
-    console.log(1);
-
     const itemsVisible = data.length / transform.k;
     const itemWidth = containerWidth / data.length;
     const newStart = -transform.x / (itemWidth * transform.k) || 0;
@@ -358,8 +356,6 @@ const TimeLapsChart = ({
 
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
-
-    console.log(2);
 
     const sliceWidth = Math.round(graphMargins.end - graphMargins.start);
     const calculatedK = data.length / (sliceWidth || 1);
