@@ -1,15 +1,6 @@
-import React, {
-  Activity,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Activity, useCallback, useMemo, useRef, useState } from "react";
 
 import * as d3 from "d3";
-
-import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 
 import Axis from "./components/axis";
 
@@ -18,14 +9,6 @@ import Tooltip from "./components/tooltip/tooltip";
 import CandleChart from "./components/candleChart/candleChart";
 import ListeningRect from "./components/listeningRect/listeningRect";
 import BarChart from "./components/barChart/barChart";
-import useZoom from "../../hooks/useZoom";
-import { number } from "framer-motion";
-
-/**
- * TODO:
- * Add custom color-choice
- * Bind functionalityx to navbar
- */
 
 const CandleAndHoverComponent = ({
   candleData,

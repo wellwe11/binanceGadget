@@ -6,23 +6,35 @@ type TrackDragInterface = (
   min: number,
 ) => void;
 
-const trackDrag: TrackDragInterface = (setter, max, min) => {
+const trackDrag: TrackDragInterface = (
+  setter,
+  max,
+  min,
+  dataLength,
+  containerWidth,
+) => {
   let animationFrameId = null as number | null;
   let accumulatedDelta = 0;
 
+  console.log(dataLength, containerWidth);
+
   const handleMove = (moveEvent: MouseEvent) => {
     // Mouse-acceleration - current setting follows MY mouse fine.
-    accumulatedDelta += moveEvent.movementX * 0.1; // Adjust for increased/decreased acceleration of mouse-speed
+    accumulatedDelta += moveEvent.movementX * 1; // Adjust for increased/decreased acceleration of mouse-speed
+
     if (animationFrameId) return;
 
     animationFrameId = requestAnimationFrame(() => {
       const delta = accumulatedDelta;
       accumulatedDelta = 0;
 
+      const indicesPerPixel = dataLength / containerWidth;
+      const deltaIndices = delta * indicesPerPixel;
+
       setter((prev) => {
         const width = prev.end - prev.start;
-        let newStart = prev.start + delta;
-        let newEnd = prev.end + delta;
+        let newStart = prev.start + deltaIndices;
+        let newEnd = prev.end + deltaIndices;
 
         // To avoid if width is full
         if (prev.start === min && prev.end === max) return prev;

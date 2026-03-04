@@ -81,6 +81,7 @@ const MoveableGraphContainerRect = ({
   width,
   height,
   setHover,
+  maxRange,
 }: {
   data: Data[];
   graphMargins: GraphMargins;
@@ -123,7 +124,7 @@ const MoveableGraphContainerRect = ({
     const clickedVal = calcWhereUserClicked(e);
 
     if (clickedVal > lowestVal && clickedVal < highestVal) {
-      trackDrag(setGraphMargins, max, 1);
+      trackDrag(setGraphMargins, max, 1, maxRange, width);
     }
   };
 
@@ -164,6 +165,7 @@ const Charts = ({
   setDisplayText,
   height,
   width,
+  maxRange,
 }: {
   data: Data[];
   graphMargins: GraphMargins;
@@ -199,6 +201,7 @@ const Charts = ({
         setHover={setDisplayText}
         width={width}
         height={height}
+        maxRange={maxRange}
       />
 
       <MoveableGraph
@@ -336,6 +339,8 @@ const TimeLapsChart = ({
 
   const [isClicking, setIsClicking] = useState(false);
 
+  const maxRange = data.length;
+
   useEffect(() => {
     if (zoomSource.current !== "heatmap") return;
 
@@ -353,7 +358,6 @@ const TimeLapsChart = ({
 
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
-    console.log(2);
 
     const sliceWidth = Math.round(graphMargins.end - graphMargins.start);
     const calculatedK = data.length / (sliceWidth || 1);
@@ -397,6 +401,7 @@ const TimeLapsChart = ({
         setDisplayText={setDisplayText}
         height={containersHeight}
         width={containerWidth}
+        maxRange={maxRange}
       />
     </div>
   );

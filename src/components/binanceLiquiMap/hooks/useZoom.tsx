@@ -10,7 +10,7 @@ const useZoom = (
   setTransform,
   zoomSource,
 ) => {
-  const zoomBehaviorRef = useRef(null); //
+  const zoomBehaviorRef = useRef(null);
 
   const visibleCount = Math.max(10, Math.floor(data.length / transform.k));
   const pixelsPerIndex = width / visibleCount;
