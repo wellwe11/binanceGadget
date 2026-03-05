@@ -35,6 +35,18 @@ export type CoinOnDateType = {
   liquidations: LiquidationType[];
 };
 
+// Remove this when fetching data from API
+export type GeneratedDataType = {
+  coin: string;
+  date: Date;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  value: number;
+  liquidations: LiquidationType[];
+};
+
 export type HeatmapDataType = Map<String, CoinOnDateType>;
 
 export type d3Date = d3.scaleBand<Date>;

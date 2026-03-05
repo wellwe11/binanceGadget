@@ -67,6 +67,8 @@ const BinanceGadget = () => {
     [placeholderCurrencies, refreshGraph, activeDays, coin],
   );
 
+  console.log(data);
+
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
   // Min/Max values (value of coin)

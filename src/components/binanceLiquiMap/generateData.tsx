@@ -1,9 +1,10 @@
+import { GeneratedDataType, LiquidationType } from "./types";
 import * as d3 from "d3";
 
-const generateHeatmapData = (names, days) => {
-  const data = [];
+const generateHeatmapData = (names: string[], days: number) => {
+  const data = [] as GeneratedDataType[];
   const today = new Date();
-  let contractPool = [];
+  let contractPool = [] as LiquidationType[];
 
   // ✅ Always ensure at least 100 points
   let amountOfData = 300;
@@ -18,10 +19,11 @@ const generateHeatmapData = (names, days) => {
   const intervalMinutes = totalMinutes / amountOfData;
 
   // Use d3.timeMinute instead of timeHour for higher granularity
-  const timeOffset = (i) => d3.timeMinute.offset(today, -(i * intervalMinutes));
+  const timeOffset = (i: number): Date =>
+    d3.timeMinute.offset(today, -(i * intervalMinutes));
 
-  const lastPrices = {};
-  const clusters = {};
+  const lastPrices: Record<string, number> = {};
+  const clusters: Record<string, number[]> = {};
 
   names.forEach((name) => {
     lastPrices[name] = 500;
