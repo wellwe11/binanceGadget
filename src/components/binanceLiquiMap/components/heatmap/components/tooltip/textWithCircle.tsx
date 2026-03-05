@@ -1,4 +1,10 @@
-const TextWithCircle = ({ children, circleColor }) => {
+const TextWithCircle = ({
+  children,
+  circleColor,
+}: {
+  children: React.ReactNode;
+  circleColor: string;
+}) => {
   return (
     <div className="flex items-center gap-2">
       <div
