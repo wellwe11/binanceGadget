@@ -1,16 +1,17 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
+import { CoinOnDateType, Setter, TransformType } from "../types";
 
 const useZoom = (
-  data,
-  ref,
-  width,
-  height,
-  transform,
-  setTransform,
-  zoomSource,
+  data: CoinOnDateType[],
+  ref: React.RefObject<SVGGElement | null>,
+  width: number,
+  height: number,
+  transform: TransformType,
+  setTransform: Setter<TransformType>,
+  zoomSource: React.RefObject<string | null>,
 ) => {
-  const zoomBehaviorRef = useRef(null);
+  const zoomBehaviorRef = useRef<d3.zoomBehaviorRef<SVGGElement> | null>(null);
 
   const visibleCount = Math.max(10, Math.floor(data.length / transform.k));
   const pixelsPerIndex = width / visibleCount;

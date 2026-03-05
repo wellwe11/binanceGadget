@@ -48,3 +48,9 @@ export type GraphMargins = {
 };
 
 export type SVGRectClickEvent = React.MouseEvent<SVGRectElement>;
+
+export type TransformType = {
+  k: number;
+  x: number;
+  y: number;
+};

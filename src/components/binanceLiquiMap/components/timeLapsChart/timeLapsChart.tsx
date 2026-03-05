@@ -23,6 +23,7 @@ import {
   InputChangeEvent,
   Setter,
   SVGRectClickEvent,
+  TransformType,
 } from "../../types";
 
 const MoveableGraph = ({
@@ -306,8 +307,8 @@ const TimeLapsChart = ({
   zoomSource,
 }: {
   data: CoinOnDateType[];
-  transform: { k: number; x: number; y: number };
-  setTransform: Setter<{ k: number; x: number; y: number }>;
+  transform: TransformType;
+  setTransform: Setter<TransformType>;
   zoomSource: React.RefObject<string | null>;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
