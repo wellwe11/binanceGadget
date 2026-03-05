@@ -102,7 +102,7 @@ const BinanceGadget = () => {
     <div className="flex flex-col pt-5 pl-1 h-250 w-full max-w-360  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
-          time={Object.keys(times)}
+          times={Object.keys(times)}
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
           setThreshold={setThreshold}

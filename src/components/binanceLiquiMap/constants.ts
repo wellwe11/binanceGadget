@@ -1,3 +1,4 @@
+// Nav
 export const buttonColors = [
   { name: "interpolateViridis", baseColor: "#440154" }, // Purple > blue > green > yellow
   { name: "interpolatePlasma", baseColor: "#1a0b3b" }, // Black > purple > orange > yellow
@@ -5,9 +6,26 @@ export const buttonColors = [
   { name: "interpolateTurbo", baseColor: "#000033" }, // White > light yellow > blue > dark blue
 ];
 
+// Nav
+export const buttons = [
+  {
+    name: "Liquidation Leverage",
+    color: "purple",
+  },
+  {
+    name: "Supercharts",
+    color: "green",
+  },
+] as const;
+
+// Nav
+export const Pair_SymbolButtons = ["Pair", "Symbol"];
+
+// Binance-gadget
 // Amount of squares visible on chart for y-angle
 export const NUM_BUCKETS = 200;
 
+// Binance-gadget
 export const placeholderPairs = [
   "Binance BTC/USDT Perpetual",
   "Gate BTC/USDT Perpetual",
@@ -28,6 +46,7 @@ export const placeholderPairs = [
   "LBank BTC/USDT Perpetual",
 ];
 
+// Binance-gadget
 export const placeholderCurrencies = [
   "BTC",
   "ETH",
@@ -61,6 +80,7 @@ export const placeholderCurrencies = [
   "LDO",
 ];
 
+// Binance-gadget
 export const times = {
   "12 hour": 0.5,
   "24 hour": 1,
@@ -72,4 +92,4 @@ export const times = {
   "3 month": 87,
   "6 month": 182,
   "1 year": 365,
-};
+} as const;

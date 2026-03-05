@@ -7,7 +7,8 @@ import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 import { Gradient } from "../gradient";
-import { buttonColors } from "../../constants";
+import { buttonColors, buttons, Pair_SymbolButtons } from "../../constants";
+import { booleanSetter, ColorTheme, Setter } from "../../types";
 
 type setShowArrayStringType = React.Dispatch<
   React.SetStateAction<liquidationType[]>
@@ -95,10 +96,10 @@ const PairSymbolDropMenu = ({
   );
 };
 
-const TimeDropMenu = ({ time, setDays }: { time: Object[] }) => {
+const TimeDropMenu = ({ times, setDays }: { time: Object[] }) => {
   return (
     <div className="w-30 mx-1">
-      <DropdownMenu keys={time} canSearch={false} handler={setDays} />
+      <DropdownMenu keys={times} canSearch={false} handler={setDays} />
     </div>
   );
 };
@@ -110,8 +111,6 @@ const PairSymbolClickMenu = ({
   pair: string[];
   setter: setPairType;
 }) => {
-  const Pair_SymbolButtons = ["Pair", "Symbol"];
-
   return <ClickMenu onSelect={setter}>{Pair_SymbolButtons}</ClickMenu>;
 };
 
@@ -122,17 +121,6 @@ const GraphTypeControllerMenu = ({
   arr: liquidationType[];
   setter: setShowArrayStringType;
 }) => {
-  const buttons = [
-    {
-      name: "Liquidation Leverage",
-      color: "purple",
-    },
-    {
-      name: "Supercharts",
-      color: "green",
-    },
-  ] as const;
-
   const handleEvent = (n: liquidationType) => {
     if (!arr.includes(n)) {
       return setter((prev) => [...prev, n]);
@@ -221,7 +209,7 @@ const ThemeSelection = ({ setColorTheme }) => {
 };
 
 const Nav = ({
-  time,
+  times,
   displayMap,
   setColorTheme,
   setThreshold,
@@ -232,13 +220,22 @@ const Nav = ({
   setDays,
   pairOrSymbol,
   setPairOrSymbol,
-  setActiveCoin,
   activeCoin,
+  setActiveCoin,
 }: {
-  symbol: string[];
-  pair: string[];
-  time: Object[];
-  displayMap: boolean;
+  times: string[];
+  displayMap: Setter<boolean>;
+  setColorTheme: Setter<ColorTheme>;
+  setThreshold: Setter<number>;
+  threshold: number;
+  showCharts: string[];
+  setShowCharts: Setter<string[]>;
+  setRefreshGraph: Setter<number>;
+  setDays: Setter<number>;
+  pairOrSymbol: string[];
+  setPairOrSymbol: Setter<string[]>;
+  activeCoin: number;
+  setActiveCoin: Setter<number>;
 }) => {
   return (
     <div className="w-full flex flex-col min-[500px]:flex-row justify-between px-2 py-1 flex-wrap">
@@ -276,7 +273,7 @@ const Nav = ({
       <div className=" flex flex-col items-end justify-between">
         <div className="generic_height flex items-center justify-end">
           <div className="flex flex-1 flex-wrap z-3">
-            <TimeDropMenu time={time} setDays={setDays} />
+            <TimeDropMenu times={times} setDays={setDays} />
             <PairSymbolDropMenu
               pairOrSymbol={pairOrSymbol}
               setActiveCoin={setActiveCoin}
