@@ -15,6 +15,7 @@ import {
   ColorTheme,
   d3Date,
   d3LinearNumber,
+  GeneratedDataType,
   HeatmapDataType,
 } from "../../types";
 
@@ -32,7 +33,7 @@ const CandleAndHoverComponent = ({
   showCharts,
 }: {
   heatmapData: HeatmapDataType;
-  candleData: CoinOnDateType[];
+  candleData: GeneratedDataType[];
   x: d3Date;
   y: d3LinearNumber;
   min: number;
@@ -44,9 +45,11 @@ const CandleAndHoverComponent = ({
   showCharts: string[];
 }) => {
   const rafRef = useRef<number | null>(null);
-  const activeCellRef = useRef<CoinOnDateType | null>(null);
+  const activeCellRef = useRef<GeneratedDataType | CoinOnDateType | null>(null);
 
-  const [activeCell, setActiveCell] = useState<CoinOnDateType | null>(null);
+  const [activeCell, setActiveCell] = useState<
+    CoinOnDateType | GeneratedDataType | null
+  >(null);
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -99,7 +102,10 @@ const CandleAndHoverComponent = ({
 
           if (cell) {
             const isNewDate = cell.date !== activeCellRef.current?.date;
-            const isNewPrice = cell.price !== activeCellRef.current?.price;
+            const isNewPrice =
+              activeCellRef.current?.price !== undefined &&
+              cell.price !== activeCellRef.current?.price;
+
             if (isNewDate || isNewPrice) {
               activeCellRef.current = cell;
               setActiveCell(cell);
@@ -170,7 +176,7 @@ const HeatMap = ({
   activeDays,
 }: {
   heatmapData: HeatmapDataType;
-  visibleData: CoinOnDateType[];
+  visibleData: GeneratedDataType[];
   min: number;
   max: number;
   numBuckets: number;

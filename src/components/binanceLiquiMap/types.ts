@@ -24,26 +24,26 @@ export type AccumulatedVol = AggregatedBarType & {
 
 export type CoinOnDateType = {
   date: Date;
-  price: number;
-  volume: number;
   coin: string;
+  value: number;
   open: number;
   close: number;
   high: number;
   low: number;
-  value: number;
+  volume: number;
   liquidations: LiquidationType[];
+  price: number;
 };
 
-// Remove this when fetching data from API
+// Remove this OR simply make it fit into fetched data when fetching data from API
 export type GeneratedDataType = {
-  coin: string;
   date: Date;
+  coin: string;
+  value: number;
   open: number;
   close: number;
   high: number;
   low: number;
-  value: number;
   liquidations: LiquidationType[];
 };
 

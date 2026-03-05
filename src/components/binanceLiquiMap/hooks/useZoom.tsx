@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
-import { CoinOnDateType, Setter, TransformType } from "../types";
+import { GeneratedDataType, Setter, TransformType } from "../types";
 
 const useZoom = (
-  data: CoinOnDateType[],
+  data: GeneratedDataType[],
   ref: React.RefObject<SVGGElement | null>,
   width: number,
   height: number,

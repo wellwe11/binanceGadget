@@ -1,5 +1,10 @@
 import { memo } from "react";
-import { CoinOnDateType, d3Date, d3LinearNumber, Setter } from "../../../types";
+import {
+  d3Date,
+  d3LinearNumber,
+  GeneratedDataType,
+  Setter,
+} from "../../../types";
 
 const CandleChart = ({
   data,
@@ -8,7 +13,7 @@ const CandleChart = ({
   handleHover,
   setHideHighlight,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   x: d3Date;
   y: d3LinearNumber;
   setHideHighlight: Setter<boolean>;

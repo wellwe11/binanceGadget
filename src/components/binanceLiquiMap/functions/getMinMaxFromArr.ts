@@ -1,6 +1,6 @@
-import { CoinOnDateType } from "../types";
+import { GeneratedDataType } from "../types";
 
-const getMinMaxFromArr = (arr: CoinOnDateType[]) => {
+const getMinMaxFromArr = (arr: GeneratedDataType[]) => {
   if (arr.length === 0) return { min: undefined, max: undefined };
 
   let min = arr[0];

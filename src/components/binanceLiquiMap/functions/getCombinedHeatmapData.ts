@@ -1,7 +1,7 @@
-import { CoinOnDateType, HeatmapDataType } from "../types";
+import { GeneratedDataType, HeatmapDataType } from "../types";
 
 const getCombinedHeatmapData = (
-  data: CoinOnDateType[],
+  data: GeneratedDataType[],
   min: number,
   max: number,
   amountOfBuckets: number,
@@ -39,10 +39,8 @@ const getCombinedHeatmapData = (
       const isLiquidated = bucketPrice >= obj.low && bucketPrice <= obj.high;
       const key = `${obj.date}-${bucketPrice.toFixed(4)}`;
 
-      const { price, volume, ...rest } = obj;
-
       cellGrid.set(key, {
-        ...rest,
+        ...obj,
         price: bucketPrice,
         volume: isLiquidated ? 0 : vol,
       });

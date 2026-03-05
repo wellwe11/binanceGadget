@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-import { CoinOnDateType, d3LinearNumber } from "../../../types";
+import { d3LinearNumber, GeneratedDataType } from "../../../types";
 
 const Chart = ({
   data,
@@ -11,7 +11,7 @@ const Chart = ({
   x,
   y,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   height: number;
   width: number;
   x: d3LinearNumber;
@@ -27,14 +27,14 @@ const Chart = ({
 
     const line = d3
       .line()
-      .x((d: CoinOnDateType) => x(new Date(d.date)))
-      .y((d: CoinOnDateType) => y(d.value));
+      .x((d: GeneratedDataType) => x(new Date(d.date)))
+      .y((d: GeneratedDataType) => y(d.value));
 
     const area = d3
       .area()
-      .x((d: CoinOnDateType) => x(new Date(d.date)))
+      .x((d: GeneratedDataType) => x(new Date(d.date)))
       .y0(height)
-      .y1((d: CoinOnDateType) => y(d.value));
+      .y1((d: GeneratedDataType) => y(d.value));
 
     // Line
     g.append("path")

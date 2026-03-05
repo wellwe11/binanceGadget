@@ -17,13 +17,13 @@ import moveGraph from "../../functions/moveGraph";
 import getHighGetLow from "../../functions/getHighGetLow";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import {
-  CoinOnDateType,
   d3LinearNumber,
   GraphMargins,
   InputChangeEvent,
   Setter,
   SVGRectClickEvent,
   TransformType,
+  GeneratedDataType,
 } from "../../types";
 
 const MoveableGraph = ({
@@ -35,7 +35,7 @@ const MoveableGraph = ({
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   x: d3LinearNumber;
   y: d3LinearNumber;
   height: number;
@@ -66,7 +66,7 @@ const MoveableGraphContainerRect = ({
   setHover,
   maxRange,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   graphMargins: GraphMargins;
   setGraphMargins: Setter<GraphMargins>;
   width: number;
@@ -151,7 +151,7 @@ const Charts = ({
   width,
   maxRange,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   graphMargins: GraphMargins;
   setGraphMargins: Setter<GraphMargins>;
   setDisplayText: Setter<boolean>;
@@ -164,7 +164,7 @@ const Charts = ({
       d3
         .scaleTime()
         .range([0, width])
-        .domain(d3.extent(data, (d: CoinOnDateType) => new Date(d.date))),
+        .domain(d3.extent(data, (d: GeneratedDataType) => new Date(d.date))),
     [data, width, height],
   );
 
@@ -173,7 +173,7 @@ const Charts = ({
       d3
         .scaleLinear()
         .range([height, 0])
-        .domain([0, d3.max(data, (d: CoinOnDateType) => d.value)]),
+        .domain([0, d3.max(data, (d: GeneratedDataType) => d.value)]),
     [data, height, width],
   );
 
@@ -211,7 +211,7 @@ const Controllers = ({
   displayText,
   setDisplayText,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   graphMargins: GraphMargins;
   setGraphMargins: Setter<GraphMargins>;
   displayText: boolean;
@@ -306,7 +306,7 @@ const TimeLapsChart = ({
   setTransform,
   zoomSource,
 }: {
-  data: CoinOnDateType[];
+  data: GeneratedDataType[];
   transform: TransformType;
   setTransform: Setter<TransformType>;
   zoomSource: React.RefObject<string | null>;
