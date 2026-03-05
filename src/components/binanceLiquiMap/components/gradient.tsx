@@ -1,12 +1,13 @@
 import colorScale from "../functions/colorScale";
 import formulateNumber from "../functions/formulateNumber";
 
-interface GradientType {
+export const Gradient = ({
+  max,
+  colorTheme,
+}: {
   max?: number;
   colorTheme?: string;
-}
-
-export const Gradient = ({ max, colorTheme }: GradientType) => {
+}) => {
   const maxVol = max || 100;
   const scaleColor = colorScale(maxVol, colorTheme);
   const gradientId = `grad-${colorTheme || "interpolateViridis"}`;

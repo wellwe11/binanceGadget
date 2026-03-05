@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
 
-import { Data } from "../timeLapsChart";
 import { CoinOnDateType, d3LinearNumber } from "../../../types";
 
 const Chart = ({
@@ -28,14 +27,14 @@ const Chart = ({
 
     const line = d3
       .line()
-      .x((d: Data) => x(new Date(d.date)))
-      .y((d: Data) => y(d.value));
+      .x((d: CoinOnDateType) => x(new Date(d.date)))
+      .y((d: CoinOnDateType) => y(d.value));
 
     const area = d3
       .area()
-      .x((d: Data) => x(new Date(d.date)))
+      .x((d: CoinOnDateType) => x(new Date(d.date)))
       .y0(height)
-      .y1((d: Data) => y(d.value));
+      .y1((d: CoinOnDateType) => y(d.value));
 
     // Line
     g.append("path")

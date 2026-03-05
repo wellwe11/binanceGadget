@@ -1,18 +1,16 @@
-import { InputChangeEvent } from "../timeLapsChart";
-
-interface InputRangeInterface {
-  val: number;
-  setter: (e: InputChangeEvent) => void;
-  max: number;
-  min: number;
-}
+import { InputChangeEvent } from "../../../types";
 
 const InputRange = ({
   val,
   setter,
   max = 100,
   min = 0,
-}: InputRangeInterface) => {
+}: {
+  val: number;
+  setter: (e: InputChangeEvent) => void;
+  max: number;
+  min: number;
+}) => {
   return (
     <input
       className="absolute top-0 right-0 w-full

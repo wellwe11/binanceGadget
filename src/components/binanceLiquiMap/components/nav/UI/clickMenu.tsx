@@ -68,7 +68,7 @@ const ClickMenu = ({
   const [transformOrigin, setTransformOrigin] = useState(false);
 
   // To clear timeouts from handleButton
-  const timersRef = useRef<NodeJS.Timeout[]>([]);
+  const timersRef = useRef<number[]>([]);
 
   // Store each button as ref to help calculate their width for ActiveButtonBackground
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
