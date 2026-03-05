@@ -1,10 +1,10 @@
-import { SetGraphMargins } from "../timeLapsChart";
+import { GraphMargins, Setter } from "../types";
 
 type MoveGraphInterface = (
   max: number,
   min: number,
   percentualClick: number,
-  setter: SetGraphMargins,
+  setter: Setter<GraphMargins>,
 ) => void;
 
 const moveGraph: MoveGraphInterface = (max, min, percentualClick, setter) => {

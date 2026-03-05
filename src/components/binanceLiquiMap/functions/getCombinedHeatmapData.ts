@@ -7,7 +7,6 @@ const getCombinedHeatmapData = (
   amountOfBuckets: number,
 ) => {
   const priceStep = (max - min) / amountOfBuckets;
-  console.log(data);
 
   const cellGrid = <HeatmapDataType>new Map();
   const bucketMap = new Map();
@@ -49,8 +48,6 @@ const getCombinedHeatmapData = (
       });
     }
   });
-
-  console.log(cellGrid);
 
   return {
     maxVolume: globalMaxVol,
