@@ -26,7 +26,7 @@ export type CoinOnDateType = {
   liquidations: LiquidationType[];
 };
 
-export type HeatmapDataType = Map<Date, CoinOnDateType>;
+export type HeatmapDataType = Map<String, CoinOnDateType>;
 
 export type d3Date = d3.scaleBand<Date>;
 export type d3LinearNumber = d3.scaleLienar<number, number>;

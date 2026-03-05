@@ -10,7 +10,7 @@ const Axis = ({
   zoomAmount,
   activeDays,
 }: {
-  children: "";
+  children: React.ReactNode;
   x: d3Date;
   y: d3LinearNumber;
   zoomAmount: number;

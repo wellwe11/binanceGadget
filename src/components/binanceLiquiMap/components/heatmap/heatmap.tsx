@@ -10,11 +10,17 @@ import CandleChart from "./components/candleChart";
 import ListeningRect from "./components/listeningRect";
 import BarChart from "./components/barChart";
 import Coin360Svg from "../../../../assets/coin360";
-import { CoinOnDateType, ColorTheme, HeatmapDataType } from "../../types";
+import {
+  CoinOnDateType,
+  ColorTheme,
+  d3Date,
+  d3LinearNumber,
+  HeatmapDataType,
+} from "../../types";
 
 const CandleAndHoverComponent = ({
-  candleData,
   heatmapData,
+  candleData,
   x,
   y,
   min,
@@ -24,22 +30,34 @@ const CandleAndHoverComponent = ({
   threshold,
   colorTheme,
   showCharts,
+}: {
+  heatmapData: HeatmapDataType;
+  candleData: CoinOnDateType[];
+  x: d3Date;
+  y: d3LinearNumber;
+  min: number;
+  max: number;
+  numBuckets: number;
+  maxVol: number;
+  threshold: number;
+  colorTheme: ColorTheme;
+  showCharts: string[];
 }) => {
-  const rafRef = useRef(null);
-  const activeCellRef = useRef(null);
+  const rafRef = useRef<number | null>(null);
+  const activeCellRef = useRef<CoinOnDateType | null>(null);
 
-  const [activeCell, setActiveCell] = useState(null);
+  const [activeCell, setActiveCell] = useState<CoinOnDateType | null>(null);
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const [hideHighlight, setHideHighlight] = useState(() => false);
+  const [hideHighlight, setHideHighlight] = useState(false);
   const [mouseOut, setMouseOut] = useState(true);
 
   const xDomain = useMemo(() => x.domain(), [x, candleData.length]);
   const yDomain = useMemo(() => y.domain(), [min, max, y, candleData.length]);
 
   const handleHover = useCallback(
-    (event) => {
+    (event: React.MouseEvent) => {
       const [mouseX, mouseY] = d3.pointer(event);
 
       if (rafRef.current) {
@@ -59,6 +77,8 @@ const CandleAndHoverComponent = ({
           Math.min(index, candleData.length - 1),
         );
         const date = candleData[clampedIndex].date;
+
+        console.log(candleData[clampedIndex]);
 
         if (!date) return;
 

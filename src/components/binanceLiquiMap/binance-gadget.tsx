@@ -100,8 +100,6 @@ const BinanceGadget = () => {
     zoomSource,
   );
 
-  console.log(processedData.cellGrid);
-
   return (
     <div className="flex flex-col pt-5 pl-1 h-250 w-full max-w-360  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>

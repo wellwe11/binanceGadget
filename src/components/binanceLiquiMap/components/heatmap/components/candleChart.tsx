@@ -1,6 +1,19 @@
 import { memo } from "react";
+import { CoinOnDateType, d3Date, d3LinearNumber, Setter } from "../../../types";
 
-const CandleChart = ({ data, x, y, handleHover, setHideHighlight }) => {
+const CandleChart = ({
+  data,
+  x,
+  y,
+  handleHover,
+  setHideHighlight,
+}: {
+  data: CoinOnDateType[];
+  x: d3Date;
+  y: d3LinearNumber;
+  setHideHighlight: Setter<boolean>;
+  handleHover: (event: React.MouseEvent) => void;
+}) => {
   return (
     <g
       className="candle"
