@@ -30,11 +30,14 @@ const BarChart = React.memo(
 
     const scaleColors = useMemo(
       () => colorScale(maxVol, colorTheme.name, threshold),
-      [maxVol, colorTheme, threshold],
+      [maxVol, colorTheme.name, threshold],
     );
 
-    const width = useMemo(() => x.range()[1], [x.domain()]);
-    const height = useMemo(() => y.range()[0], [y.domain()]);
+    const xDomain = x.domain();
+    const yDomain = y.domain();
+
+    const width = useMemo(() => x.range()[1], [xDomain]);
+    const height = useMemo(() => y.range()[0], [yDomain[0], yDomain[1]]);
 
     useEffect(() => {
       if (!canvasRef.current) return;

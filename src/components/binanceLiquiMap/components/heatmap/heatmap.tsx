@@ -197,6 +197,8 @@ const HeatMap = ({
       .range([containersHeight - 50, 0]);
   }, [min, max, containersHeight]);
 
+  if (!visibleData || visibleData.length < 1) return;
+
   return (
     <div
       style={{

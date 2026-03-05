@@ -21,7 +21,9 @@ import {
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
-  const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
+  const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
+    () => false,
+  );
   const [colorTheme, setColorTheme] = useState({
     name: "interpolateViridis",
     color: "#440154",
@@ -59,6 +61,7 @@ const BinanceGadget = () => {
 
   const activeDays = Object.values(times)[days];
 
+  // IN future, update BITCOIN to be/fetch 'coin'
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
     [placeholderCurrencies, refreshGraph, activeDays, coin],
@@ -67,24 +70,7 @@ const BinanceGadget = () => {
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
   // Min/Max values (value of coin)
-  const { min, max } = useMemo(
-    () => getMinMaxFromArr(data),
-    [data, activeDays],
-  );
-
-  if (!min || !max) return;
-
-  // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
-  const pricePadding = (max.value - min.value) * 0.3;
-  const paddedMin = min.value - pricePadding;
-  const paddedMax = max.value + pricePadding;
-
-  const processedData = useMemo(
-    () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
-    [data, paddedMin, paddedMax, NUM_BUCKETS, activeDays],
-  );
-
-  if (!data) return;
+  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
   // Controls data when zooming
   const { visibleData } = useZoom(
@@ -97,8 +83,22 @@ const BinanceGadget = () => {
     zoomSource,
   );
 
+  if (!min || !max) return;
+
+  // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
+  const pricePadding = (max.value - min.value) * 0.3;
+  const paddedMin = min.value - pricePadding;
+  const paddedMax = max.value + pricePadding;
+
+  const processedData = useMemo(
+    () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
+    [data, paddedMin, paddedMax, activeDays],
+  );
+
+  if (!data) return;
+
   return (
-    <div className="flex flex-col pt-5 pl-1 h-250 w-full max-w-360  bg-black">
+    <div className="flex flex-col pt-5 pl-1 h-250 min-w-10 min-h-10 w-full max-w-360  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
           times={Object.keys(times)}

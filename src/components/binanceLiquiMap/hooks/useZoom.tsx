@@ -11,7 +11,9 @@ const useZoom = (
   setTransform: Setter<TransformType>,
   zoomSource: React.RefObject<string | null>,
 ) => {
-  const zoomBehaviorRef = useRef<d3.zoomBehaviorRef<SVGGElement> | null>(null);
+  const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGGElement, unknown> | null>(
+    null,
+  );
 
   const visibleCount = Math.max(10, Math.floor(data.length / transform.k));
   const pixelsPerIndex = width / visibleCount;
@@ -72,7 +74,7 @@ const useZoom = (
       zoom.transform,
       d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k),
     );
-  }, [width, data.length, height]);
+  }, [data.length, width, height]);
 
   return { visibleData, transform, setTransform, zoomSource };
 };
