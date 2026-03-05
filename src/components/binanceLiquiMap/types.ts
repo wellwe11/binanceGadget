@@ -1,6 +1,6 @@
 export type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
-export type ObjectString = {
+export type ColorTheme = {
   name: string;
   color: string;
 };

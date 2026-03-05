@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-const colorScale = (max: number, colorTheme, threshhold) => {
+const colorScale = (max: number, colorTheme?: string, threshhold?: number) => {
   const interpolator = d3[colorTheme || "interpolateViridis"];
 
   let maxNum = max;

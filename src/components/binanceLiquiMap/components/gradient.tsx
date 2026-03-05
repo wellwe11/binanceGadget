@@ -1,21 +1,9 @@
 import colorScale from "../functions/colorScale";
 import formulateNumber from "../functions/formulateNumber";
 
-type Gradient = {
-  percentage: string;
-  color: string;
-};
-
-interface GradientScaleNamed {
-  start: Gradient;
-  midLow: Gradient;
-  midHigh: Gradient;
-  end: Gradient;
-}
-
 interface GradientType {
-  max: number;
-  gradientScale?: GradientScaleNamed;
+  max?: number;
+  colorTheme?: string;
 }
 
 export const Gradient = ({ max, colorTheme }: GradientType) => {

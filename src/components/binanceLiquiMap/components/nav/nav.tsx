@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./nav.css";
+
 import ClickMenu from "./UI/clickMenu";
 import DropdownMenu from "./UI/dropdownMenu";
 import MenuButton from "./components/menuButton";
@@ -7,19 +8,13 @@ import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 import { Gradient } from "../gradient";
+
 import { buttonColors, buttons, Pair_SymbolButtons } from "../../constants";
-import { ObjectString, Setter } from "../../types";
-
-type setShowArrayStringType = React.Dispatch<
-  React.SetStateAction<liquidationType[]>
->;
-type liquidationType = "Liquidation Leverage" | "Supercharts";
-
-type setPairType = React.Dispatch<React.SetStateAction<string[]>>;
+import { ColorTheme, Setter } from "../../types";
 
 const SnapShotButton = () => {
   return (
-    <div onClick={() => setRotation((prev) => prev + 180)}>
+    <div>
       <MenuButton>
         <div
           className="transition-transform duration-500 ease-bounce"
@@ -32,7 +27,11 @@ const SnapShotButton = () => {
   );
 };
 
-const ResetButton = ({ setRefreshGraph }) => {
+const ResetButton = ({
+  setRefreshGraph,
+}: {
+  setRefreshGraph: Setter<number>;
+}) => {
   const [rotation, setRotation] = useState(0);
 
   return (
@@ -56,7 +55,13 @@ const ResetButton = ({ setRefreshGraph }) => {
   );
 };
 
-const Slider = ({ threshold, setThreshold }) => {
+const Slider = ({
+  threshold,
+  setThreshold,
+}: {
+  threshold: number;
+  setThreshold: Setter<number>;
+}) => {
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement, Element>) => {
     const val = +e.target.value;
     setThreshold(val);
@@ -97,7 +102,13 @@ const PairSymbolDropMenu = ({
   );
 };
 
-const TimeDropMenu = ({ times, setDays }: { time: Object[] }) => {
+const TimeDropMenu = ({
+  times,
+  setDays,
+}: {
+  times: string[];
+  setDays: (n: number) => void;
+}) => {
   return (
     <div className="w-30 mx-1">
       <DropdownMenu keys={times} canSearch={false} handler={setDays} />
@@ -113,10 +124,10 @@ const GraphTypeControllerMenu = ({
   arr,
   setter,
 }: {
-  arr: liquidationType[];
-  setter: setShowArrayStringType;
+  arr: string[];
+  setter: Setter<string[]>;
 }) => {
-  const handleEvent = (n: liquidationType) => {
+  const handleEvent = (n: string) => {
     if (!arr.includes(n)) {
       return setter((prev) => [...prev, n]);
     }
@@ -129,10 +140,7 @@ const GraphTypeControllerMenu = ({
   return (
     <div className="flex gap-5">
       {buttons.map(
-        (
-          { name, color }: { name: liquidationType; color: string },
-          index: number,
-        ) => {
+        ({ name, color }: { name: string; color: string }, index: number) => {
           const isActive = arr.includes(name);
           return (
             <button
@@ -169,8 +177,8 @@ const GraphTypeControllerMenu = ({
   );
 };
 
-const DisplayLiquidationButton = ({ setter }) => {
-  const handleChecked = (e) => {
+const DisplayLiquidationButton = ({ setter }: { setter: Setter<boolean> }) => {
+  const handleChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
     setter(isChecked);
@@ -187,7 +195,11 @@ const DisplayLiquidationButton = ({ setter }) => {
   );
 };
 
-const ThemeSelection = ({ setColorTheme }) => {
+const ThemeSelection = ({
+  setColorTheme,
+}: {
+  setColorTheme: Setter<ColorTheme>;
+}) => {
   return (
     <div className="flex gap-2">
       {buttonColors.map(({ name, baseColor }, index) => (
@@ -220,15 +232,17 @@ const Nav = ({
 }: {
   times: string[];
   displayMap: Setter<boolean>;
-  setColorTheme: Setter<ObjectString>;
+  setColorTheme: Setter<ColorTheme>;
   setThreshold: Setter<number>;
   threshold: number;
   showCharts: string[];
   setShowCharts: Setter<string[]>;
   setRefreshGraph: Setter<number>;
   setDays: Setter<number>;
+
   pairOrSymbol: string[];
   setPairOrSymbol: (n: number) => void;
+
   activeCoin: number;
   setActiveCoin: (n: number) => void;
 }) => {
