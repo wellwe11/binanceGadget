@@ -168,7 +168,7 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="flex flex-col pt-5 pl-1 h-200 w-300  bg-black">
+    <div className="flex flex-col pt-5 pl-1 h-250 w-[70vw]  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
           time={Object.keys(times)}
@@ -241,7 +241,7 @@ const BinanceGadget = () => {
 
         <div
           className="flex w-full gap-2.5"
-          style={{ height: "15%" }}
+          style={{ height: "10%" }}
           key={refreshGraph}
         >
           <div

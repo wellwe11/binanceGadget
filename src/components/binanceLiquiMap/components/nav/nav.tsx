@@ -247,37 +247,39 @@ const Nav = ({
   displayMap: boolean;
 }) => {
   return (
-    <div className="w-full flex flex-col justify-between px-2 py-1 flex-wrap">
-      <div className="flex-1 min-w-[300px]">
+    <div className="w-full flex flex-col min-[500px]:flex-row justify-between px-2 py-1 flex-wrap">
+      <div className="flex-1">
         <div className="flex flex-col">
           <div className="generic_height w-32">
             <PairSymbolClickMenu setter={setPairOrSymbol} />
           </div>
-          <h4
-            style={{
-              fontSize: "28px",
-              fontVariationSettings: "'wght' 550",
-              color: "white",
-            }}
-          >
-            {activeCoin + " Heatmap" || "Please add title"}
-          </h4>
-          <p className="text-white max-w-100 text-wrap text-xs font-extralight py-1">
-            This heatmap is still in under development. Data is directly created
-            inside of the component. This may cause unpredictable behaviour.
-            With live data, this will be resolved.
-          </p>
-          <p className="text-gray-300 max-w-100 text-wrap text-xs font-extralight py-1">
-            If data looks 'odd', please click the refresh-button found on the
-            right-hand side of the navigational bar.
-          </p>
-          <p className="text-gray-400 max-w-100 text-wrap text-xs font-extralight py-1">
-            Snapshot is currently disabled.
-          </p>
+          <div className="hidden min-[1000px]:block">
+            <h4
+              style={{
+                fontSize: "28px",
+                fontVariationSettings: "'wght' 550",
+                color: "white",
+              }}
+            >
+              {activeCoin + " Heatmap" || "Please add title"}
+            </h4>
+            <p className="text-white max-w-100 text-wrap text-xs font-extralight py-1">
+              This heatmap is still in under development. Data is directly
+              created inside of the component. This may cause unpredictable
+              behaviour. With live data, this will be resolved.
+            </p>
+            <p className="text-gray-300 max-w-100 text-wrap text-xs font-extralight py-1">
+              If data looks 'odd', please click the refresh-button found on the
+              right-hand side of the navigational bar.
+            </p>
+            <p className="text-gray-400 max-w-100 text-wrap text-xs font-extralight py-1">
+              Snapshot is currently disabled.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="h-full flex flex-col items-end justify-between">
+      <div className=" flex flex-col items-end justify-between">
         <div className="generic_height flex items-center justify-end">
           <div className="flex flex-1 flex-wrap z-3">
             <TimeDropMenu time={time} setDays={setDays} />
@@ -288,13 +290,13 @@ const Nav = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-end gap-5">
-          <div className="flex flex-col gap-5 py-2">
-            <div className="generic_height flex flex-wrap justify-end pr-3">
+        <div className="flex  justify-end gap-5">
+          <div className="flex flex-col gap-5 py-2 ">
+            <div className="generic_height flex justify-end pr-3">
               <ResetButton setRefreshGraph={setRefreshGraph} />
               <SnapShotButton />
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex gap-2.5 flex-wrap">
               <ThemeSelection setColorTheme={setColorTheme} />
               <Slider setThreshold={setThreshold} threshold={threshold} />
             </div>
