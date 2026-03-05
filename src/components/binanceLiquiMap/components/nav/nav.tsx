@@ -243,7 +243,7 @@ const Nav = ({
   pairOrSymbol: string[];
   setPairOrSymbol: (n: number) => void;
 
-  activeCoin: number;
+  activeCoin: string;
   setActiveCoin: (n: number) => void;
 }) => {
   return (
