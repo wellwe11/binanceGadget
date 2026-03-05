@@ -165,13 +165,19 @@ const DropdownMenu = ({
   keys: string[];
   value?: number;
   canSearch?: boolean;
+  handler?: (n: number) => void;
 }) => {
   const [currentButton, setCurrentButton] = useState(value);
   const [expandBar, setExpandBar] = useState(false);
+
   const handleExpandBar = () => setExpandBar(!expandBar);
-  const handleClick = (e) => {
+
+  const handleClick = (e: number) => {
     setCurrentButton(e);
-    handler(e);
+
+    if (handler) {
+      handler(e);
+    }
   };
 
   return (

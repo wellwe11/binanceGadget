@@ -52,6 +52,8 @@ const BinanceGadget = () => {
 
   const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
 
+  const handleActiveCoin = (n: number) => setActiveCoin(n);
+
   const handleSetPairOrSymbol = (n: number) => {
     const pairOrSymbolArr = [placeholderPairs, placeholderCurrencies];
     setActiveCoin(0);
@@ -111,9 +113,9 @@ const BinanceGadget = () => {
           setShowCharts={setShowCharts}
           setRefreshGraph={setRefreshGraph}
           setDays={setDays}
-          setActiveCoin={setActiveCoin}
           pairOrSymbol={pairOrSymbol}
           setPairOrSymbol={handleSetPairOrSymbol}
+          setActiveCoin={handleActiveCoin}
           activeCoin={coin}
         />
       </div>

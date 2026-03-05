@@ -8,7 +8,7 @@ import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 import { Gradient } from "../gradient";
 import { buttonColors, buttons, Pair_SymbolButtons } from "../../constants";
-import { booleanSetter, ColorTheme, Setter } from "../../types";
+import { ObjectString, Setter } from "../../types";
 
 type setShowArrayStringType = React.Dispatch<
   React.SetStateAction<liquidationType[]>
@@ -84,6 +84,7 @@ const PairSymbolDropMenu = ({
   setActiveCoin,
 }: {
   pairOrSymbol: string[];
+  setActiveCoin: (n: number) => void;
 }) => {
   return (
     <div className="w-70">
@@ -104,13 +105,7 @@ const TimeDropMenu = ({ times, setDays }: { time: Object[] }) => {
   );
 };
 
-const PairSymbolClickMenu = ({
-  setter,
-}: {
-  symbol: string[];
-  pair: string[];
-  setter: setPairType;
-}) => {
+const PairSymbolClickMenu = ({ setter }: { setter: (n: number) => void }) => {
   return <ClickMenu onSelect={setter}>{Pair_SymbolButtons}</ClickMenu>;
 };
 
@@ -225,7 +220,7 @@ const Nav = ({
 }: {
   times: string[];
   displayMap: Setter<boolean>;
-  setColorTheme: Setter<ColorTheme>;
+  setColorTheme: Setter<ObjectString>;
   setThreshold: Setter<number>;
   threshold: number;
   showCharts: string[];
@@ -233,9 +228,9 @@ const Nav = ({
   setRefreshGraph: Setter<number>;
   setDays: Setter<number>;
   pairOrSymbol: string[];
-  setPairOrSymbol: Setter<string[]>;
+  setPairOrSymbol: (n: number) => void;
   activeCoin: number;
-  setActiveCoin: Setter<number>;
+  setActiveCoin: (n: number) => void;
 }) => {
   return (
     <div className="w-full flex flex-col min-[500px]:flex-row justify-between px-2 py-1 flex-wrap">
