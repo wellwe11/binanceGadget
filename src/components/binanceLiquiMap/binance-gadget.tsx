@@ -12,78 +12,17 @@ import getMinMaxFromArr from "./functions/getMinMaxFromArr";
 import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
+import {
+  NUM_BUCKETS,
+  placeholderCurrencies,
+  placeholderPairs,
+  times,
+} from "./constants";
 
 // Fix types
 // Upload to Vercel
 // Move arrays, objects etc OUTSIDE of components. (ALL COMPONENTS)
 // Send james
-
-const NUM_BUCKETS = 200;
-const placeholderPairs = [
-  "Binance BTC/USDT Perpetual",
-  "Gate BTC/USDT Perpetual",
-  "Bybit BTC/USDT Perpetual",
-  "MEXC BTC/USDT Perpetual",
-  "OKX BTC/USDT Perpetual",
-  "HTX BTC/USDT Perpetual",
-  "BINGX BTC/USDT Perpetual",
-  "Binance BTC/USDT Perpetual",
-  "Hyperliquid BTC/USDT Perpetual",
-  "WhiteBIT BTC/USDT Perpetual",
-  "Deribit BTC/USDT Perpetual",
-  "Bitget BTC/USDT Perpetual",
-  "OKX BTC/USDT Perpetual",
-  "Binance BTC/USDT Perpetual",
-  "Bybit BTC/USDT Perpetual",
-  "Bitfinex BTC/USDT Perpetual",
-  "LBank BTC/USDT Perpetual",
-];
-
-const placeholderCurrencies = [
-  "BTC",
-  "ETH",
-  "USDT",
-  "BNB",
-  "SOL",
-  "XRP",
-  "USDC",
-  "ADA",
-  "STETH",
-  "AVAX",
-  "DOGE",
-  "DOT",
-  "TRX",
-  "LINK",
-  "WBTC",
-  "MATIC",
-  "SHIB",
-  "TON",
-  "DAI",
-  "LTC",
-  "BCH",
-  "UNI",
-  "LEO",
-  "NEAR",
-  "OP",
-  "APT",
-  "ARB",
-  "XLM",
-  "OKB",
-  "LDO",
-];
-
-const times = {
-  "12 hour": 0.5,
-  "24 hour": 1,
-  "48 hour": 2,
-  "3 day": 3,
-  "1 week": 7,
-  "2 week": 14,
-  "1 month": 29,
-  "3 month": 87,
-  "6 month": 182,
-  "1 year": 365,
-};
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {

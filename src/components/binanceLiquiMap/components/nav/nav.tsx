@@ -7,6 +7,7 @@ import CameraSVG from "./UI/assets/cameraSVG";
 import ResetSVG from "./UI/assets/resetSVG";
 import DragInput from "./UI/dragInput";
 import { Gradient } from "../gradient";
+import { buttonColors } from "../../constants";
 
 type setShowArrayStringType = React.Dispatch<
   React.SetStateAction<liquidationType[]>
@@ -204,13 +205,6 @@ const DisplayLiquidationButton = ({ setter }) => {
 };
 
 const ThemeSelection = ({ setColorTheme }) => {
-  const buttonColors = [
-    { name: "interpolateViridis", baseColor: "#440154" }, // Purple > blue > green > yellow
-    { name: "interpolatePlasma", baseColor: "#1a0b3b" }, // Black > purple > orange > yellow
-    { name: "interpolateCividis", baseColor: "#111c2e" }, // Dark blue > yellow
-    { name: "interpolateTurbo", baseColor: "#000033" }, // White > light yellow > blue > dark blue
-  ];
-
   return (
     <div className="flex gap-2">
       {buttonColors.map(({ name, baseColor }, index) => (
