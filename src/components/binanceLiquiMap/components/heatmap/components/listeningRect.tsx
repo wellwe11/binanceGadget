@@ -1,4 +1,5 @@
 import { Activity, memo } from "react";
+import { d3Date, d3LinearNumber, CoinOnDateType, Setter } from "../../../types";
 
 const ListeningRect = ({
   y,
@@ -9,6 +10,15 @@ const ListeningRect = ({
   mouseOut,
   setMouseOut,
   numBuckets,
+}: {
+  x: d3Date;
+  y: d3LinearNumber;
+  handleHover: (e: React.MouseEvent) => void;
+  activeCell: CoinOnDateType | null;
+  hideHighlight: boolean;
+  mouseOut: boolean;
+  setMouseOut: Setter<boolean>;
+  numBuckets: number;
 }) => {
   const cellH = Math.abs(y.range()[0] - y.range()[1]) / numBuckets;
 

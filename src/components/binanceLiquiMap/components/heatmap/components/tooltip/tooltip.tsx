@@ -6,22 +6,44 @@ import colorScale from "../../../../functions/colorScale";
 
 import useSize from "../../../../hooks/useSize";
 import formulateNumber from "../../../../functions/formulateNumber";
+import {
+  CoinOnDateType,
+  ColorTheme,
+  d3Date,
+  d3LinearNumber,
+} from "../../../../types";
 
-const CandleText = ({ activeCell }) => {
+const CandleText = ({ activeCell }: { activeCell: CoinOnDateType }) => {
   const candleCircleColor = `${activeCell.open > activeCell.close ? "#ff3939" : "#65ff65"}`;
   const candleTextKeys = ["open", "high", "low", "close"];
   return (
     <div className="flex flex-col">
-      {candleTextKeys.map((key, index) => (
-        <TextWithCircle circleColor={candleCircleColor} key={index}>
-          {`${firstLetterCapital(key)} ${formulateNumber(Math.round(activeCell[key]))}`}
-        </TextWithCircle>
-      ))}
+      {candleTextKeys.map((key, index) => {
+        const value = activeCell[key as keyof CoinOnDateType];
+
+        if (typeof value !== "number") return null;
+
+        return (
+          <TextWithCircle circleColor={candleCircleColor} key={index}>
+            {`${firstLetterCapital(key)} ${formulateNumber(Math.round(value))}`}
+          </TextWithCircle>
+        );
+      })}
     </div>
   );
 };
 
-const CellText = ({ activeCell, max, colorTheme, threshold }) => {
+const CellText = ({
+  activeCell,
+  max,
+  colorTheme,
+  threshold,
+}: {
+  activeCell: CoinOnDateType;
+  max: number;
+  colorTheme: ColorTheme;
+  threshold: number;
+}) => {
   const cellTextKeys = ["price", "volume"];
   const scaleColor = useMemo(
     () => colorScale(max, colorTheme.name, threshold),
@@ -30,14 +52,23 @@ const CellText = ({ activeCell, max, colorTheme, threshold }) => {
 
   return (
     <div className="flex flex-col">
-      {cellTextKeys.map((key, index) => (
-        <TextWithCircle key={index} circleColor={scaleColor(activeCell.volume)}>
-          <div className="flex justify-between w-full">
-            <p>{`${firstLetterCapital(key)}`}</p>
-            <p>{`${formulateNumber(Math.round(activeCell[key]))}`}</p>
-          </div>
-        </TextWithCircle>
-      ))}
+      {cellTextKeys.map((key, index) => {
+        const rawValue = activeCell[key as keyof CoinOnDateType];
+
+        if (typeof rawValue !== "number") return null;
+
+        return (
+          <TextWithCircle
+            key={index}
+            circleColor={scaleColor(activeCell.volume)}
+          >
+            <div className="flex justify-between w-full">
+              <p>{firstLetterCapital(key)}</p>
+              <p>{formulateNumber(Math.round(rawValue))}</p>
+            </div>
+          </TextWithCircle>
+        );
+      })}
     </div>
   );
 };
@@ -51,6 +82,15 @@ const Tooltip = ({
   max,
   colorTheme,
   threshold,
+}: {
+  mousePos: { x: number; y: number };
+  activeCell: CoinOnDateType | null;
+  x: d3Date;
+  y: d3LinearNumber;
+  hideHighlight: boolean;
+  max: number;
+  colorTheme: ColorTheme;
+  threshold: number;
 }) => {
   const toolTipRef = useRef(null);
 

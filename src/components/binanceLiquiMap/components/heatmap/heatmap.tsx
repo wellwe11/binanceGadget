@@ -78,8 +78,6 @@ const CandleAndHoverComponent = ({
         );
         const date = candleData[clampedIndex].date;
 
-        console.log(candleData[clampedIndex]);
-
         if (!date) return;
 
         if (hideHighlight) {
