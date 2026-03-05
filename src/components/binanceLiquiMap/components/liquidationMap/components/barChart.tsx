@@ -1,9 +1,19 @@
-import { XYType } from "../Types";
-
-import colorScale from "../../../functions/colorScale";
 import { memo } from "react";
 
-const BarChart = ({ data, x, y, colorTheme }: XYType) => {
+import colorScale from "../../../functions/colorScale";
+import { AccumulatedVol, d3LinearNumber } from "../../../types";
+
+const BarChart = ({
+  data,
+  x,
+  y,
+  colorTheme,
+}: {
+  data: AccumulatedVol[];
+  x: d3LinearNumber;
+  y: d3LinearNumber;
+  colorTheme: string;
+}) => {
   const [min, max] = x.domain();
   const scaleColors = colorScale(max, colorTheme);
 
@@ -15,9 +25,9 @@ const BarChart = ({ data, x, y, colorTheme }: XYType) => {
           className="bar"
           x="0"
           y={y(d.price)}
-          width={x(d.vol)}
+          width={x(d.volume)}
           height={2}
-          fill={scaleColors(d.vol)}
+          fill={scaleColors(d.volume)}
           style={{
             transformOrigin: "left",
 

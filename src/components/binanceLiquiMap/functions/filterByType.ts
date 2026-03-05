@@ -8,9 +8,9 @@ const filterByType = (arr: DataType[], currentPrice) => {
     const price = item.price;
 
     if (price > currentPrice) {
-      short.push({ price: price, vol: item.volume });
+      short.push({ price: price, volume: item.volume });
     } else {
-      long.push({ price: price, vol: item.volume });
+      long.push({ price: price, volume: item.volume });
     }
   };
 

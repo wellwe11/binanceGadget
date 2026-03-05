@@ -13,6 +13,15 @@ export type LiquidationType = {
   type: string;
 };
 
+export type AggregatedBarType = {
+  price: number;
+  volume: number;
+};
+
+export type AccumulatedVol = AggregatedBarType & {
+  accumulatedVol: number;
+};
+
 export type CoinOnDateType = {
   date: Date;
   price: number;

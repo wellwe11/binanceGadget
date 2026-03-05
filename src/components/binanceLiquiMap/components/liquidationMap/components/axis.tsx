@@ -1,7 +1,18 @@
 import * as d3 from "d3";
-import { AxisType, DottedLineType, List } from "../Types";
 
-const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLineType) => {
+import { AggregatedBarType, d3LinearNumber } from "../../../types";
+
+const DottedLine = ({
+  data,
+  x,
+  height,
+  opacity = "0.2",
+}: {
+  data: number;
+  x: d3LinearNumber;
+  height: number;
+  opacity?: string;
+}) => {
   return (
     <line
       x1={x ? x(data) : data}
@@ -16,12 +27,30 @@ const DottedLine = ({ data, x, height, opacity = "0.2" }: DottedLineType) => {
   );
 };
 
-const Axis = ({ children, shorts, longs, xBars, y, x }: AxisType) => {
-  const maxShorts = d3.max(shorts, (d: List) => d.vol);
-  const averageShorts = Math.round(d3.mean(shorts, (d: List) => d.vol));
+const Axis = ({
+  children,
+  shorts,
+  longs,
+  xBars,
+  y,
+  x,
+}: {
+  children: React.ReactNode;
+  shorts: AggregatedBarType[];
+  longs: AggregatedBarType[];
+  xBars: d3LinearNumber;
+  x: d3LinearNumber;
+  y: d3LinearNumber;
+}) => {
+  const maxShorts = d3.max(shorts, (d: AggregatedBarType) => d.volume);
+  const averageShorts = Math.round(
+    d3.mean(shorts, (d: AggregatedBarType) => d.volume),
+  );
 
-  const maxLongs = d3.max(longs, (d: List) => d.vol);
-  const averageLongs = Math.round(d3.mean(longs, (d: List) => d.vol));
+  const maxLongs = d3.max(longs, (d: AggregatedBarType) => d.volume);
+  const averageLongs = Math.round(
+    d3.mean(longs, (d: AggregatedBarType) => d.volume),
+  );
 
   const [maxYPixels] = y.range();
   const [minXPixels, maxXPixels] = x.range();

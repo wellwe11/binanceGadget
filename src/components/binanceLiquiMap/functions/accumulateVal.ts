@@ -6,7 +6,7 @@ const accumulateVal = (d: List[]) => {
   const calcTotal: accumulatedType[] = [];
 
   d.forEach((i) => {
-    const vol = i.vol;
+    const vol = i.volume;
     totalVol += vol;
 
     calcTotal.push({ ...i, accumulatedVol: totalVol });

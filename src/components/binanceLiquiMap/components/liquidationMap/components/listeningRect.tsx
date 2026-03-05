@@ -1,9 +1,10 @@
 import { Activity, memo, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import colorScale from "../../../functions/colorScale";
-import { ListeningRectType } from "../Types";
+
 import useSize from "../../../hooks/useSize";
 import formulateNumber from "../../../functions/formulateNumber";
+import { AccumulatedVol, d3LinearNumber } from "../../../types";
 
 const ListeningRect = ({
   data,
@@ -13,7 +14,15 @@ const ListeningRect = ({
   currentPrice,
   max,
   colorTheme,
-}: ListeningRectType) => {
+}: {
+  data: AccumulatedVol[];
+  xBars: d3LinearNumber;
+  x: d3LinearNumber;
+  y: d3LinearNumber;
+  currentPrice: number;
+  max: number;
+  colorTheme: string;
+}) => {
   const listeningRef = useRef(null);
   const lineRef = useRef(null);
   const circleRef = useRef(null);
@@ -52,7 +61,7 @@ const ListeningRect = ({
 
       const mousePrice = y.invert(yCoord);
 
-      const bisectPrice = d3.bisector((d) => d.price).left;
+      const bisectPrice = d3.bisector((d: AccumulatedVol) => d.price).left;
       const i = bisectPrice(data, mousePrice, 1, data.length - 1);
       const d0 = data[i - 1];
       const d1 = data[i];
@@ -73,7 +82,7 @@ const ListeningRect = ({
         interpolatedAccumulatedVol =
           d0.accumulatedVol + t * (d1.accumulatedVol - d0.accumulatedVol);
 
-        interpolatedVol = d0.vol + t * (d1.vol - d0.vol);
+        interpolatedVol = d0.volume + t * (d1.volume - d0.volume);
         interpolatedPrice = d0.price + t * (d1.price - d0.price);
       }
 

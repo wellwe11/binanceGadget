@@ -11,6 +11,7 @@ import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import accumulateVal from "../../functions/accumulateVal";
 
 import { DataType, accumulatedType } from "./Types";
+import { AccumulatedVol, AggregatedBarType, ColorTheme } from "../../types";
 
 const LiquidationMap = ({
   liquidationMapData,
@@ -19,7 +20,11 @@ const LiquidationMap = ({
   currentPrice,
   colorTheme,
 }: {
-  data: DataType[];
+  liquidationMapData: AggregatedBarType[];
+  minPrice: number;
+  maxPrice: number;
+  currentPrice: number;
+  colorTheme: string;
 }) => {
   const containerRef = useRef(null);
   const [containerWidth, containersHeight] =
@@ -38,12 +43,12 @@ const LiquidationMap = ({
       return [
         {
           price: currentPrice,
-          vol: 0,
+          volume: 0,
           accumulatedVol: 0,
         },
         {
           price: maxPrice,
-          vol: 0,
+          volume: 0,
           accumulatedVol: 0,
         },
       ];
@@ -53,7 +58,7 @@ const LiquidationMap = ({
       ...accumulated,
       {
         price: maxPrice,
-        vol: 0,
+        volume: 0,
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
     ];
@@ -65,12 +70,12 @@ const LiquidationMap = ({
       return [
         {
           price: maxPrice,
-          vol: 0,
+          volume: 0,
           accumulatedVol: 0,
         },
         {
           price: minPrice,
-          vol: 0,
+          volume: 0,
           accumulatedVol: 0,
         },
       ];
@@ -80,7 +85,7 @@ const LiquidationMap = ({
       ...accumulated,
       {
         price: minPrice,
-        vol: 0,
+        volume: 0,
         accumulatedVol: accumulated[accumulated.length - 1].accumulatedVol,
       },
     ];
@@ -90,6 +95,8 @@ const LiquidationMap = ({
   const sortedData = [
     ...accumulatedShorts.toReversed().concat(...accumulatedLongs),
   ];
+
+  console.log(sortedData);
 
   // Define highest referal-point for graph (x)
   const maxAccumulatedVol = d3.max(
@@ -101,8 +108,9 @@ const LiquidationMap = ({
   );
 
   // Highest volume-point (for xBars)
-  const vol = d3.max(sortedData, (d) => d.vol);
+  const vol = d3.max(sortedData, (d: AccumulatedVol) => d.volume);
 
+  console.log(filteredData);
   const x = d3
     .scaleLinear()
     .range([0, containerWidth])
@@ -146,8 +154,8 @@ const LiquidationMap = ({
         <AreaChart data={accumulatedLongs} x={x} y={y} color="#ff0000" />
 
         <ListeningRect
-          colorTheme={colorTheme}
           data={sortedData.toReversed()}
+          colorTheme={colorTheme}
           x={x}
           xBars={xBars}
           y={y}
