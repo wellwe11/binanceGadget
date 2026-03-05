@@ -22,7 +22,8 @@ const Axis = ({
     .domain()
     .filter((_: Date, i: number) => i % zoomAmount === 0);
 
-  const d3TimeFormat = activeDays >= 14 ? "%d %b" : "%m, %H:%M";
+  const d3TimeFormat =
+    activeDays >= 180 ? "%b %Y" : activeDays >= 14 ? "%d %b" : "%m, %H:%M";
 
   useEffect(() => {
     if (!xRef.current || !yRef.current) return;

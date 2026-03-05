@@ -95,8 +95,6 @@ const BinanceGadget = () => {
     [data, paddedMin, paddedMax, activeDays],
   );
 
-  console.log(processedData.aggregateBar, data);
-
   if (!data) return;
 
   return (
