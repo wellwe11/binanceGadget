@@ -1,4 +1,4 @@
-const formulateNumber = (n) =>
+const formulateNumber = (n: number) =>
   Intl.NumberFormat("en", {
     notation: "compact",
     maximumFractionDigits: 1,

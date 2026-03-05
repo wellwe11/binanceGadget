@@ -1,7 +1,15 @@
-const getCombinedHeatmapData = (data, min, max, amountOfBuckets) => {
-  const priceStep = (max - min) / amountOfBuckets;
+import { CoinOnDateType, HeatmapDataType } from "../types";
 
-  const cellGrid = new Map();
+const getCombinedHeatmapData = (
+  data: CoinOnDateType[],
+  min: number,
+  max: number,
+  amountOfBuckets: number,
+) => {
+  const priceStep = (max - min) / amountOfBuckets;
+  console.log(data);
+
+  const cellGrid = <HeatmapDataType>new Map();
   const bucketMap = new Map();
   let globalMaxVol = 0;
   let totalVol = 0;
@@ -32,14 +40,17 @@ const getCombinedHeatmapData = (data, min, max, amountOfBuckets) => {
       const isLiquidated = bucketPrice >= obj.low && bucketPrice <= obj.high;
       const key = `${obj.date}-${bucketPrice.toFixed(4)}`;
 
+      const { price, volume, ...rest } = obj;
+
       cellGrid.set(key, {
-        date: obj.date,
+        ...rest,
         price: bucketPrice,
         volume: isLiquidated ? 0 : vol,
-        ...obj,
       });
     }
   });
+
+  console.log(cellGrid);
 
   return {
     maxVolume: globalMaxVol,

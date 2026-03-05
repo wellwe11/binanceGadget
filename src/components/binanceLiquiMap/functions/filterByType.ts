@@ -1,10 +1,10 @@
-import { DataType, List } from "../Types";
+import { AggregatedBarType } from "../types";
 
-const filterByType = (arr: DataType[], currentPrice) => {
-  const short: List[] = [];
-  const long: List[] = [];
+const filterByType = (arr: AggregatedBarType[], currentPrice: number) => {
+  const short: AggregatedBarType[] = [];
+  const long: AggregatedBarType[] = [];
 
-  const addToBucket = (item: DataType) => {
+  const addToBucket = (item: AggregatedBarType) => {
     const price = item.price;
 
     if (price > currentPrice) {

@@ -46,3 +46,5 @@ export type GraphMargins = {
   start: number;
   end: number;
 };
+
+export type SVGRectClickEvent = React.MouseEvent<SVGRectElement>;

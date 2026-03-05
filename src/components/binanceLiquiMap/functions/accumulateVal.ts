@@ -1,9 +1,9 @@
-import { List, accumulatedType } from "../Types";
+import { AccumulatedVol, AggregatedBarType } from "../types";
 
 // Accumulate data vol += vol
-const accumulateVal = (d: List[]) => {
+const accumulateVal = (d: AggregatedBarType[]) => {
   let totalVol = 0;
-  const calcTotal: accumulatedType[] = [];
+  const calcTotal: AccumulatedVol[] = [];
 
   d.forEach((i) => {
     const vol = i.volume;
