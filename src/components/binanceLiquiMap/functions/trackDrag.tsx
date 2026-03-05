@@ -1,17 +1,11 @@
-import { SetGraphMargins } from "../components/timeLapsChart/timeLapsChart";
+import { GraphMargins, Setter } from "../types";
 
-type TrackDragInterface = (
-  setter: SetGraphMargins,
+const trackDrag = (
+  setter: Setter<GraphMargins>,
   max: number,
   min: number,
-) => void;
-
-const trackDrag: TrackDragInterface = (
-  setter,
-  max,
-  min,
-  dataLength,
-  containerWidth,
+  dataLength: number,
+  containerWidth: number,
 ) => {
   let animationFrameId = null as number | null;
   let accumulatedDelta = 0;

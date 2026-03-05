@@ -3,16 +3,21 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 import { Data } from "../timeLapsChart";
+import { CoinOnDateType, d3LinearNumber } from "../../../types";
 
-interface ChartInterface {
-  data: Data[];
+const Chart = ({
+  data,
+  height,
+  width,
+  x,
+  y,
+}: {
+  data: CoinOnDateType[];
   height: number;
   width: number;
-  x: d3.scaleTime<number, number>;
-  y: d3.scaleLinear<number, number>;
-}
-
-const Chart = ({ data, height, width, x, y }: ChartInterface) => {
+  x: d3LinearNumber;
+  y: d3LinearNumber;
+}) => {
   const gRef = useRef(null);
 
   useEffect(() => {

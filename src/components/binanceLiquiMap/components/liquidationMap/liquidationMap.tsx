@@ -10,8 +10,7 @@ import { useMemo, useRef } from "react";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
 import accumulateVal from "../../functions/accumulateVal";
 
-import { DataType, accumulatedType } from "./Types";
-import { AccumulatedVol, AggregatedBarType, ColorTheme } from "../../types";
+import { AccumulatedVol, AggregatedBarType } from "../../types";
 
 const LiquidationMap = ({
   liquidationMapData,
@@ -96,21 +95,18 @@ const LiquidationMap = ({
     ...accumulatedShorts.toReversed().concat(...accumulatedLongs),
   ];
 
-  console.log(sortedData);
-
   // Define highest referal-point for graph (x)
   const maxAccumulatedVol = d3.max(
     [
       accumulatedShorts?.[accumulatedShorts.length - 1] || 0,
       accumulatedLongs?.[accumulatedLongs.length - 1] || 0,
     ].flat(),
-    (d: accumulatedType) => d.accumulatedVol,
+    (d: AccumulatedVol) => d.accumulatedVol,
   );
 
   // Highest volume-point (for xBars)
   const vol = d3.max(sortedData, (d: AccumulatedVol) => d.volume);
 
-  console.log(filteredData);
   const x = d3
     .scaleLinear()
     .range([0, containerWidth])

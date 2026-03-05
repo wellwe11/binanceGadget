@@ -39,3 +39,10 @@ export type HeatmapDataType = Map<String, CoinOnDateType>;
 
 export type d3Date = d3.scaleBand<Date>;
 export type d3LinearNumber = d3.scaleLienar<number, number>;
+
+export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+export type GraphMargins = {
+  start: number;
+  end: number;
+};

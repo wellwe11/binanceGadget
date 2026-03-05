@@ -16,31 +16,14 @@ import trackDrag from "../../functions/trackDrag";
 import moveGraph from "../../functions/moveGraph";
 import getHighGetLow from "../../functions/getHighGetLow";
 import useTrackContainerSize from "../../hooks/useTrackContainerSize";
-
-export type Data = {
-  coin: string;
-  date: Date;
-  value: number;
-  openInterest: number;
-};
-
-type GraphMargins = {
-  start: number;
-  end: number;
-};
-
-type SVGRectClickEvent = React.MouseEvent<SVGRectElement>;
-export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
-
-export type SetGraphMargins = React.Dispatch<
-  React.SetStateAction<GraphMargins>
->;
-
-type SetBoolean = React.Dispatch<React.SetStateAction<boolean>>;
-
-interface MainProps {
-  data: Data[];
-}
+import {
+  CoinOnDateType,
+  d3LinearNumber,
+  GraphMargins,
+  InputChangeEvent,
+  Setter,
+  SVGRectClickEvent,
+} from "../../types";
 
 const MoveableGraph = ({
   data,
@@ -51,9 +34,9 @@ const MoveableGraph = ({
   sliceStart, // graphWidthStart
   sliceEnd, // graphWidthEnd
 }: {
-  data: Data[];
-  x: d3.scaleTime<number, number>;
-  y: d3.scaleLinear<number, number>;
+  data: CoinOnDateType[];
+  x: d3LinearNumber;
+  y: d3LinearNumber;
   height: number;
   width: number;
   sliceStart: number;
@@ -82,12 +65,13 @@ const MoveableGraphContainerRect = ({
   setHover,
   maxRange,
 }: {
-  data: Data[];
+  data: CoinOnDateType[];
   graphMargins: GraphMargins;
-  setGraphMargins: SetGraphMargins;
+  setGraphMargins: Setter<GraphMargins>;
   width: number;
   height: number;
-  setHover: SetBoolean;
+  setHover: Setter<boolean>;
+  maxRange: number;
 }) => {
   const max = data.length - 1;
   const containerRectRef = useRef<SVGRectElement | null>(null);
@@ -166,19 +150,20 @@ const Charts = ({
   width,
   maxRange,
 }: {
-  data: Data[];
+  data: CoinOnDateType[];
   graphMargins: GraphMargins;
-  setGraphMargins: SetGraphMargins;
-  setDisplayText: SetBoolean;
+  setGraphMargins: Setter<GraphMargins>;
+  setDisplayText: Setter<boolean>;
   height: number;
   width: number;
+  maxRange: number;
 }) => {
   const x = useMemo(
     () =>
       d3
         .scaleTime()
         .range([0, width])
-        .domain(d3.extent(data, (d: Data) => new Date(d.date))),
+        .domain(d3.extent(data, (d: CoinOnDateType) => new Date(d.date))),
     [data, width, height],
   );
 
@@ -187,7 +172,7 @@ const Charts = ({
       d3
         .scaleLinear()
         .range([height, 0])
-        .domain([0, d3.max(data, (d: Data) => d.value)]),
+        .domain([0, d3.max(data, (d: CoinOnDateType) => d.value)]),
     [data, height, width],
   );
 
@@ -225,14 +210,12 @@ const Controllers = ({
   displayText,
   setDisplayText,
 }: {
-  data: Data[];
+  data: CoinOnDateType[];
   graphMargins: GraphMargins;
-  setGraphMargins: SetGraphMargins;
+  setGraphMargins: Setter<GraphMargins>;
   displayText: boolean;
-  setDisplayText: SetBoolean;
+  setDisplayText: Setter<boolean>;
 }) => {
-  // Used for texts that follow left and right handlers, that resize one of the graphs. Displays left and right active date.
-
   const start = graphMargins.start;
   const end = graphMargins.end;
   const [lowestVal, highestVal] = getHighGetLow(start, end);
@@ -321,7 +304,12 @@ const TimeLapsChart = ({
   transform,
   setTransform,
   zoomSource,
-}: MainProps) => {
+}: {
+  data: CoinOnDateType[];
+  transform: { k: number; x: number; y: number };
+  setTransform: Setter<{ k: number; x: number; y: number }>;
+  zoomSource: React.RefObject<string | null>;
+}) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [containerWidth, containersHeight] =

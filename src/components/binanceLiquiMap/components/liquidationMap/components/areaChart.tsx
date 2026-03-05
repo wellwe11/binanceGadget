@@ -1,24 +1,29 @@
 import * as d3 from "d3";
-import { accumulatedType, XYType } from "../Types";
-import { useMemo } from "react";
+
+import { AccumulatedVol, d3LinearNumber } from "../../../types";
 
 const AreaChart = ({
   data,
   x,
   y,
   color = "green",
-}: XYType & { color: string }) => {
+}: {
+  data: AccumulatedVol[];
+  x: d3LinearNumber;
+  y: d3LinearNumber;
+  color: string;
+}) => {
   const line = d3
     .line()
-    .y((d: accumulatedType) => y(d.price))
-    .x((d: accumulatedType) => x(d.accumulatedVol))
+    .y((d: AccumulatedVol) => y(d.price))
+    .x((d: AccumulatedVol) => x(d.accumulatedVol))
     .curve(d3.curveLinear);
 
   const area = d3
     .area()
-    .y((d: accumulatedType) => y(d.price))
+    .y((d: AccumulatedVol) => y(d.price))
     .x0(0)
-    .x1((d: accumulatedType) => x(d.accumulatedVol))
+    .x1((d: AccumulatedVol) => x(d.accumulatedVol))
     .curve(d3.curveLinear);
 
   return (

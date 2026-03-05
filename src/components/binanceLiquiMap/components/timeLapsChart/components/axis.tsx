@@ -5,6 +5,7 @@ const Axis = ({
 }: {
   children: React.ReactNode;
   width: number;
+  height: number;
 }) => {
   return (
     <svg
