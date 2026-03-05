@@ -10,6 +10,7 @@ import CandleChart from "./components/candleChart";
 import ListeningRect from "./components/listeningRect";
 import BarChart from "./components/barChart";
 import Coin360Svg from "../../../../assets/coin360";
+import { CoinOnDateType, ColorTheme, HeatmapDataType } from "../../types";
 
 const CandleAndHoverComponent = ({
   candleData,
@@ -20,7 +21,7 @@ const CandleAndHoverComponent = ({
   max,
   numBuckets,
   maxVol,
-  threshhold,
+  threshold,
   colorTheme,
   showCharts,
 }) => {
@@ -127,7 +128,7 @@ const CandleAndHoverComponent = ({
           y={y}
           hideHighlight={hideHighlight}
           max={maxVol}
-          threshhold={threshhold}
+          threshold={threshold}
           colorTheme={colorTheme}
         />
       </Activity>
@@ -143,12 +144,26 @@ const HeatMap = ({
   numBuckets,
   maxVol,
   colorTheme,
-  threshhold,
+  threshold,
   showCharts,
   zoomRef,
   containerWidth,
   containersHeight,
   activeDays,
+}: {
+  heatmapData: HeatmapDataType;
+  visibleData: CoinOnDateType[];
+  min: number;
+  max: number;
+  numBuckets: number;
+  maxVol: number;
+  colorTheme: ColorTheme;
+  threshold: number;
+  showCharts: string[];
+  zoomRef: React.RefObject<SVGGElement | null>;
+  containerWidth: number;
+  containersHeight: number;
+  activeDays: number;
 }) => {
   const x = useMemo(() => {
     return d3
@@ -217,7 +232,7 @@ const HeatMap = ({
               numBuckets={numBuckets}
               maxVol={maxVol}
               colorTheme={colorTheme}
-              threshhold={threshhold}
+              threshold={threshold}
             />
           </Activity>
 
@@ -230,7 +245,7 @@ const HeatMap = ({
             max={max}
             numBuckets={numBuckets}
             maxVol={maxVol}
-            threshhold={threshhold}
+            threshold={threshold}
             colorTheme={colorTheme}
             showCharts={showCharts}
           />

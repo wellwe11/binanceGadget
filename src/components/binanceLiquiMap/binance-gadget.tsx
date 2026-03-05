@@ -31,7 +31,7 @@ const BinanceGadget = () => {
     name: "interpolateViridis",
     color: "#440154",
   });
-  const [threshhold, setThreshold] = useState(() => 60);
+  const [threshold, setThreshold] = useState(() => 60);
   const [showCharts, setShowCharts] = useState([
     "Liquidation Leverage",
     "Supercharts",
@@ -48,7 +48,7 @@ const BinanceGadget = () => {
 
   const [activeCoin, setActiveCoin] = useState(0);
 
-  const zoomRef = useRef(null);
+  const zoomRef = useRef<SVGGElement | null>(null);
 
   const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
 
@@ -100,6 +100,8 @@ const BinanceGadget = () => {
     zoomSource,
   );
 
+  console.log(processedData.cellGrid);
+
   return (
     <div className="flex flex-col pt-5 pl-1 h-250 w-full max-w-360  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
@@ -108,7 +110,7 @@ const BinanceGadget = () => {
           displayMap={setDisplayLiquidationMap}
           setColorTheme={setColorTheme}
           setThreshold={setThreshold}
-          threshold={threshhold}
+          threshold={threshold}
           showCharts={showCharts}
           setShowCharts={setShowCharts}
           setRefreshGraph={setRefreshGraph}
@@ -129,7 +131,6 @@ const BinanceGadget = () => {
             <Gradient
               max={processedData.totalVolume}
               colorTheme={colorTheme.name}
-              threshhold={threshhold}
             />
           </div>
 
@@ -149,7 +150,7 @@ const BinanceGadget = () => {
                 numBuckets={NUM_BUCKETS}
                 maxVol={processedData.maxVolume}
                 colorTheme={colorTheme}
-                threshhold={threshhold}
+                threshold={threshold}
                 showCharts={showCharts}
                 zoomRef={zoomRef}
                 containerWidth={containerWidth}

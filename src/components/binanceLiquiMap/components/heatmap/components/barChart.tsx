@@ -1,14 +1,36 @@
 import React, { useEffect, useMemo, useRef } from "react";
 
 import colorScale from "../../../functions/colorScale";
+import {
+  ColorTheme,
+  d3Date,
+  HeatmapDataType,
+  d3LinearNumber,
+} from "../../../types";
 
 const BarChart = React.memo(
-  ({ data, x, y, numBuckets, maxVol, colorTheme, threshhold }) => {
-    const canvasRef = useRef(null);
+  ({
+    data,
+    x,
+    y,
+    numBuckets,
+    maxVol,
+    colorTheme,
+    threshold,
+  }: {
+    data: HeatmapDataType;
+    x: d3Date;
+    y: d3LinearNumber;
+    numBuckets: number;
+    maxVol: number;
+    colorTheme: ColorTheme;
+    threshold: number;
+  }) => {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const scaleColors = useMemo(
-      () => colorScale(maxVol, colorTheme.name, threshhold),
-      [maxVol, colorTheme, threshhold],
+      () => colorScale(maxVol, colorTheme.name, threshold),
+      [maxVol, colorTheme, threshold],
     );
 
     const width = useMemo(() => x.range()[1], [x.domain()]);
@@ -16,8 +38,8 @@ const BarChart = React.memo(
 
     useEffect(() => {
       if (!canvasRef.current) return;
-
       const canvas = canvasRef.current;
+
       const ctx = canvas.getContext("2d");
       const dpr = window.devicePixelRatio || 1;
 

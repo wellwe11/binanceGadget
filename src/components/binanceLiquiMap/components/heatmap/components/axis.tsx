@@ -1,11 +1,26 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import * as d3 from "d3";
+import { d3Date, d3LinearNumber } from "../../../types";
 
-const Axis = ({ children, x, y, zoomAmount, activeDays }) => {
+const Axis = ({
+  children,
+  x,
+  y,
+  zoomAmount,
+  activeDays,
+}: {
+  children: "";
+  x: d3Date;
+  y: d3LinearNumber;
+  zoomAmount: number;
+  activeDays: number;
+}) => {
   const xRef = useRef(null);
   const yRef = useRef(null);
-  const xAxisTicks = x.domain().filter((d, i) => i % zoomAmount === 0);
+  const xAxisTicks = x
+    .domain()
+    .filter((_: Date, i: number) => i % zoomAmount === 0);
 
   const d3TimeFormat = activeDays >= 14 ? "%d %b" : "%m, %H:%M";
 

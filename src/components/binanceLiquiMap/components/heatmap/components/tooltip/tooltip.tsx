@@ -21,11 +21,11 @@ const CandleText = ({ activeCell }) => {
   );
 };
 
-const CellText = ({ activeCell, max, colorTheme, threshhold }) => {
+const CellText = ({ activeCell, max, colorTheme, threshold }) => {
   const cellTextKeys = ["price", "volume"];
   const scaleColor = useMemo(
-    () => colorScale(max, colorTheme.name, threshhold),
-    [max, colorTheme, threshhold],
+    () => colorScale(max, colorTheme.name, threshold),
+    [max, colorTheme, threshold],
   );
 
   return (
@@ -50,7 +50,7 @@ const Tooltip = ({
   hideHighlight,
   max,
   colorTheme,
-  threshhold,
+  threshold,
 }) => {
   const toolTipRef = useRef(null);
 
@@ -107,7 +107,7 @@ const Tooltip = ({
             activeCell={activeCell}
             max={max}
             colorTheme={colorTheme}
-            threshhold={threshhold}
+            threshold={threshold}
           />
         )}
       </div>
