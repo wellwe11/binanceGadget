@@ -19,11 +19,6 @@ import {
   times,
 } from "./constants";
 
-// Fix types
-// Upload to Vercel
-// Move arrays, objects etc OUTSIDE of components. (ALL COMPONENTS)
-// Send james
-
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
@@ -76,6 +71,8 @@ const BinanceGadget = () => {
     () => getMinMaxFromArr(data),
     [data, activeDays],
   );
+
+  if (!min || !max) return;
 
   // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
   const pricePadding = (max.value - min.value) * 0.3;

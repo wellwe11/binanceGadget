@@ -48,7 +48,7 @@ const useZoom = (
       .on("start", () => {
         zoomSource.current = "heatmap";
       })
-      .on("zoom", (e) => {
+      .on("zoom", (e: d3.zoomBehaviorRef) => {
         if (zoomSource.current !== "heatmap") return;
 
         const t = e.transform;
