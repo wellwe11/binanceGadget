@@ -1,4 +1,4 @@
-import { useMemo, useState, Activity, useRef, useEffect } from "react";
+import { useMemo, useState, Activity, useRef } from "react";
 
 import * as d3 from "d3";
 
@@ -13,10 +13,77 @@ import getCombinedHeatmapData from "./functions/getCombinedHeatmapData";
 import useZoom from "./hooks/useZoom";
 import useTrackContainerSize from "./hooks/useTrackContainerSize";
 
-// Make it fit for smaller screens
 // Fix types
 // Upload to Vercel
+// Move arrays, objects etc OUTSIDE of components. (ALL COMPONENTS)
 // Send james
+
+const NUM_BUCKETS = 200;
+const placeholderPairs = [
+  "Binance BTC/USDT Perpetual",
+  "Gate BTC/USDT Perpetual",
+  "Bybit BTC/USDT Perpetual",
+  "MEXC BTC/USDT Perpetual",
+  "OKX BTC/USDT Perpetual",
+  "HTX BTC/USDT Perpetual",
+  "BINGX BTC/USDT Perpetual",
+  "Binance BTC/USDT Perpetual",
+  "Hyperliquid BTC/USDT Perpetual",
+  "WhiteBIT BTC/USDT Perpetual",
+  "Deribit BTC/USDT Perpetual",
+  "Bitget BTC/USDT Perpetual",
+  "OKX BTC/USDT Perpetual",
+  "Binance BTC/USDT Perpetual",
+  "Bybit BTC/USDT Perpetual",
+  "Bitfinex BTC/USDT Perpetual",
+  "LBank BTC/USDT Perpetual",
+];
+
+const placeholderCurrencies = [
+  "BTC",
+  "ETH",
+  "USDT",
+  "BNB",
+  "SOL",
+  "XRP",
+  "USDC",
+  "ADA",
+  "STETH",
+  "AVAX",
+  "DOGE",
+  "DOT",
+  "TRX",
+  "LINK",
+  "WBTC",
+  "MATIC",
+  "SHIB",
+  "TON",
+  "DAI",
+  "LTC",
+  "BCH",
+  "UNI",
+  "LEO",
+  "NEAR",
+  "OP",
+  "APT",
+  "ARB",
+  "XLM",
+  "OKB",
+  "LDO",
+];
+
+const times = {
+  "12 hour": 0.5,
+  "24 hour": 1,
+  "48 hour": 2,
+  "3 day": 3,
+  "1 week": 7,
+  "2 week": 14,
+  "1 month": 29,
+  "3 month": 87,
+  "6 month": 182,
+  "1 year": 365,
+};
 
 // Tie timeLapsChart to heatmap
 const BinanceGadget = () => {
@@ -26,7 +93,7 @@ const BinanceGadget = () => {
     color: "#440154",
   });
   const [threshhold, setThreshold] = useState(() => 60);
-  const [showCharts, setShowCharts] = useState<liquidationType[]>([
+  const [showCharts, setShowCharts] = useState([
     "Liquidation Leverage",
     "Supercharts",
   ]);
@@ -44,92 +111,17 @@ const BinanceGadget = () => {
 
   const zoomRef = useRef(null);
 
-  const placeholderCurrencies = useMemo(
-    () => [
-      "BTC",
-      "ETH",
-      "USDT",
-      "BNB",
-      "SOL",
-      "XRP",
-      "USDC",
-      "ADA",
-      "STETH",
-      "AVAX",
-      "DOGE",
-      "DOT",
-      "TRX",
-      "LINK",
-      "WBTC",
-      "MATIC",
-      "SHIB",
-      "TON",
-      "DAI",
-      "LTC",
-      "BCH",
-      "UNI",
-      "LEO",
-      "NEAR",
-      "OP",
-      "APT",
-      "ARB",
-      "XLM",
-      "OKB",
-      "LDO",
-    ],
-    [],
-  );
-
-  const placeholderPairs = useMemo(
-    () => [
-      "Binance BTC/USDT Perpetual",
-      "Gate BTC/USDT Perpetual",
-      "Bybit BTC/USDT Perpetual",
-      "MEXC BTC/USDT Perpetual",
-      "OKX BTC/USDT Perpetual",
-      "HTX BTC/USDT Perpetual",
-      "BINGX BTC/USDT Perpetual",
-      "Binance BTC/USDT Perpetual",
-      "Hyperliquid BTC/USDT Perpetual",
-      "WhiteBIT BTC/USDT Perpetual",
-      "Deribit BTC/USDT Perpetual",
-      "Bitget BTC/USDT Perpetual",
-      "OKX BTC/USDT Perpetual",
-      "Binance BTC/USDT Perpetual",
-      "Bybit BTC/USDT Perpetual",
-      "Bitfinex BTC/USDT Perpetual",
-      "LBank BTC/USDT Perpetual",
-    ],
-    [],
-  );
   const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
 
-  const times = useMemo(
-    () => ({
-      "12 hour": 0.5,
-      "24 hour": 1,
-      "48 hour": 2,
-      "3 day": 3,
-      "1 week": 7,
-      "2 week": 14,
-      "1 month": 29,
-      "3 month": 87,
-      "6 month": 182,
-      "1 year": 365,
-    }),
-    [],
-  );
-
-  const handleSetPairOrSymbol = (e) => {
+  const handleSetPairOrSymbol = (n: number) => {
     const pairOrSymbolArr = [placeholderPairs, placeholderCurrencies];
     setActiveCoin(0);
-    setPairOrSymbol(pairOrSymbolArr[e]);
+    setPairOrSymbol(pairOrSymbolArr[n]);
   };
 
   const coin = pairOrSymbol[activeCoin];
 
   const activeDays = Object.values(times)[days];
-  const NUM_BUCKETS = 200;
 
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
@@ -168,7 +160,7 @@ const BinanceGadget = () => {
   );
 
   return (
-    <div className="flex flex-col pt-5 pl-1 h-250 w-[70vw]  bg-black">
+    <div className="flex flex-col pt-5 pl-1 h-250 w-full max-w-360  bg-black">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
           time={Object.keys(times)}
@@ -204,7 +196,7 @@ const BinanceGadget = () => {
             <div
               ref={containerRef}
               style={{
-                width: !displayLiquidationMap ? "100%" : "80%",
+                width: !displayLiquidationMap ? "100%" : "74%",
                 height: "100%",
               }}
             >
@@ -226,7 +218,7 @@ const BinanceGadget = () => {
             </div>
 
             <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-              <div style={{ width: "19%", height: "100%" }}>
+              <div style={{ width: "25%", height: "100%" }}>
                 <LiquidationMap
                   colorTheme={colorTheme.name}
                   liquidationMapData={processedData.aggregateBar}
@@ -250,7 +242,7 @@ const BinanceGadget = () => {
           />
 
           <div style={{ width: "95%" }} className=" flex">
-            <div style={{ width: !displayLiquidationMap ? "100%" : "80%" }}>
+            <div style={{ width: !displayLiquidationMap ? "100%" : "74%" }}>
               <TimeLapsChart
                 key={days + coin}
                 data={reversedData}
@@ -262,7 +254,7 @@ const BinanceGadget = () => {
             <div
               className=""
               style={{
-                width: !displayLiquidationMap ? "0%" : "20%",
+                width: !displayLiquidationMap ? "0%" : "25%",
                 height: "100%",
               }}
             />
