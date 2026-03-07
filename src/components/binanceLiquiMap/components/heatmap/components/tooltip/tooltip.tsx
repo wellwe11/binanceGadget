@@ -11,6 +11,7 @@ import {
   ColorTheme,
   d3Date,
   d3LinearNumber,
+  GeneratedDataType,
 } from "../../../../types";
 
 const CandleText = ({ activeCell }: { activeCell: CoinOnDateType }) => {
@@ -84,7 +85,7 @@ const Tooltip = ({
   threshold,
 }: {
   mousePos: { x: number; y: number };
-  activeCell: CoinOnDateType | null;
+  activeCell: CoinOnDateType | GeneratedDataType | null;
   x: d3Date;
   y: d3LinearNumber;
   hideHighlight: boolean;

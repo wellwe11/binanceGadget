@@ -325,7 +325,7 @@ const TimeLapsChart = ({
     end: data.length - 1,
   });
 
-  const [isClicking, setIsClicking] = useState(true);
+  const [isClicking, setIsClicking] = useState(false);
 
   const maxRange = data.length - 1;
 
@@ -333,16 +333,17 @@ const TimeLapsChart = ({
     if (zoomSource.current !== "heatmap") return;
     console.log(1);
 
-    const itemsVisible = maxRange / transform.k;
-    const itemWidth = containerWidth / maxRange;
+    const itemsVisible = data.length / transform.k;
+    const itemWidth = containerWidth / data.length;
     const newStart = -transform.x / (itemWidth * transform.k) || 0;
 
     setGraphMargins({
       start: Math.max(0, newStart),
-      end: Math.min(maxRange, newStart + itemsVisible),
+      end: Math.min(data.length - 1, newStart + itemsVisible),
     });
   }, [transform.x, transform.k, data.length, containerWidth]);
 
+  console.log(isClicking);
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
     console.log(2);
@@ -370,7 +371,7 @@ const TimeLapsChart = ({
         zoomSource.current = null;
       }
     }, 50);
-  }, [isClicking, graphMargins.start, graphMargins.end]);
+  }, [isClicking, graphMargins.start, graphMargins.end, transform]);
 
   return (
     <div

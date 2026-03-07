@@ -1,5 +1,11 @@
 import { Activity, memo } from "react";
-import { d3Date, d3LinearNumber, CoinOnDateType, Setter } from "../../../types";
+import {
+  d3Date,
+  d3LinearNumber,
+  CoinOnDateType,
+  Setter,
+  GeneratedDataType,
+} from "../../../types";
 
 const ListeningRect = ({
   y,
@@ -14,7 +20,7 @@ const ListeningRect = ({
   x: d3Date;
   y: d3LinearNumber;
   handleHover: (e: React.MouseEvent) => void;
-  activeCell: CoinOnDateType | null;
+  activeCell: CoinOnDateType | GeneratedDataType | null;
   hideHighlight: boolean;
   mouseOut: boolean;
   setMouseOut: Setter<boolean>;

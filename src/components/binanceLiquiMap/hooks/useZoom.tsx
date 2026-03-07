@@ -15,17 +15,18 @@ const useZoom = (
     null,
   );
 
-  const visibleCount = Math.max(10, Math.floor(data.length / transform.k));
-  const pixelsPerIndex = width / visibleCount;
+  const pointWidth = width / data.length;
+
   const startIdx = Math.max(
     0,
-    Math.min(
-      data.length - visibleCount,
-      Math.floor(-transform.x / pixelsPerIndex),
-    ),
+    Math.floor(-transform.x / (pointWidth * transform.k)),
   );
 
-  const visibleData = data.slice(startIdx, startIdx + visibleCount);
+  const visibleCount = Math.ceil(width / (pointWidth * transform.k)) + 2;
+
+  const endIdx = Math.min(data.length, startIdx + visibleCount);
+
+  const visibleData = data.slice(startIdx, endIdx);
 
   useEffect(() => {
     if (!ref.current || !zoomBehaviorRef.current) return;
@@ -41,22 +42,22 @@ const useZoom = (
     if (!ref.current) return;
 
     const zoom = d3
-      .zoom()
+      .zoom<SVGGElement, unknown>()
       .scaleExtent([1, 10])
-      .translateExtent([
-        [-data.length * (width / 5), 0],
-        [width, height],
-      ])
+
       .on("start", () => {
         zoomSource.current = "heatmap";
       })
-      .on("zoom", (e: d3.zoomBehaviorRef) => {
+      .on("zoom", (e: d3.D3ZoomEvent<SVGGElement, unknown>) => {
         if (zoomSource.current !== "heatmap") return;
 
         const t = e.transform;
-        if (t.x > 0) t.x = 0;
 
-        setTransform(e.transform);
+        const minX = -width * (t.k - 1);
+        const maxX = 0;
+        t.x = Math.min(maxX, Math.max(minX, t.x));
+
+        setTransform({ x: t.x, y: t.y, k: t.k });
       })
       .on("end", () => {
         setTimeout(() => {
@@ -74,8 +75,9 @@ const useZoom = (
       zoom.transform,
       d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k),
     );
-  }, [data.length, width, height]);
+  }, [data, width, height]);
 
-  return { visibleData, transform, setTransform, zoomSource };
+  return { visibleData };
 };
+
 export default useZoom;
