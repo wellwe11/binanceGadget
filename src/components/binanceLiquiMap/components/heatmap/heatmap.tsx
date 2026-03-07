@@ -227,6 +227,8 @@ const HeatMap = ({
         y={y}
         zoomAmount={Math.round(visibleData.length / 10)}
         activeDays={activeDays}
+        data={visibleData}
+        displayLines={!showCharts.includes("Liquidation Leverage")}
       >
         <g
           ref={zoomRef}

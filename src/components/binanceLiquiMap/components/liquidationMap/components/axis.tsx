@@ -57,13 +57,13 @@ const Axis = ({
 
   return (
     <svg height={maxYPixels > 0 ? maxYPixels : 0} width={maxXPixels + 10}>
-      <DottedLine
-        data={maxShorts}
-        x={xBars}
-        height={maxYPixels}
-        opacity="0.3"
-      />
-      <g id="dottedLinesGroup">
+      <g id="liquidationMapdottedLinesGroup">
+        <DottedLine
+          data={maxShorts}
+          x={xBars}
+          height={maxYPixels}
+          opacity="0.3"
+        />
         <DottedLine data={averageShorts} x={xBars} height={maxYPixels} />
         <DottedLine
           data={maxLongs}

@@ -51,6 +51,7 @@ export type HeatmapDataType = Map<String, CoinOnDateType>;
 
 export type d3Date = d3.scaleBand<Date>;
 export type d3LinearNumber = d3.scaleLienar<number, number>;
+export type d3Band = d3.scaleBand<string>;
 
 export type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 

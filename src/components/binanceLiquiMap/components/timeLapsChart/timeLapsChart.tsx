@@ -331,7 +331,6 @@ const TimeLapsChart = ({
 
   useEffect(() => {
     if (zoomSource.current !== "heatmap") return;
-    console.log(1);
 
     const itemsVisible = data.length / transform.k;
     const itemWidth = containerWidth / data.length;
@@ -343,10 +342,8 @@ const TimeLapsChart = ({
     });
   }, [transform.x, transform.k, data.length, containerWidth]);
 
-  console.log(isClicking);
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
-    console.log(2);
 
     const [lowestVal, highestVal] = getHighGetLow(
       graphMargins.start,

@@ -1,4 +1,4 @@
-import { useMemo, useState, Activity, useRef } from "react";
+import { useMemo, useState, Activity, useRef, useEffect } from "react";
 
 import * as d3 from "d3";
 
@@ -19,18 +19,19 @@ import {
   times,
 } from "./constants";
 
-// fix bug where if you zoom all the way right on heatmap, timelapsChart continues for a bit
-// fix so squares dont look so 'squary' - currently have some outline on them.″
-// add hover on gradients numbers
-// hide timelapscahrt when superCharts is off
-// fix white square so it hovers on mouse-top
-// chart zoom should reset when user changes date
-// hide tooltip on drag
-// hide white dot on drag
-// timelapschart 'lags' when you open liquidation map,
-// Tie timeLapsChart to heatmap
 // Add dotted lines to heatmap so when liquidation leverage is disabled, you see them for each price
-// Fix gradient size
+
+// hide white dot on drag
+// hide tooltip on drag
+
+// fix so squares dont look so 'squary' - currently have some outline on them. (barChart)
+
+// fix white square so it hovers on mouse-top
+
+// timelapschart 'lags' when you open liquidation map,
+// Tie timeLapsChart to heatmap ??
+
+// Add zoom to y-axis (check jens graph)
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
@@ -78,6 +79,10 @@ const BinanceGadget = () => {
     () => generateHeatmapData(["BITCOIN"], activeDays),
     [placeholderCurrencies, refreshGraph, activeDays, coin],
   );
+
+  useEffect(() => {
+    setTransform({ x: 1, y: 0, k: 0 });
+  }, [data]);
 
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
@@ -131,7 +136,14 @@ const BinanceGadget = () => {
 
       <div style={{ height: "65%" }} className="flex flex-col justify-between ">
         <div className="flex gap-5" style={{ height: "90%" }}>
-          <div style={{ width: "5%", maxWidth: "50px" }}>
+          <div
+            style={{
+              width: "5%",
+              maxWidth: "50px",
+              marginBottom: "-17px",
+              marginTop: "-17px",
+            }}
+          >
             <Gradient
               max={processedData.totalVolume}
               colorTheme={colorTheme.name}
@@ -193,13 +205,17 @@ const BinanceGadget = () => {
                 width: !displayLiquidationMap ? "100%" : "74%",
               }}
             >
-              <TimeLapsChart
-                key={days + coin}
-                data={reversedData}
-                transform={transform}
-                setTransform={setTransform}
-                zoomSource={zoomSource}
-              />
+              <Activity
+                mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
+              >
+                <TimeLapsChart
+                  key={days + coin}
+                  data={reversedData}
+                  transform={transform}
+                  setTransform={setTransform}
+                  zoomSource={zoomSource}
+                />
+              </Activity>
             </div>
             <div
               className=""

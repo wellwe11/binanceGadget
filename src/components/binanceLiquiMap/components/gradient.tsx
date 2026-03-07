@@ -19,7 +19,7 @@ export const Gradient = ({
     end: scaleColor(maxVol),
   };
 
-  const textClass = "text-white text-[12px] text-center pt-2 pb-2";
+  const textClass = "text-white text-[12px] text-center cursor-pointer";
 
   return (
     <div className="flex flex-col h-full w-full">
