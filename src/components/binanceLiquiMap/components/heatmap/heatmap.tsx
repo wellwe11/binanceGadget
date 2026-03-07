@@ -26,6 +26,8 @@ const CandleAndHoverComponent = ({
   y,
   min,
   max,
+  mapMin,
+  mapMax,
   numBuckets,
   maxVol,
   threshold,
@@ -38,6 +40,8 @@ const CandleAndHoverComponent = ({
   y: d3LinearNumber;
   min: number;
   max: number;
+  mapMin;
+  mapMax;
   numBuckets: number;
   maxVol: number;
   threshold: number;
@@ -56,7 +60,7 @@ const CandleAndHoverComponent = ({
   const [hideHighlight, setHideHighlight] = useState(false);
   const [mouseOut, setMouseOut] = useState(true);
 
-  const xDomain = useMemo(() => x.domain(), [x, candleData.length]);
+  const xDomain = useMemo(() => x.domain(), [x, candleData.length, min, max]);
   const yDomain = useMemo(() => y.domain(), [min, max, y, candleData.length]);
 
   const handleHover = useCallback(
@@ -79,6 +83,7 @@ const CandleAndHoverComponent = ({
           0,
           Math.min(index, candleData.length - 1),
         );
+
         const date = candleData[clampedIndex].date;
 
         if (!date) return;
@@ -94,10 +99,10 @@ const CandleAndHoverComponent = ({
         } else {
           const rawPrice = y.invert(mouseY);
 
-          const priceStep = (min - max) / numBuckets;
-          const snappedPrice =
-            Math.floor((rawPrice - min) / priceStep) * priceStep + min;
-
+          const priceStep = (mapMax - mapMin) / numBuckets;
+          const idx = Math.floor((rawPrice - mapMin) / priceStep);
+          const clampedIdx = Math.max(0, Math.min(numBuckets - 1, idx));
+          const snappedPrice = mapMin + clampedIdx * priceStep;
           const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
 
           if (cell) {
@@ -114,7 +119,7 @@ const CandleAndHoverComponent = ({
         }
       });
     },
-    [heatmapData, yDomain, xDomain, numBuckets],
+    [heatmapData, yDomain, xDomain, numBuckets, min, max],
   );
 
   return (
@@ -165,6 +170,8 @@ const HeatMap = ({
   visibleData,
   min,
   max,
+  mapMin,
+  mapMax,
   numBuckets,
   maxVol,
   colorTheme,
@@ -174,6 +181,7 @@ const HeatMap = ({
   containerWidth,
   containersHeight,
   activeDays,
+  onYAxisDrag,
 }: {
   heatmapData: HeatmapDataType;
   visibleData: GeneratedDataType[];
@@ -188,13 +196,14 @@ const HeatMap = ({
   containerWidth: number;
   containersHeight: number;
   activeDays: number;
+  onYAxisDrag: (delta: number) => void;
 }) => {
   const x = useMemo(() => {
     return d3
       .scaleBand()
       .domain(visibleData.map((d) => d.date))
       .range([0, containerWidth]);
-  }, [visibleData, containerWidth]);
+  }, [visibleData, containerWidth, min, max]);
 
   const y = useMemo(() => {
     return d3.scaleLinear().domain([min, max]).range([containersHeight, 0]);
@@ -229,6 +238,7 @@ const HeatMap = ({
         activeDays={activeDays}
         data={visibleData}
         displayLines={!showCharts.includes("Liquidation Leverage")}
+        onYAxisDrag={onYAxisDrag}
       >
         <g
           ref={zoomRef}
@@ -269,6 +279,8 @@ const HeatMap = ({
             y={y}
             min={min}
             max={max}
+            mapMin={mapMin}
+            mapMax={mapMax}
             numBuckets={numBuckets}
             maxVol={maxVol}
             threshold={threshold}

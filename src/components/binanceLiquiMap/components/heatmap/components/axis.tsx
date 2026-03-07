@@ -7,6 +7,7 @@ import {
   d3LinearNumber,
   GeneratedDataType,
 } from "../../../types";
+import formulateNumber from "../../../functions/formulateNumber";
 
 const DottedLine = ({
   data,
@@ -41,6 +42,7 @@ const Axis = ({
   zoomAmount,
   activeDays,
   displayLines,
+  onYAxisDrag,
 }: {
   children: React.ReactNode;
   data: GeneratedDataType[];
@@ -50,10 +52,13 @@ const Axis = ({
   activeDays: number;
   displayLines: boolean;
 }) => {
+  const rectRef = useRef(null);
   const d3TimeFormat =
     activeDays >= 180 ? "%b %Y" : activeDays >= 14 ? "%d %b" : "%m, %H:%M";
   const xRef = useRef(null);
   const yRef = useRef(null);
+  const prevK = useRef(1);
+
   const xAxisTicks = x
     .domain()
     .filter((_: Date, i: number) => i % zoomAmount === 0);
@@ -72,10 +77,21 @@ const Axis = ({
     [data],
   );
 
+  const yZoom = useMemo(
+    () =>
+      d3.zoom().on("zoom", (e) => {
+        if (e.sourceEvent && e.sourceEvent.type === "mousemove") {
+          onYAxisDrag?.(e.sourceEvent.movementY);
+        }
+      }),
+    [onYAxisDrag],
+  );
+
   useEffect(() => {
     if (!xRef.current || !yRef.current) return;
     const xAxis = d3.select(xRef.current);
     const yAxis = d3.select(yRef.current);
+    const yRect = d3.select(rectRef.current);
 
     xAxis.call(
       d3
@@ -85,11 +101,13 @@ const Axis = ({
         .tickSize(0),
     );
 
-    yAxis.call(d3.axisRight(y).tickSize(0));
+    yAxis.call(d3.axisRight(y).tickFormat(formulateNumber).tickSize(0));
+
+    yRect.call(yZoom);
 
     xAxis.select(".domain").remove();
     yAxis.select(".domain").remove();
-  }, [x, y]);
+  }, [x, y, yZoom]);
 
   return (
     <svg
@@ -106,12 +124,21 @@ const Axis = ({
         className="text-white"
       />
       <g
-        z="10"
-        pointerEvents="none"
         ref={yRef}
+        z="100"
+        style={{ cursor: "ns-resize" }}
         transform={`translate(${x.range()[1]}, 0)`}
         className="text-white"
-      />
+      >
+        <rect
+          ref={rectRef}
+          x={0}
+          y={0}
+          width={30}
+          height={y.range()[0]}
+          fill="transparent"
+        />
+      </g>
       {children}
       <Activity mode={displayLines ? "visible" : "hidden"}>
         <g id="heatMapDottedLineGroup">
@@ -125,7 +152,7 @@ const Axis = ({
               data={tickValue}
               x={x}
               y={y}
-              opacity="0.1"
+              opacity="0.15"
             />
           ))}
         </g>

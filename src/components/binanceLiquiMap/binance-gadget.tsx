@@ -19,14 +19,8 @@ import {
   times,
 } from "./constants";
 
-// Add dotted lines to heatmap so when liquidation leverage is disabled, you see them for each price
-
 // hide white dot on drag
 // hide tooltip on drag
-
-// fix so squares dont look so 'squary' - currently have some outline on them. (barChart)
-
-// fix white square so it hovers on mouse-top
 
 // timelapschart 'lags' when you open liquidation map,
 // Tie timeLapsChart to heatmap ??
@@ -102,14 +96,25 @@ const BinanceGadget = () => {
 
   if (!min || !max) return;
 
-  // Adjust max/min padding, so graph has some space between top/bottom and highest/lowest value
   const pricePadding = (max.value - min.value) * 0.3;
-  const paddedMin = min.value - pricePadding;
+  const paddedMin = Math.max(1, min.value - pricePadding);
   const paddedMax = max.value + pricePadding;
 
+  // View boundaries — changed by y-axis drag
+  const [yMin, setYMin] = useState(paddedMin);
+  const [yMax, setYMax] = useState(paddedMax);
+
+  console.log(yMin, yMax);
+
+  useEffect(() => {
+    setYMin(paddedMin);
+    setYMax(paddedMax);
+  }, [data]);
+
+  // Map never rebuilds on y-drag
   const processedData = useMemo(
     () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
-    [data, paddedMin, paddedMax, activeDays],
+    [data, activeDays],
   );
 
   if (!data) return;
@@ -161,8 +166,10 @@ const BinanceGadget = () => {
               <HeatMap
                 heatmapData={processedData.cellGrid}
                 visibleData={visibleData}
-                min={paddedMin}
-                max={paddedMax}
+                min={yMin}
+                max={yMax}
+                mapMin={paddedMin}
+                mapMax={paddedMax}
                 numBuckets={NUM_BUCKETS}
                 maxVol={processedData.maxVolume}
                 colorTheme={colorTheme}
@@ -172,6 +179,14 @@ const BinanceGadget = () => {
                 containerWidth={containerWidth}
                 containersHeight={containersHeight}
                 activeDays={activeDays}
+                onYAxisDrag={(deltaY) => {
+                  const priceRange = yMax - yMin;
+                  const pricePerPixel = priceRange / containersHeight;
+                  const priceChange = deltaY * pricePerPixel;
+
+                  setYMin((prev) => prev + priceChange);
+                  setYMax((prev) => prev - priceChange);
+                }}
               />
             </div>
 
