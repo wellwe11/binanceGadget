@@ -164,7 +164,7 @@ const BinanceGadget = () => {
             </div>
 
             <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-              <div style={{ width: "25%", height: "90%" }}>
+              <div style={{ width: "25%", height: "100%" }}>
                 <LiquidationMap
                   colorTheme={colorTheme.name}
                   liquidationMapData={processedData.aggregateBar}

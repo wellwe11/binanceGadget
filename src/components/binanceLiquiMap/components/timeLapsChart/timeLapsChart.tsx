@@ -321,29 +321,31 @@ const TimeLapsChart = ({
 
   // Adjusts smaller graphs size
   const [graphMargins, setGraphMargins] = useState<GraphMargins>({
-    start: 1,
+    start: 0,
     end: data.length - 1,
   });
 
-  const [isClicking, setIsClicking] = useState(false);
+  const [isClicking, setIsClicking] = useState(true);
 
-  const maxRange = data.length;
+  const maxRange = data.length - 1;
 
   useEffect(() => {
     if (zoomSource.current !== "heatmap") return;
+    console.log(1);
 
-    const itemsVisible = data.length / transform.k;
-    const itemWidth = containerWidth / data.length;
+    const itemsVisible = maxRange / transform.k;
+    const itemWidth = containerWidth / maxRange;
     const newStart = -transform.x / (itemWidth * transform.k) || 0;
 
     setGraphMargins({
       start: Math.max(0, newStart),
-      end: Math.min(data.length - 1, newStart + itemsVisible),
+      end: Math.min(maxRange, newStart + itemsVisible),
     });
   }, [transform.x, transform.k, data.length, containerWidth]);
 
   useEffect(() => {
     if (zoomSource.current === "heatmap" || isClicking) return;
+    console.log(2);
 
     const [lowestVal, highestVal] = getHighGetLow(
       graphMargins.start,
@@ -351,8 +353,8 @@ const TimeLapsChart = ({
     );
 
     const sliceWidth = Math.round(highestVal - lowestVal);
-    const calculatedK = data.length / (sliceWidth || 1);
-    const itemWidth = containerWidth / data.length;
+    const calculatedK = maxRange / (sliceWidth || 1);
+    const itemWidth = containerWidth / maxRange;
 
     zoomSource.current = "timelaps";
 
