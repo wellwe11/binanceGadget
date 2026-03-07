@@ -19,7 +19,20 @@ import {
   times,
 } from "./constants";
 
+// increase size of white dot on liquidations chart when hovering it
+// fix bug where if you zoom all the way right on heatmap, timelapsChart continues for a bit
+// fix so squares dont look so 'squary' - currently have some outline on them.″
+// add hover on gradients numbers
+// hide timelapscahrt when superCharts is off
+// fix white square so it hovers on mouse-top
+// liquidationmap needs to be a tiny bit smaller because it spills out a bit on right (dot disappears half) when its on right side edge (hover on top vol to see what i mean)
+// chart zoom should reset when user changes date
+// hide tooltip on drag
+// hide white dot on drag
+// timelapschart 'lags' when you open liquidation map,
 // Tie timeLapsChart to heatmap
+// Add dotted lines to heatmap so when liquidation leverage is disabled, you see them for each price
+
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
     () => false,
@@ -98,7 +111,7 @@ const BinanceGadget = () => {
   if (!data) return;
 
   return (
-    <div className="flex flex-col pt-5 pl-1 h-250 min-w-10 min-h-10 w-full max-w-360  bg-black">
+    <div className="flex flex-col pt-5 pl-1 h-250 min-w-10 min-h-10 w-full max-w-360 bg-black overflow-hidden select-none">
       <div className="bg-gray-950 flex" style={{ height: "35%" }}>
         <Nav
           times={Object.keys(times)}
@@ -118,18 +131,15 @@ const BinanceGadget = () => {
       </div>
 
       <div style={{ height: "65%" }} className="flex flex-col justify-between ">
-        <div className="flex gap-2.5" style={{ height: "95%" }}>
-          <div
-            className="mb-4 -mt-8.5"
-            style={{ width: "5%", maxWidth: "50px" }}
-          >
+        <div className="flex gap-5" style={{ height: "90%" }}>
+          <div style={{ width: "5%", maxWidth: "50px" }}>
             <Gradient
               max={processedData.totalVolume}
               colorTheme={colorTheme.name}
             />
           </div>
 
-          <div className="flex" style={{ width: "95%" }}>
+          <div className="flex gap-10" style={{ width: "90%", height: "100%" }}>
             <div
               ref={containerRef}
               style={{
@@ -155,7 +165,7 @@ const BinanceGadget = () => {
             </div>
 
             <Activity mode={displayLiquidationMap ? "visible" : "hidden"}>
-              <div style={{ width: "25%", height: "100%" }}>
+              <div style={{ width: "25%", height: "90%" }}>
                 <LiquidationMap
                   colorTheme={colorTheme.name}
                   liquidationMapData={processedData.aggregateBar}
@@ -169,7 +179,7 @@ const BinanceGadget = () => {
         </div>
 
         <div
-          className="flex w-full gap-2.5"
+          className="flex w-full gap-5 "
           style={{ height: "10%" }}
           key={refreshGraph}
         >
@@ -178,8 +188,12 @@ const BinanceGadget = () => {
             style={{ height: "inherit", width: "5%", maxWidth: "50px" }}
           />
 
-          <div style={{ width: "95%" }} className=" flex">
-            <div style={{ width: !displayLiquidationMap ? "100%" : "74%" }}>
+          <div className="flex" style={{ width: "90%" }}>
+            <div
+              style={{
+                width: !displayLiquidationMap ? "100%" : "74%",
+              }}
+            >
               <TimeLapsChart
                 key={days + coin}
                 data={reversedData}

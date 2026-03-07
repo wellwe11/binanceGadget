@@ -172,7 +172,7 @@ const Charts = ({
     () =>
       d3
         .scaleLinear()
-        .range([height, 0])
+        .range([height, 20]) // 20, because it intersects with heatmap; allows distance so user does not overclick the graphs
         .domain([0, d3.max(data, (d: GeneratedDataType) => d.value)]),
     [data, height, width],
   );
@@ -372,9 +372,9 @@ const TimeLapsChart = ({
 
   return (
     <div
+      style={{ backgroundColor: "#09387040" }}
       ref={containerRef}
       className="w-full h-full"
-      style={{ width: "calc(100% - 40px)" }} // Because heatmaps x-angle is -40
       onMouseUp={() => setIsClicking(false)}
       onMouseDown={() => setIsClicking(true)}
       onMouseLeave={() => setIsClicking(false)}

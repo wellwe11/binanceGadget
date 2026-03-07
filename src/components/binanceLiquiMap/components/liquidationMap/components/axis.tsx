@@ -63,15 +63,22 @@ const Axis = ({
         height={maxYPixels}
         opacity="0.3"
       />
-      <DottedLine data={averageShorts} x={xBars} height={maxYPixels} />
-      <DottedLine data={maxLongs} x={xBars} height={maxYPixels} opacity="0.3" />
-      <DottedLine data={averageLongs} x={xBars} height={maxYPixels} />
-      <DottedLine
-        data={maxYPixels}
-        x={xBars}
-        height={maxYPixels}
-        opacity="0.5"
-      />
+      <g id="dottedLinesGroup">
+        <DottedLine data={averageShorts} x={xBars} height={maxYPixels} />
+        <DottedLine
+          data={maxLongs}
+          x={xBars}
+          height={maxYPixels}
+          opacity="0.3"
+        />
+        <DottedLine data={averageLongs} x={xBars} height={maxYPixels} />
+        <DottedLine
+          data={maxYPixels}
+          x={xBars}
+          height={maxYPixels}
+          opacity="0.5"
+        />
+      </g>
       {children}
     </svg>
   );

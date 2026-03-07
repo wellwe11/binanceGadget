@@ -119,7 +119,7 @@ const LiquidationMap = ({
 
   const y = d3
     .scaleLinear()
-    .range([containersHeight - 50, 0])
+    .range([containersHeight, 0])
     .domain([minPrice, maxPrice]);
 
   if (!accumulatedLongs || !accumulatedShorts) return;

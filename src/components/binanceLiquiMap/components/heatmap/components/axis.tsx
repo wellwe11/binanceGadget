@@ -46,17 +46,21 @@ const Axis = ({
 
   return (
     <svg
-      width={x.range()[1] > 0 ? x.range()[1] + 40 : 0}
-      height={y.range()[0] > 0 ? y.range()[0] + 40 : 0}
+      width={x.range()[1] > 0 ? x.range()[1] + 30 : 0}
+      height={y.range()[0] > 0 ? y.range()[0] + 10 : 0}
       x={x.range()[0]}
       y={y.range()[1]}
     >
       <g
+        z="10"
+        pointerEvents="none"
         ref={xRef}
         transform={`translate(0, ${y.range()[0]})`}
         className="text-white"
       />
       <g
+        z="10"
+        pointerEvents="none"
         ref={yRef}
         transform={`translate(${x.range()[1]}, 0)`}
         className="text-white"

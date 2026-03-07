@@ -193,14 +193,11 @@ const HeatMap = ({
     return d3
       .scaleBand()
       .domain(visibleData.map((d) => d.date))
-      .range([0, containerWidth - 40]);
+      .range([0, containerWidth]);
   }, [visibleData, containerWidth]);
 
   const y = useMemo(() => {
-    return d3
-      .scaleLinear()
-      .domain([min, max])
-      .range([containersHeight - 50, 0]);
+    return d3.scaleLinear().domain([min, max]).range([containersHeight, 0]);
   }, [min, max, containersHeight]);
 
   if (!visibleData || visibleData.length < 1) return;
@@ -219,7 +216,7 @@ const HeatMap = ({
           position: "absolute",
           left: `${containerWidth}px`,
           top: `${containersHeight}px`,
-          transform: "translate(-14.5rem, -7rem)",
+          transform: "translate(-13rem, -5rem)",
         }}
       >
         <Coin360Svg />
@@ -249,6 +246,7 @@ const HeatMap = ({
               height={y.range()[0] > 0 ? y.range()[0] : 0}
               x={x.range()[0]}
               y={y.range()[1]}
+              z="-1"
             />
 
             <BarChart
