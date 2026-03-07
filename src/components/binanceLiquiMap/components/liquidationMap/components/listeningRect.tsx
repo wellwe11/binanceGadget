@@ -204,6 +204,7 @@ const ListeningRect = ({
         pointerEvents="none"
       />
       <circle
+        className="hover:stroke-[2px] transition-[stroke-width] duration-200"
         ref={circleRef}
         visibility={displayToolbar ? "visible" : "hidden"}
         r={0}
@@ -214,7 +215,7 @@ const ListeningRect = ({
 
       <foreignObject
         ref={tooltipRef}
-        width={maxXPixels}
+        width={maxXPixels + 10}
         height={tooltipHeight}
         style={{
           pointerEvents: "none",

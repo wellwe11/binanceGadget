@@ -19,19 +19,18 @@ import {
   times,
 } from "./constants";
 
-// increase size of white dot on liquidations chart when hovering it
 // fix bug where if you zoom all the way right on heatmap, timelapsChart continues for a bit
 // fix so squares dont look so 'squary' - currently have some outline on them.″
 // add hover on gradients numbers
 // hide timelapscahrt when superCharts is off
 // fix white square so it hovers on mouse-top
-// liquidationmap needs to be a tiny bit smaller because it spills out a bit on right (dot disappears half) when its on right side edge (hover on top vol to see what i mean)
 // chart zoom should reset when user changes date
 // hide tooltip on drag
 // hide white dot on drag
 // timelapschart 'lags' when you open liquidation map,
 // Tie timeLapsChart to heatmap
 // Add dotted lines to heatmap so when liquidation leverage is disabled, you see them for each price
+// Fix gradient size
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(

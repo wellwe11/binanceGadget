@@ -56,7 +56,7 @@ const Axis = ({
   const [minXPixels, maxXPixels] = x.range();
 
   return (
-    <svg height={maxYPixels > 0 ? maxYPixels : 0} width={maxXPixels}>
+    <svg height={maxYPixels > 0 ? maxYPixels : 0} width={maxXPixels + 10}>
       <DottedLine
         data={maxShorts}
         x={xBars}
