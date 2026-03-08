@@ -274,6 +274,7 @@ const HeatMap = ({
         transform={transform}
       >
         <g
+          className="heatmapG"
           ref={zoomRef}
           width={x.range()[1] > 0 ? x.range()[1] : 0}
           height={y.range()[0] > 0 ? y.range()[0] : 0}
@@ -303,23 +304,23 @@ const HeatMap = ({
               colorTheme={colorTheme}
               threshold={threshold}
             />
-          </Activity>
 
-          <CandleAndHoverComponent
-            candleData={visibleData}
-            heatmapData={heatmapData}
-            x={x}
-            y={y}
-            min={min}
-            max={max}
-            mapMin={mapMin}
-            mapMax={mapMax}
-            numBuckets={numBuckets}
-            maxVol={maxVol}
-            threshold={threshold}
-            colorTheme={colorTheme}
-            showCharts={showCharts}
-          />
+            <CandleAndHoverComponent
+              candleData={visibleData}
+              heatmapData={heatmapData}
+              x={x}
+              y={y}
+              min={min}
+              max={max}
+              mapMin={mapMin}
+              mapMax={mapMax}
+              numBuckets={numBuckets}
+              maxVol={maxVol}
+              threshold={threshold}
+              colorTheme={colorTheme}
+              showCharts={showCharts}
+            />
+          </Activity>
         </g>
       </Axis>
     </div>

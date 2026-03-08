@@ -124,13 +124,23 @@ const Axis = ({
       x={x.range()[0]}
       y={y.range()[1]}
     >
+      {children}
       <g
-        z="10"
+        z="100"
         pointerEvents="none"
         ref={xRef}
         transform={`translate(0, ${y.range()[0]})`}
         className="text-white"
-      />
+      >
+        <rect
+          ref={rectRef}
+          x={0}
+          y={0}
+          height={30}
+          width={x.range()[1]}
+          fill="black"
+        />
+      </g>
       <g
         ref={yRef}
         z="100"
@@ -147,7 +157,7 @@ const Axis = ({
           fill="transparent"
         />
       </g>
-      {children}
+
       <Activity mode={displayLines ? "visible" : "hidden"}>
         <g id="heatMapDottedLineGroup">
           <DottedLine data={averagePrice} x={x} y={y} opacity="0.5" />
