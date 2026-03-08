@@ -18,6 +18,7 @@ const ListeningRect = ({
   numBuckets,
   hideToolTip,
   setHideToolTip,
+  showCharts,
 }: {
   x: d3Date;
   y: d3LinearNumber;
@@ -47,7 +48,14 @@ const ListeningRect = ({
       />
 
       <Activity
-        mode={mouseOut || hideHighlight || hideToolTip ? "hidden" : "visible"}
+        mode={
+          mouseOut ||
+          hideHighlight ||
+          hideToolTip ||
+          !showCharts.includes("Liquidation Leverage")
+            ? "hidden"
+            : "visible"
+        }
       >
         <rect
           x={x(activeCell?.date)}

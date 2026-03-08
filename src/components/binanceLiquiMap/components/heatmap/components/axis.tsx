@@ -124,6 +124,23 @@ const Axis = ({
       x={x.range()[0]}
       y={y.range()[1]}
     >
+      <Activity mode={displayLines ? "visible" : "hidden"}>
+        <g id="heatMapDottedLineGroup" pointerEvents="none">
+          <DottedLine data={averagePrice} x={x} y={y} opacity="0.5" />
+          <DottedLine data={maxPrice} x={x} y={y} opacity="0.5" />
+          <DottedLine data={lowPrice} x={x} y={y} opacity="0.5" />
+
+          {yTicks.map((tickValue: number) => (
+            <DottedLine
+              key={tickValue}
+              data={tickValue}
+              x={x}
+              y={y}
+              opacity="0.15"
+            />
+          ))}
+        </g>
+      </Activity>
       {children}
       <g
         z="100"
@@ -157,24 +174,6 @@ const Axis = ({
           fill="transparent"
         />
       </g>
-
-      <Activity mode={displayLines ? "visible" : "hidden"}>
-        <g id="heatMapDottedLineGroup">
-          <DottedLine data={averagePrice} x={x} y={y} opacity="0.5" />
-          <DottedLine data={maxPrice} x={x} y={y} opacity="0.5" />
-          <DottedLine data={lowPrice} x={x} y={y} opacity="0.5" />
-
-          {yTicks.map((tickValue: number) => (
-            <DottedLine
-              key={tickValue}
-              data={tickValue}
-              x={x}
-              y={y}
-              opacity="0.15"
-            />
-          ))}
-        </g>
-      </Activity>
     </svg>
   );
 };

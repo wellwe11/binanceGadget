@@ -19,14 +19,6 @@ import {
   times,
 } from "./constants";
 
-// hide white dot on drag
-// hide tooltip on drag
-
-// timelapschart 'lags' when you open liquidation map,
-// Tie timeLapsChart to heatmap ??
-
-// Add zoom to y-axis (check jens graph)
-
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
     () => false,
@@ -98,6 +90,15 @@ const BinanceGadget = () => {
 
     setYMin((prev) => prev + priceChange);
     setYMax((prev) => prev + priceChange);
+  };
+
+  const onYAxisDrag = (deltaY) => {
+    const priceRange = yMax - yMin;
+    const pricePerPixel = priceRange / containersHeight;
+    const priceChange = deltaY * pricePerPixel;
+
+    setYMin((prev) => prev + priceChange / 2);
+    setYMax((prev) => prev - priceChange / 2);
   };
 
   // Controls data when zooming
@@ -186,14 +187,7 @@ const BinanceGadget = () => {
                 containersHeight={containersHeight}
                 activeDays={activeDays}
                 transform={transform}
-                onYAxisDrag={(deltaY) => {
-                  const priceRange = yMax - yMin;
-                  const pricePerPixel = priceRange / containersHeight;
-                  const priceChange = deltaY * pricePerPixel;
-
-                  setYMin((prev) => prev + priceChange / 2);
-                  setYMax((prev) => prev - priceChange / 2);
-                }}
+                onYAxisDrag={onYAxisDrag}
               />
             </div>
 

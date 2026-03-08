@@ -160,6 +160,7 @@ const CandleAndHoverComponent = React.memo(
             numBuckets={numBuckets}
             setHideToolTip={setHideToolTip}
             hideToolTip={hideToolTip}
+            showCharts={showCharts}
           />
         </Activity>
 
@@ -177,7 +178,11 @@ const CandleAndHoverComponent = React.memo(
 
         <Activity
           mode={
-            (mouseOut && !hideHighlight) || hideToolTip ? "hidden" : "visible"
+            (mouseOut && !hideHighlight) ||
+            hideToolTip ||
+            (!hideHighlight && !showCharts.includes("Liquidation Leverage"))
+              ? "hidden"
+              : "visible"
           }
         >
           <Tooltip
@@ -304,23 +309,22 @@ const HeatMap = ({
               colorTheme={colorTheme}
               threshold={threshold}
             />
-
-            <CandleAndHoverComponent
-              candleData={visibleData}
-              heatmapData={heatmapData}
-              x={x}
-              y={y}
-              min={min}
-              max={max}
-              mapMin={mapMin}
-              mapMax={mapMax}
-              numBuckets={numBuckets}
-              maxVol={maxVol}
-              threshold={threshold}
-              colorTheme={colorTheme}
-              showCharts={showCharts}
-            />
           </Activity>
+          <CandleAndHoverComponent
+            candleData={visibleData}
+            heatmapData={heatmapData}
+            x={x}
+            y={y}
+            min={min}
+            max={max}
+            mapMin={mapMin}
+            mapMax={mapMax}
+            numBuckets={numBuckets}
+            maxVol={maxVol}
+            threshold={threshold}
+            colorTheme={colorTheme}
+            showCharts={showCharts}
+          />
         </g>
       </Axis>
     </div>
