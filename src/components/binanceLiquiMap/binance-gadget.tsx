@@ -20,9 +20,7 @@ import {
 } from "./constants";
 
 const BinanceGadget = () => {
-  const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
-    () => false,
-  );
+  const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
 
   const [colorTheme, setColorTheme] = useState({
     name: "interpolateViridis",
@@ -34,7 +32,7 @@ const BinanceGadget = () => {
     "Supercharts",
   ]);
   const [transform, setTransform] = useState(() => d3.zoomIdentity);
-  const [refreshGraph, setRefreshGraph] = useState(0);
+  const [refreshGraph, setRefreshGraph] = useState(() => 0);
 
   const zoomSource = useRef(null);
   const [days, setDays] = useState(0);
@@ -66,12 +64,13 @@ const BinanceGadget = () => {
   // IN future, update BITCOIN to be/fetch 'coin'
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
-    [placeholderCurrencies, refreshGraph, activeDays, coin],
+    [placeholderCurrencies, activeDays, coin],
   );
 
   // Min/Max values (value of coin)
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
-  if (!min || !max) return;
+
+  if (!min || !max) return null;
 
   const pricePadding = (max.value - min.value) * 0.3;
   const paddedMin = Math.max(1, min.value - pricePadding);
@@ -80,13 +79,19 @@ const BinanceGadget = () => {
   const [yMax, setYMax] = useState(paddedMax);
 
   useEffect(() => {
-    setTransform({ x: 1, y: 0, k: 0 });
-  }, [data]);
+    if (transform.x !== 0 && transform.y !== 0 && transform.k !== 1) {
+      setTransform(d3.zoomIdentity);
+    }
+    setAllowYDrag(false);
+
+    if (zoomRef.current) {
+      d3.select(zoomRef.current).call(d3.zoom().transform, d3.zoomIdentity);
+    }
+  }, [refreshGraph]);
 
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
   const handleGraphPanY = (deltaY: number) => {
-    console.log(allowYDrag);
     if (!allowYDrag) return;
 
     const priceRange = yMax - yMin;
@@ -131,7 +136,7 @@ const BinanceGadget = () => {
     [data, activeDays],
   );
 
-  if (!data) return;
+  if (!data) return null;
 
   return (
     <div className="flex flex-col pt-5 pl-1 h-250 min-w-10 min-h-10 w-full max-w-360 bg-black overflow-hidden select-none">
@@ -153,7 +158,7 @@ const BinanceGadget = () => {
         />
       </div>
 
-      <div style={{ height: "65%" }} className="flex flex-col justify-between ">
+      <div style={{ height: "65%" }} className="flex flex-col justify-between">
         <div className="flex gap-5" style={{ height: "90%" }}>
           <div
             style={{
@@ -212,11 +217,7 @@ const BinanceGadget = () => {
           </div>
         </div>
 
-        <div
-          className="flex w-full gap-5 "
-          style={{ height: "10%" }}
-          key={refreshGraph}
-        >
+        <div className="flex w-full gap-5 " style={{ height: "10%" }}>
           <div
             className="mb-4 -mt-8.5"
             style={{ height: "inherit", width: "5%", maxWidth: "50px" }}
@@ -232,7 +233,6 @@ const BinanceGadget = () => {
                 mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
               >
                 <TimeLapsChart
-                  key={days + coin}
                   data={reversedData}
                   transform={transform}
                   setTransform={setTransform}

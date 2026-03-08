@@ -246,7 +246,7 @@ const HeatMap = ({
     return d3.scaleLinear().domain([min, max]).range([containersHeight, 0]);
   }, [min, max, containersHeight]);
 
-  if (!visibleData || visibleData.length < 1) return;
+  if (!visibleData || visibleData.length < 1) return null;
 
   return (
     <div

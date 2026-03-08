@@ -24,17 +24,11 @@ const useZoom = (
     Math.floor(-transform.x / (pointWidth * transform.k)),
   );
 
-  const visibleCount = useMemo(
-    () => Math.ceil(width / (pointWidth * transform.k)) + 2,
-    [transform.k],
-  );
+  const visibleCount = Math.ceil(width / (pointWidth * transform.k)) + 2;
 
   const endIdx = Math.min(data.length, startIdx + visibleCount);
 
-  const visibleData = useMemo(
-    () => data.slice(startIdx, endIdx),
-    [startIdx, endIdx],
-  );
+  const visibleData = data.slice(startIdx, endIdx);
 
   useEffect(() => {
     if (!ref.current || !zoomBehaviorRef.current) return;
