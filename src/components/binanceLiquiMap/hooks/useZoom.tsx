@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { GeneratedDataType, Setter, TransformType } from "../types";
 
 const useZoom = (
@@ -10,6 +10,7 @@ const useZoom = (
   transform: TransformType,
   setTransform: Setter<TransformType>,
   zoomSource: React.RefObject<string | null>,
+  onPanY: (deltaY: number) => void,
 ) => {
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGGElement, unknown> | null>(
     null,
@@ -22,7 +23,10 @@ const useZoom = (
     Math.floor(-transform.x / (pointWidth * transform.k)),
   );
 
-  const visibleCount = Math.ceil(width / (pointWidth * transform.k)) + 2;
+  const visibleCount = useMemo(
+    () => Math.ceil(width / (pointWidth * transform.k)) + 2,
+    [transform.k],
+  );
 
   const endIdx = Math.min(data.length, startIdx + visibleCount);
 
@@ -53,6 +57,14 @@ const useZoom = (
 
         const t = e.transform;
 
+        if (e.sourceEvent && typeof e.sourceEvent.movementY !== "undefined") {
+          const dx = Math.abs(e.sourceEvent.movementX);
+          const dy = Math.abs(e.sourceEvent.movementY);
+
+          if (dy > dx) {
+            onPanY?.(e.sourceEvent.movementY);
+          }
+        }
         // Horizontal boundaries
         const minX = -width * (t.k - 1);
         const maxX = 0;

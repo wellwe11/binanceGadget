@@ -41,6 +41,7 @@ const BarChart = React.memo(
 
     useEffect(() => {
       if (!canvasRef.current) return;
+
       const canvas = canvasRef.current;
 
       const ctx = canvas.getContext("2d");
@@ -53,6 +54,7 @@ const BarChart = React.memo(
       canvas.style.height = `${height}px`;
 
       if (!ctx) return;
+
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, width * dpr, height * dpr);
       ctx.scale(dpr, dpr);

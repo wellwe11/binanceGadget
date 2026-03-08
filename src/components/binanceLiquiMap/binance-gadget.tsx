@@ -31,6 +31,7 @@ const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(
     () => false,
   );
+
   const [colorTheme, setColorTheme] = useState({
     name: "interpolateViridis",
     color: "#440154",
@@ -74,14 +75,30 @@ const BinanceGadget = () => {
     [placeholderCurrencies, refreshGraph, activeDays, coin],
   );
 
+  // Min/Max values (value of coin)
+  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+  if (!min || !max) return;
+
+  const pricePadding = (max.value - min.value) * 0.3;
+  const paddedMin = Math.max(1, min.value - pricePadding);
+  const paddedMax = max.value + pricePadding;
+  const [yMin, setYMin] = useState(paddedMin);
+  const [yMax, setYMax] = useState(paddedMax);
+
   useEffect(() => {
     setTransform({ x: 1, y: 0, k: 0 });
   }, [data]);
 
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
-  // Min/Max values (value of coin)
-  const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
+  const handleGraphPanY = (deltaY: number) => {
+    const priceRange = yMax - yMin;
+    const pricePerPixel = priceRange / containersHeight;
+    const priceChange = deltaY * pricePerPixel;
+
+    setYMin((prev) => prev + priceChange);
+    setYMax((prev) => prev + priceChange);
+  };
 
   // Controls data when zooming
   const { visibleData } = useZoom(
@@ -92,17 +109,8 @@ const BinanceGadget = () => {
     transform,
     setTransform,
     zoomSource,
+    handleGraphPanY,
   );
-
-  if (!min || !max) return;
-
-  const pricePadding = (max.value - min.value) * 0.3;
-  const paddedMin = Math.max(1, min.value - pricePadding);
-  const paddedMax = max.value + pricePadding;
-
-  // View boundaries — changed by y-axis drag
-  const [yMin, setYMin] = useState(paddedMin);
-  const [yMax, setYMax] = useState(paddedMax);
 
   useEffect(() => {
     setYMin(paddedMin);
@@ -183,8 +191,8 @@ const BinanceGadget = () => {
                   const pricePerPixel = priceRange / containersHeight;
                   const priceChange = deltaY * pricePerPixel;
 
-                  setYMin((prev) => prev + priceChange);
-                  setYMax((prev) => prev - priceChange);
+                  setYMin((prev) => prev + priceChange / 2);
+                  setYMax((prev) => prev - priceChange / 2);
                 }}
               />
             </div>

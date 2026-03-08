@@ -57,7 +57,6 @@ const Axis = ({
     activeDays >= 180 ? "%b %Y" : activeDays >= 14 ? "%d %b" : "%m, %H:%M";
   const xRef = useRef(null);
   const yRef = useRef(null);
-  const prevK = useRef(1);
 
   const xAxisTicks = x
     .domain()
@@ -80,8 +79,17 @@ const Axis = ({
   const yZoom = useMemo(
     () =>
       d3.zoom().on("zoom", (e) => {
-        if (e.sourceEvent && e.sourceEvent.type === "mousemove") {
+        if (!e.sourceEvent) return;
+
+        // Mouse Drag
+        if (e.sourceEvent.type === "mousemove") {
           onYAxisDrag?.(e.sourceEvent.movementY);
+        }
+
+        // Scroll Wheel
+        if (e.sourceEvent.type === "wheel") {
+          const scrollDelta = -e.sourceEvent.deltaY / 2;
+          onYAxisDrag?.(scrollDelta);
         }
       }),
     [onYAxisDrag],

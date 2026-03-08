@@ -1,4 +1,11 @@
-import { Activity, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import * as d3 from "d3";
 
@@ -19,166 +26,168 @@ import {
   HeatmapDataType,
 } from "../../types";
 
-// If user is still hovering CandleAndHoverComponent, but outside of 'active' cell range, simply use currently hovering price/date and remove volume
-// Add vertical movement so that if user increases vertical size, user can scroll up/down as well
-// Add max-range & min-range to vertical zoom
+const CandleAndHoverComponent = React.memo(
+  ({
+    heatmapData,
+    candleData,
+    x,
+    y,
+    min,
+    max,
+    mapMin,
+    mapMax,
+    numBuckets,
+    maxVol,
+    threshold,
+    colorTheme,
+    showCharts,
+  }: {
+    heatmapData: HeatmapDataType;
+    candleData: GeneratedDataType[];
+    x: d3Date;
+    y: d3LinearNumber;
+    min: number;
+    max: number;
+    mapMin: number;
+    mapMax: number;
+    numBuckets: number;
+    maxVol: number;
+    threshold: number;
+    colorTheme: ColorTheme;
+    showCharts: string[];
+  }) => {
+    const rafRef = useRef<number | null>(null);
+    const activeCellRef = useRef<GeneratedDataType | CoinOnDateType | null>(
+      null,
+    );
 
-const CandleAndHoverComponent = ({
-  heatmapData,
-  candleData,
-  x,
-  y,
-  min,
-  max,
-  mapMin,
-  mapMax,
-  numBuckets,
-  maxVol,
-  threshold,
-  colorTheme,
-  showCharts,
-}: {
-  heatmapData: HeatmapDataType;
-  candleData: GeneratedDataType[];
-  x: d3Date;
-  y: d3LinearNumber;
-  min: number;
-  max: number;
-  mapMin: number;
-  mapMax: number;
-  numBuckets: number;
-  maxVol: number;
-  threshold: number;
-  colorTheme: ColorTheme;
-  showCharts: string[];
-}) => {
-  const rafRef = useRef<number | null>(null);
-  const activeCellRef = useRef<GeneratedDataType | CoinOnDateType | null>(null);
+    const [activeCell, setActiveCell] = useState<
+      CoinOnDateType | GeneratedDataType | null
+    >(null);
 
-  const [activeCell, setActiveCell] = useState<
-    CoinOnDateType | GeneratedDataType | null
-  >(null);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [hideHighlight, setHideHighlight] = useState(false);
+    const [mouseOut, setMouseOut] = useState(true);
 
-  const [hideHighlight, setHideHighlight] = useState(false);
-  const [mouseOut, setMouseOut] = useState(true);
+    const xDomain = useMemo(() => x.domain(), [x, candleData.length, min, max]);
+    const yDomain = useMemo(() => y.domain(), [min, max, y, candleData.length]);
 
-  const xDomain = useMemo(() => x.domain(), [x, candleData.length, min, max]);
-  const yDomain = useMemo(() => y.domain(), [min, max, y, candleData.length]);
+    const handleHover = useCallback(
+      (event: React.MouseEvent) => {
+        const [mouseX, mouseY] = d3.pointer(event);
 
-  const handleHover = useCallback(
-    (event: React.MouseEvent) => {
-      const [mouseX, mouseY] = d3.pointer(event);
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+        }
 
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+        rafRef.current = requestAnimationFrame(() => {
+          setMousePos({ x: mouseX, y: mouseY });
 
-      rafRef.current = requestAnimationFrame(() => {
-        setMousePos({ x: mouseX, y: mouseY });
+          const eachBand = x.step();
+          const rangeStart = x.range()[0];
 
-        const eachBand = x.step();
-        const rangeStart = x.range()[0];
+          const index = Math.round((mouseX - rangeStart) / eachBand);
 
-        const index = Math.round((mouseX - rangeStart) / eachBand);
+          const clampedIndex = Math.max(
+            0,
+            Math.min(index, candleData.length - 1),
+          );
 
-        const clampedIndex = Math.max(
-          0,
-          Math.min(index, candleData.length - 1),
-        );
+          const date = candleData[clampedIndex].date;
 
-        const date = candleData[clampedIndex].date;
+          if (!date) return;
 
-        if (!date) return;
+          // If user hovers a candle
+          if (hideHighlight) {
+            const cell = candleData[clampedIndex];
 
-        // If user hovers a candle
-        if (hideHighlight) {
-          const cell = candleData[clampedIndex];
+            if (cell !== activeCellRef.current) {
+              activeCellRef.current = cell;
 
-          if (cell !== activeCellRef.current) {
-            activeCellRef.current = cell;
-
-            setActiveCell(cell);
-          }
-        } else {
-          const rawPrice = y.invert(mouseY);
-
-          // If user is scrolling outside of CandleChart, we need to update price/date so that tooltip still shows some data
-          if (rawPrice < mapMin || rawPrice > mapMax) {
-            const customCell = {
-              date: date,
-              price: rawPrice,
-            };
-
-            setActiveCell(customCell);
+              setActiveCell(cell);
+            }
           } else {
-            const priceStep = (mapMax - mapMin) / numBuckets;
-            const idx = Math.floor((rawPrice - mapMin) / priceStep);
-            const clampedIdx = Math.max(0, Math.min(numBuckets - 1, idx));
-            const snappedPrice = mapMin + clampedIdx * priceStep;
-            const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
+            const rawPrice = y.invert(mouseY);
 
-            if (cell) {
-              const isNewDate = cell.date !== activeCellRef.current?.date;
-              const isNewPrice =
-                activeCellRef.current?.price !== undefined &&
-                cell.price !== activeCellRef.current?.price;
+            // If user is scrolling outside of CandleChart, we need to update price/date so that tooltip still shows some data
+            if (rawPrice < mapMin || rawPrice > mapMax) {
+              const customCell = {
+                date: date,
+                price: rawPrice,
+              };
 
-              if (isNewDate || isNewPrice) {
-                activeCellRef.current = cell;
-                setActiveCell(cell);
+              setActiveCell(customCell);
+            } else {
+              const priceStep = (mapMax - mapMin) / numBuckets;
+              const idx = Math.floor((rawPrice - mapMin) / priceStep);
+              const clampedIdx = Math.max(0, Math.min(numBuckets - 1, idx));
+              const snappedPrice = mapMin + clampedIdx * priceStep;
+              const cell = heatmapData.get(
+                `${date}-${snappedPrice.toFixed(4)}`,
+              );
+
+              if (cell) {
+                const isNewDate = cell.date !== activeCellRef.current?.date;
+                const isNewPrice =
+                  activeCellRef.current?.price !== undefined &&
+                  cell.price !== activeCellRef.current?.price;
+
+                if (isNewDate || isNewPrice) {
+                  activeCellRef.current = cell;
+                  setActiveCell(cell);
+                }
               }
             }
           }
-        }
-      });
-    },
-    [heatmapData, yDomain, xDomain, numBuckets, min, max],
-  );
+        });
+      },
+      [heatmapData, yDomain, xDomain, numBuckets, min, max],
+    );
 
-  return (
-    <g className="CandleAndHoverComponent">
-      <Activity mode={showCharts.length > 0 ? "visible" : "hidden"}>
-        <ListeningRect
-          y={y}
-          x={x}
-          handleHover={handleHover}
-          activeCell={activeCell}
-          hideHighlight={hideHighlight}
-          setMouseOut={setMouseOut}
-          mouseOut={mouseOut}
-          numBuckets={numBuckets}
-        />
-      </Activity>
+    return (
+      <g className="CandleAndHoverComponent">
+        <Activity mode={showCharts.length > 0 ? "visible" : "hidden"}>
+          <ListeningRect
+            y={y}
+            x={x}
+            handleHover={handleHover}
+            activeCell={activeCell}
+            hideHighlight={hideHighlight}
+            setMouseOut={setMouseOut}
+            mouseOut={mouseOut}
+            numBuckets={numBuckets}
+          />
+        </Activity>
 
-      <Activity
-        mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
-      >
-        <CandleChart
-          data={candleData}
-          x={x}
-          y={y}
-          handleHover={handleHover}
-          setHideHighlight={setHideHighlight}
-        />
-      </Activity>
+        <Activity
+          mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
+        >
+          <CandleChart
+            data={candleData}
+            x={x}
+            y={y}
+            handleHover={handleHover}
+            setHideHighlight={setHideHighlight}
+          />
+        </Activity>
 
-      <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
-        <Tooltip
-          mousePos={mousePos}
-          activeCell={activeCell}
-          x={x}
-          y={y}
-          hideHighlight={hideHighlight}
-          max={maxVol}
-          threshold={threshold}
-          colorTheme={colorTheme}
-        />
-      </Activity>
-    </g>
-  );
-};
+        <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
+          <Tooltip
+            mousePos={mousePos}
+            activeCell={activeCell}
+            x={x}
+            y={y}
+            hideHighlight={hideHighlight}
+            max={maxVol}
+            threshold={threshold}
+            colorTheme={colorTheme}
+          />
+        </Activity>
+      </g>
+    );
+  },
+);
 
 const HeatMap = ({
   heatmapData,
@@ -303,7 +312,6 @@ const HeatMap = ({
             threshold={threshold}
             colorTheme={colorTheme}
             showCharts={showCharts}
-            transform={transform}
           />
         </g>
       </Axis>
