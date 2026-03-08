@@ -109,8 +109,10 @@ const Axis = ({
         .tickSize(0),
     );
 
-    yAxis.call(d3.axisRight(y).tickFormat(formulateNumber).tickSize(0));
+    xAxis.selectAll(".tick text").style("pointer-events", "none");
+    yAxis.selectAll(".tick text").style("pointer-events", "none");
 
+    yAxis.call(d3.axisRight(y).tickFormat(formulateNumber).tickSize(0));
     yRect.call(yZoom);
 
     xAxis.select(".domain").remove();
@@ -144,7 +146,6 @@ const Axis = ({
       {children}
       <g
         z="100"
-        pointerEvents="none"
         ref={xRef}
         transform={`translate(0, ${y.range()[0]})`}
         className="text-white"
