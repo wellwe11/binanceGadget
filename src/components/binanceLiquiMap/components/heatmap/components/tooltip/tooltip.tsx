@@ -135,6 +135,7 @@ const Tooltip = ({
       height={y.range()[0] > 0 ? y.range()[0] : 0}
       style={{
         transform: `translate(${adjustPos.left ? `-${tooltipWidth + 10}px` : "20px"}, ${adjustPos.up ? `-${tooltipHeight}px` : "0"})`,
+
         transition: activeCell ? "transform 0.3s ease, height 0.2s ease" : "",
         pointerEvents: "none",
       }}

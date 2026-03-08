@@ -53,9 +53,15 @@ const useZoom = (
 
         const t = e.transform;
 
+        // Horizontal boundaries
         const minX = -width * (t.k - 1);
         const maxX = 0;
         t.x = Math.min(maxX, Math.max(minX, t.x));
+
+        // Vertical boundaries
+        const minY = -height * (t.k - 1);
+        const maxY = 0;
+        t.y = Math.min(maxY, Math.max(minY, t.y));
 
         setTransform({ x: t.x, y: t.y, k: t.k });
       })

@@ -19,6 +19,10 @@ import {
   HeatmapDataType,
 } from "../../types";
 
+// If user is still hovering CandleAndHoverComponent, but outside of 'active' cell range, simply use currently hovering price/date and remove volume
+// Add vertical movement so that if user increases vertical size, user can scroll up/down as well
+// Add max-range & min-range to vertical zoom
+
 const CandleAndHoverComponent = ({
   heatmapData,
   candleData,
@@ -182,6 +186,7 @@ const HeatMap = ({
   containersHeight,
   activeDays,
   onYAxisDrag,
+  transform,
 }: {
   heatmapData: HeatmapDataType;
   visibleData: GeneratedDataType[];
@@ -239,6 +244,7 @@ const HeatMap = ({
         data={visibleData}
         displayLines={!showCharts.includes("Liquidation Leverage")}
         onYAxisDrag={onYAxisDrag}
+        transform={transform}
       >
         <g
           ref={zoomRef}
@@ -286,6 +292,7 @@ const HeatMap = ({
             threshold={threshold}
             colorTheme={colorTheme}
             showCharts={showCharts}
+            transform={transform}
           />
         </g>
       </Axis>

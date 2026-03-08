@@ -6,7 +6,6 @@ const generateHeatmapData = (names: string[], days: number) => {
   const today = new Date();
   let contractPool = [] as LiquidationType[];
 
-  // ✅ Always ensure at least 100 points
   let amountOfData = 300;
 
   if (days > 29) amountOfData = 400;
@@ -14,11 +13,9 @@ const generateHeatmapData = (names: string[], days: number) => {
   if (days > 182) amountOfData = 600;
   if (days > 365) amountOfData = 1200;
 
-  // ✅ Use Minutes for interval to handle short durations (like 12h) accurately
   const totalMinutes = days * 24 * 60;
   const intervalMinutes = totalMinutes / amountOfData;
 
-  // Use d3.timeMinute instead of timeHour for higher granularity
   const timeOffset = (i: number): Date =>
     d3.timeMinute.offset(today, -(i * intervalMinutes));
 
@@ -45,7 +42,6 @@ const generateHeatmapData = (names: string[], days: number) => {
       const low = Math.max(5, Math.min(open, close) - Math.random() * 5);
       lastPrices[name] = close;
 
-      // ✅ Less frequent clustering (25% chance)
       if (Math.random() > 0.75) {
         const clusterIdx = Math.floor(Math.random() * clusters[name].length);
         clusters[name][clusterIdx] = close + (Math.random() - 0.5) * 100;
@@ -53,7 +49,6 @@ const generateHeatmapData = (names: string[], days: number) => {
         const targetPrice = clusters[name][clusterIdx];
         const priceStep = 5;
 
-        // ✅ Moderate orders per cluster (12-20)
         const ordersInCluster = Math.floor(Math.random() * 8) + 12;
 
         for (let j = 0; j < ordersInCluster; j++) {
@@ -71,21 +66,18 @@ const generateHeatmapData = (names: string[], days: number) => {
         }
       }
 
-      // ✅ Remove ONLY liquidated positions (price passed through)
       contractPool = contractPool.filter((contract) => {
-        // Short liquidated if price went ABOVE it
         if (contract.type === "short" && low >= contract.price) {
           return false;
         }
-        // Long liquidated if price went BELOW it
+
         if (contract.type === "long" && high <= contract.price) {
           return false;
         }
-        // Keep all others - they persist until liquidated
+
         return true;
       });
 
-      // ✅ Moderate pool limit (600)
       if (contractPool.length > 600) {
         contractPool.splice(0, 50);
       }

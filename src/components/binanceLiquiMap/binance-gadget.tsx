@@ -104,8 +104,6 @@ const BinanceGadget = () => {
   const [yMin, setYMin] = useState(paddedMin);
   const [yMax, setYMax] = useState(paddedMax);
 
-  console.log(yMin, yMax);
-
   useEffect(() => {
     setYMin(paddedMin);
     setYMax(paddedMax);
@@ -179,6 +177,7 @@ const BinanceGadget = () => {
                 containerWidth={containerWidth}
                 containersHeight={containersHeight}
                 activeDays={activeDays}
+                transform={transform}
                 onYAxisDrag={(deltaY) => {
                   const priceRange = yMax - yMin;
                   const pricePerPixel = priceRange / containersHeight;
