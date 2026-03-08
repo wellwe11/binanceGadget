@@ -11,6 +11,7 @@ const useZoom = (
   setTransform: Setter<TransformType>,
   zoomSource: React.RefObject<string | null>,
   onPanY: (deltaY: number) => void,
+  allowYDrag,
 ) => {
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGGElement, unknown> | null>(
     null,
@@ -96,7 +97,7 @@ const useZoom = (
       zoom.transform,
       d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k),
     );
-  }, [data, width, height]);
+  }, [data, width, height, allowYDrag]);
 
   return { visibleData };
 };

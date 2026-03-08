@@ -49,6 +49,8 @@ const BinanceGadget = () => {
 
   const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
 
+  const [allowYDrag, setAllowYDrag] = useState(false);
+
   const handleActiveCoin = (n: number) => setActiveCoin(n);
 
   const handleSetPairOrSymbol = (n: number) => {
@@ -84,6 +86,9 @@ const BinanceGadget = () => {
   const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
 
   const handleGraphPanY = (deltaY: number) => {
+    console.log(allowYDrag);
+    if (!allowYDrag) return;
+
     const priceRange = yMax - yMin;
     const pricePerPixel = priceRange / containersHeight;
     const priceChange = deltaY * pricePerPixel;
@@ -93,6 +98,7 @@ const BinanceGadget = () => {
   };
 
   const onYAxisDrag = (deltaY) => {
+    setAllowYDrag(true);
     const priceRange = yMax - yMin;
     const pricePerPixel = priceRange / containersHeight;
     const priceChange = deltaY * pricePerPixel;
@@ -111,6 +117,7 @@ const BinanceGadget = () => {
     setTransform,
     zoomSource,
     handleGraphPanY,
+    allowYDrag,
   );
 
   useEffect(() => {
