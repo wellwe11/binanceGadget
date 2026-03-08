@@ -44,8 +44,8 @@ const CandleAndHoverComponent = ({
   y: d3LinearNumber;
   min: number;
   max: number;
-  mapMin;
-  mapMax;
+  mapMin: number;
+  mapMax: number;
   numBuckets: number;
   maxVol: number;
   threshold: number;
@@ -92,6 +92,7 @@ const CandleAndHoverComponent = ({
 
         if (!date) return;
 
+        // If user hovers a candle
         if (hideHighlight) {
           const cell = candleData[clampedIndex];
 
@@ -103,21 +104,31 @@ const CandleAndHoverComponent = ({
         } else {
           const rawPrice = y.invert(mouseY);
 
-          const priceStep = (mapMax - mapMin) / numBuckets;
-          const idx = Math.floor((rawPrice - mapMin) / priceStep);
-          const clampedIdx = Math.max(0, Math.min(numBuckets - 1, idx));
-          const snappedPrice = mapMin + clampedIdx * priceStep;
-          const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
+          // If user is scrolling outside of CandleChart, we need to update price/date so that tooltip still shows some data
+          if (rawPrice < mapMin || rawPrice > mapMax) {
+            const customCell = {
+              date: date,
+              price: rawPrice,
+            };
 
-          if (cell) {
-            const isNewDate = cell.date !== activeCellRef.current?.date;
-            const isNewPrice =
-              activeCellRef.current?.price !== undefined &&
-              cell.price !== activeCellRef.current?.price;
+            setActiveCell(customCell);
+          } else {
+            const priceStep = (mapMax - mapMin) / numBuckets;
+            const idx = Math.floor((rawPrice - mapMin) / priceStep);
+            const clampedIdx = Math.max(0, Math.min(numBuckets - 1, idx));
+            const snappedPrice = mapMin + clampedIdx * priceStep;
+            const cell = heatmapData.get(`${date}-${snappedPrice.toFixed(4)}`);
 
-            if (isNewDate || isNewPrice) {
-              activeCellRef.current = cell;
-              setActiveCell(cell);
+            if (cell) {
+              const isNewDate = cell.date !== activeCellRef.current?.date;
+              const isNewPrice =
+                activeCellRef.current?.price !== undefined &&
+                cell.price !== activeCellRef.current?.price;
+
+              if (isNewDate || isNewPrice) {
+                activeCellRef.current = cell;
+                setActiveCell(cell);
+              }
             }
           }
         }
