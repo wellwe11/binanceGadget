@@ -16,6 +16,8 @@ const ListeningRect = ({
   mouseOut,
   setMouseOut,
   numBuckets,
+  hideToolTip,
+  setHideToolTip,
 }: {
   x: d3Date;
   y: d3LinearNumber;
@@ -31,6 +33,8 @@ const ListeningRect = ({
   return (
     <g cursor="pointer">
       <rect
+        onPointerDown={() => setHideToolTip(true)}
+        onPointerUp={() => setHideToolTip(false)}
         onMouseLeave={() => setMouseOut(true)}
         onMouseEnter={() => setMouseOut(false)}
         width={x.range()[1] > 0 ? x.range()[1] : 0}
@@ -42,7 +46,9 @@ const ListeningRect = ({
         className="pointer-events-auto"
       />
 
-      <Activity mode={mouseOut || hideHighlight ? "hidden" : "visible"}>
+      <Activity
+        mode={mouseOut || hideHighlight || hideToolTip ? "hidden" : "visible"}
+      >
         <rect
           x={x(activeCell?.date)}
           y={y(activeCell?.price)}

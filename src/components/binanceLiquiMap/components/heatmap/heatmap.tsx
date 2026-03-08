@@ -68,6 +68,7 @@ const CandleAndHoverComponent = React.memo(
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
     const [hideHighlight, setHideHighlight] = useState(false);
+    const [hideToolTip, setHideToolTip] = useState(false);
     const [mouseOut, setMouseOut] = useState(true);
 
     const xDomain = useMemo(() => x.domain(), [x, candleData.length, min, max]);
@@ -157,6 +158,8 @@ const CandleAndHoverComponent = React.memo(
             setMouseOut={setMouseOut}
             mouseOut={mouseOut}
             numBuckets={numBuckets}
+            setHideToolTip={setHideToolTip}
+            hideToolTip={hideToolTip}
           />
         </Activity>
 
@@ -172,7 +175,11 @@ const CandleAndHoverComponent = React.memo(
           />
         </Activity>
 
-        <Activity mode={mouseOut && !hideHighlight ? "hidden" : "visible"}>
+        <Activity
+          mode={
+            (mouseOut && !hideHighlight) || hideToolTip ? "hidden" : "visible"
+          }
+        >
           <Tooltip
             mousePos={mousePos}
             activeCell={activeCell}

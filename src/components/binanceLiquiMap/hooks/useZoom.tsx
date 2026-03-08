@@ -30,7 +30,10 @@ const useZoom = (
 
   const endIdx = Math.min(data.length, startIdx + visibleCount);
 
-  const visibleData = data.slice(startIdx, endIdx);
+  const visibleData = useMemo(
+    () => data.slice(startIdx, endIdx),
+    [startIdx, endIdx],
+  );
 
   useEffect(() => {
     if (!ref.current || !zoomBehaviorRef.current) return;
