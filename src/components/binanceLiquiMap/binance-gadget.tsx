@@ -21,7 +21,6 @@ import {
 
 const BinanceGadget = () => {
   const [displayLiquidationMap, setDisplayLiquidationMap] = useState(false);
-
   const [colorTheme, setColorTheme] = useState({
     name: "interpolateViridis",
     color: "#440154",
@@ -33,21 +32,22 @@ const BinanceGadget = () => {
   ]);
   const [transform, setTransform] = useState(() => d3.zoomIdentity);
   const [refreshGraph, setRefreshGraph] = useState(() => 0);
+  const [days, setDays] = useState(0);
+  const [activeCoin, setActiveCoin] = useState(0);
+  const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
+  const [allowYDrag, setAllowYDrag] = useState(false);
+  const [yMin, setYMin] = useState(0);
+  const [yMax, setYMax] = useState(0);
 
   const zoomSource = useRef(null);
-  const [days, setDays] = useState(0);
-
   const containerRef = useRef(null);
+  const zoomRef = useRef<SVGGElement | null>(null);
+
   const [containerWidth, containersHeight] =
     useTrackContainerSize(containerRef);
 
-  const [activeCoin, setActiveCoin] = useState(0);
-
-  const zoomRef = useRef<SVGGElement | null>(null);
-
-  const [pairOrSymbol, setPairOrSymbol] = useState(placeholderPairs);
-
-  const [allowYDrag, setAllowYDrag] = useState(false);
+  const coin = pairOrSymbol[activeCoin];
+  const activeDays = Object.values(times)[days];
 
   const handleActiveCoin = (n: number) => setActiveCoin(n);
 
@@ -57,45 +57,34 @@ const BinanceGadget = () => {
     setPairOrSymbol(pairOrSymbolArr[n]);
   };
 
-  const coin = pairOrSymbol[activeCoin];
-
-  const activeDays = Object.values(times)[days];
-
   // IN future, update BITCOIN to be/fetch 'coin'
   const data = useMemo(
     () => generateHeatmapData(["BITCOIN"], activeDays),
-    [placeholderCurrencies, activeDays, coin],
+    [placeholderCurrencies, days, coin],
   );
 
   // Min/Max values (value of coin)
   const { min, max } = useMemo(() => getMinMaxFromArr(data), [data]);
 
-  if (!min || !max) return null;
+  const pricePadding = min && max ? (max.value - min.value) * 0.3 : 0;
+  const paddedMin = min ? Math.max(1, min.value - pricePadding) : 0;
+  const paddedMax = max ? max.value + pricePadding : 0;
 
-  const pricePadding = (max.value - min.value) * 0.3;
-  const paddedMin = Math.max(1, min.value - pricePadding);
-  const paddedMax = max.value + pricePadding;
-  const [yMin, setYMin] = useState(paddedMin);
-  const [yMax, setYMax] = useState(paddedMax);
-
-  // Reset the graph
   useEffect(() => {
-    if (transform.x !== 0 && transform.y !== 0 && transform.k !== 1) {
-      setTransform(d3.zoomIdentity);
-    }
-    setAllowYDrag(false);
+    if (!paddedMin || !paddedMax) return;
 
-    setYMin(paddedMin);
-    setYMax(paddedMax);
-
-    setThreshold(60);
+    setTransform(d3.zoomIdentity);
 
     if (zoomRef.current) {
       d3.select(zoomRef.current).call(d3.zoom().transform, d3.zoomIdentity);
     }
-  }, [refreshGraph]);
 
-  const reversedData = useMemo(() => data.toReversed(), [data, activeDays]);
+    setYMin(paddedMin);
+    setYMax(paddedMax);
+
+    setAllowYDrag(false);
+    setThreshold(60);
+  }, [refreshGraph, days]);
 
   const handleGraphPanY = (deltaY: number) => {
     if (!allowYDrag) return;
@@ -131,18 +120,15 @@ const BinanceGadget = () => {
     allowYDrag,
   );
 
-  useEffect(() => {
-    setYMin(paddedMin);
-    setYMax(paddedMax);
-  }, [data]);
-
-  // Map never rebuilds on y-drag
   const processedData = useMemo(
     () => getCombinedHeatmapData(data, paddedMin, paddedMax, NUM_BUCKETS),
-    [data, activeDays],
+    [data, days],
   );
 
-  if (!data) return null;
+  const reversedData = useMemo(() => data.toReversed(), [data]);
+
+  if (!paddedMin || !paddedMax || !data || !visibleData || !processedData)
+    return null;
 
   return (
     <div className="flex flex-col pt-5 pl-1 h-250 min-w-10 min-h-10 w-full max-w-360 bg-black overflow-hidden select-none">
@@ -239,7 +225,7 @@ const BinanceGadget = () => {
                 mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
               >
                 <TimeLapsChart
-                  key={coin + activeDays}
+                  key={coin + activeDays + days}
                   data={reversedData}
                   transform={transform}
                   setTransform={setTransform}
