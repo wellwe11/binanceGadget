@@ -84,6 +84,9 @@ const BinanceGadget = () => {
     }
     setAllowYDrag(false);
 
+    setYMin(paddedMin);
+    setYMax(paddedMax);
+
     if (zoomRef.current) {
       d3.select(zoomRef.current).call(d3.zoom().transform, d3.zoomIdentity);
     }
