@@ -239,6 +239,7 @@ const BinanceGadget = () => {
                 mode={showCharts.includes("Supercharts") ? "visible" : "hidden"}
               >
                 <TimeLapsChart
+                  key={coin + activeDays}
                   data={reversedData}
                   transform={transform}
                   setTransform={setTransform}
