@@ -78,6 +78,7 @@ const BinanceGadget = () => {
   const [yMin, setYMin] = useState(paddedMin);
   const [yMax, setYMax] = useState(paddedMax);
 
+  // Reset the graph
   useEffect(() => {
     if (transform.x !== 0 && transform.y !== 0 && transform.k !== 1) {
       setTransform(d3.zoomIdentity);
@@ -86,6 +87,8 @@ const BinanceGadget = () => {
 
     setYMin(paddedMin);
     setYMax(paddedMax);
+
+    setThreshold(60);
 
     if (zoomRef.current) {
       d3.select(zoomRef.current).call(d3.zoom().transform, d3.zoomIdentity);

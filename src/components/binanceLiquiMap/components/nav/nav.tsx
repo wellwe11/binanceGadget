@@ -269,8 +269,8 @@ const Nav = ({
               behaviour. With live data, this will be resolved.
             </p>
             <p className="text-gray-300 max-w-100 text-wrap text-xs font-extralight py-1">
-              If data looks 'odd', please click the refresh-button found on the
-              right-hand side of the navigational bar.
+              Data is generated on mount. May look a bit strange. To update
+              data, please refresh the page.
             </p>
             <p className="text-gray-400 max-w-100 text-wrap text-xs font-extralight py-1">
               Snapshot is currently disabled.
